@@ -1,0 +1,47 @@
+
+.list-user {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    color: #fff;
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.li-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid #333;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.li-item:last-child {
+    border-bottom: none;
+}
+
+.user {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    transition: color 0.2s ease;
+}
+
+.user:hover {
+    color: #fe2c55;
+  
+}
+
+
+.list-user ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+

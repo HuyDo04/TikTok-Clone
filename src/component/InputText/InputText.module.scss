@@ -1,0 +1,19 @@
+.error {
+    color: red;
+    font-size: 13px;
+}
+
+.input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e2e2e2;
+    border-radius: 4px;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.input:focus {
+    border-color: #fe2c55;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(254, 44, 85, 0.1);
+}

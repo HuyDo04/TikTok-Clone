@@ -1,0 +1,104 @@
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+    padding: 20px;
+}
+
+.form {
+    width: 100%;
+    max-width: 440px;
+    background: #fff;
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #161823;
+}
+
+.input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e2e2e2;
+    border-radius: 4px;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.input:focus {
+    border-color: #fe2c55;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(254, 44, 85, 0.1);
+}
+
+.Button {
+    text-align: center;
+}
+
+.submitButton {
+    width: 100%;
+    padding: 14px;
+    background-color: #fe2c55;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+    background-color: #e41e4e;
+}
+
+.error {
+    color: #fe2c55;
+    font-size: 13px;
+    margin-top: 6px;
+    display: block;
+}
+
+
+.registerLink {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #161823;
+    font-size: 14px;
+}
+
+.registerLink a {
+    margin-top: 20px;
+    color: #fe2c55;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.registerLink a:hover {
+    text-decoration: underline;
+}
+
+.subButton {
+    cursor: pointer;
+    border: none;
+    background-color: rgba(254, 44, 85, 1);
+    color: rgba(255, 255, 255, 1);
+    height: 40px;
+    min-width: 108px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 21px;
+    width: 12.5rem;
+}

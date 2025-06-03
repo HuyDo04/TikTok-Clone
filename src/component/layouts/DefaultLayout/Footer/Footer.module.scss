@@ -1,0 +1,32 @@
+.footer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top:100px;
+}
+
+.footer-container {
+    position: relative;
+    border-top: 1px solid rgba(22, 24, 35, 0.12);
+    padding-top: 16px;
+    width: 12.5rem;
+}
+
+.footer-item {
+    font-size: 15px;
+    line-height: 22px;
+    margin-top: 0px;
+    cursor: pointer;
+    color: rgba(22, 24, 35, 0.5);
+    font-weight: 700;
+}
+
+.span {
+    color: rgba(22, 24, 35, 0.5);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    display: inline-block;
+    margin-right: 6px;
+    margin-top: 5px;
+}

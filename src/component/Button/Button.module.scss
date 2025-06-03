@@ -1,0 +1,54 @@
+.wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 120px;
+    min-height: 34px;
+    border: none;
+    outline: none;
+    padding: 8px 16px;
+    background: #ccc;
+    color: inherit;
+    text-decoration: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+.primary {
+    background-color: rgba(254, 44, 85, 1);
+    color: rgba(255, 255, 255, 1)
+}
+
+.secondary {
+    background-color: green;
+}
+
+.rounded {
+    border-radius: 99px;
+}
+
+.disabled {
+    opacity: 0.5;
+}
+
+.small {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.medium {
+    height: 40px;
+    min-width: 108px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 21px;
+    width: 12.5rem;
+}
+
+.large {
+    font-size: 16px;
+    padding: 10px 20px;
+}

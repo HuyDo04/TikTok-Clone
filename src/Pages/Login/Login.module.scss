@@ -1,0 +1,98 @@
+// Login.module.scss
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5; // Màu nền sáng giống TikTok
+    padding: 20px;
+}
+
+.form {
+    width: 100%;
+    max-width: 400px; // Giới hạn chiều rộng giống form TikTok
+    padding: 24px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #161823; // Màu chữ tối của TikTok
+}
+
+.input {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(22, 24, 35, 0.12); // Viền nhạt giống TikTok
+    border-radius: 4px;
+    font-size: 16px;
+    outline: none;
+    background: #fff;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: #161823; // Đậm hơn khi focus
+    }
+
+    // Khi có lỗi (nếu InputText hỗ trợ)
+    &[data-error="true"] {
+        border-color: #fe2c55; // Màu đỏ của TikTok khi lỗi
+    }
+}
+
+.Button {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.subButton {
+    width: 100%;
+    padding: 12px;
+    background: #161823; // Màu đen đặc trưng TikTok
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.register-link {
+    margin-top: 16px;
+    text-align: center;
+
+    a {
+        color: #161823;
+        font-size: 14px;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+            color: #fe2c55; // Điểm nhấn đỏ của TikTok
+        }
+    }
+}
+
+// Nếu muốn thêm error message
+.error {
+    color: #fe2c55;
+    font-size: 14px;
+    margin-top: -12px;
+    margin-bottom: 12px;
+}
