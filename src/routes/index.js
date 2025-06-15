@@ -24,7 +24,7 @@ const routes = [
      {
         path: config.routes.products,
         component: Products,
-        layout: AdminLayout
+        // layout: DefaultLayout
     },
     {
         path: config.routes.productDetail,
@@ -67,7 +67,7 @@ const routes = [
     {
         path: config.routes.notFound,
         component: NotFound
-    }
+    },
 ]
 
 export default routes
