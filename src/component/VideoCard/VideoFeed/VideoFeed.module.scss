@@ -1,51 +1,70 @@
 .videoFeed {
-  width: auto; /* Allow feed to grow with content */
+  width: auto;
   height: 100vh;
-  margin-left:20px;
-  // margin: 0 auto; 
+  margin-left: 20px;
   border-radius: 8px;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
-  // background: #000; // Background will be on the player part
+  position: relative;
 
-  // Hide scrollbar
+  // Ẩn scrollbar
   &::-webkit-scrollbar {
     display: none;
   }
-  -ms-overflow-style: none; 
-  scrollbar-width: none; 
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  // Hiệu ứng mở comment
+  transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+  padding-right 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+  background-color 0.3s ease;
+
+  right: 0;
+  padding-right: 0;
+  background: transparent;
+
+  &.comments-open {
+    position: relative;
+    right: 40px; // dịch nhẹ sang trái để tạo cảm giác "nhường chỗ"
+    padding-right: 40px;
+  }
 }
 
-// .column-list-container {
-//   // This might not be needed anymore, but keeping it as user requested
-// }
+.videoFeedInner {
+  position: relative;
+}
 
 .videoWrapper {
   padding: 10px;
-  width: 100%; /* Allow feed to grow with content */
+  width: 100%;
+  /* Allow feed to grow with content */
   height: 100vh;
   position: relative;
   scroll-snap-align: start;
-  display: flex; /* This is the key change */
+  display: flex;
+  /* This is the key change */
   align-items: end;
   justify-content: center;
   box-sizing: border-box;
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-  &.comments-open {
-    transform: translateX(-160px);
-  }
+  
+  
 }
 
 .navigation {
   position: fixed;
-  right: 20px; 
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 1rem;
   z-index: 100;
+
+  &.comments-open {
+    translate: -380px 0;;
+    }
 }
 
 .navButton {
@@ -80,20 +99,24 @@
 }
 
 @keyframes bounce-up {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-5px);
   }
 }
 
 @keyframes bounce-down {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(5px);
   }

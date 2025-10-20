@@ -203,7 +203,7 @@
 
 /* Nếu muốn đồng thời thu hẹp indent cho replies khi mở */
 .replyContainer.open {
-  margin-inline-start: 32px;
+  margin-inline-start: 0;
   /* thay vì 0 để không quá sát trái */
 }
 

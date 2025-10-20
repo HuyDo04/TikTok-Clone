@@ -5,14 +5,15 @@ import { useState, useRef, useEffect } from "react"
 import VideoPlayer from "../VideoPlayer/VideoPlayer"
 import VideoActions from "../VideoActions/VideoActions"
 import styles from "./VideoFeed.module.scss"
-import classNames from 'classnames/bind';
+import classNames from "classnames/bind"
 
-const cx = classNames.bind(styles);
+const cx = classNames.bind(styles)
 
 const mockVideos = [
   {
     id: 1,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    videoUrl:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     author: {
       username: "hoangdung.music",
       avatar: "https://picsum.photos/200",
@@ -29,7 +30,8 @@ const mockVideos = [
   },
   {
     id: 2,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    videoUrl:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     author: {
       username: "user_example",
       avatar: "https://picsum.photos/200",
@@ -46,7 +48,8 @@ const mockVideos = [
   },
   {
     id: 3,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    videoUrl:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     author: {
       username: "creator_demo",
       avatar: "https://picsum.photos/200",
@@ -65,55 +68,50 @@ const mockVideos = [
 
 export default function VideoFeed() {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [commentVideoId, setCommentVideoId] = useState(null);
+  const [commentVideoId, setCommentVideoId] = useState(null)
   const [videos] = useState(mockVideos)
   const feedRef = useRef(null)
 
   const toggleComments = (videoId) => {
     if (commentVideoId === videoId) {
-      setCommentVideoId(null); // Close if open
+      setCommentVideoId(null)
     } else {
-      setCommentVideoId(videoId); // Open for this video
+      setCommentVideoId(videoId)
     }
   }
 
-  const scrollTimeout = useRef(null);
+  const scrollTimeout = useRef(null)
   const handleScroll = () => {
-    if (scrollTimeout.current) {
-      clearTimeout(scrollTimeout.current);
-    }
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current)
     scrollTimeout.current = setTimeout(() => {
       if (feedRef.current) {
-        const { scrollTop, clientHeight } = feedRef.current;
-        const newIndex = Math.round(scrollTop / clientHeight);
+        const { scrollTop, clientHeight } = feedRef.current
+        const newIndex = Math.round(scrollTop / clientHeight)
         if (newIndex !== currentIndex) {
-          setCurrentIndex(newIndex);
-          setCommentVideoId(null); // Close comments on video change
+          setCurrentIndex(newIndex)
+          if (commentVideoId) {
+            setCommentVideoId(videos[newIndex].id)
+          }
         }
       }
-    }, 150);
-  };
+    }, 150)
+  }
 
   const scrollToVideo = (index) => {
     if (feedRef.current) {
       feedRef.current.scrollTo({
         top: index * feedRef.current.clientHeight,
-        behavior: 'smooth'
-      });
-      setCurrentIndex(index);
+        behavior: "smooth",
+      })
     }
   }
 
   const handleNext = () => {
-    if (currentIndex < videos.length - 1) {
-      scrollToVideo(currentIndex + 1);
-    }
+    if (currentIndex < videos.length - 1) scrollToVideo(currentIndex + 1)
   }
 
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      scrollToVideo(currentIndex - 1);
-    }
+    if (currentIndex > 0) scrollToVideo(currentIndex - 1)
   }
 
   useEffect(() => {
@@ -126,59 +124,71 @@ export default function VideoFeed() {
         handlePrev()
       }
     }
-
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [currentIndex]);
+  }, [currentIndex])
 
-  const isCommentOpen = !!commentVideoId;
+  const isCommentOpen = !!commentVideoId
 
   return (
-    <div className={cx('videoFeed', { 'comments-open': isCommentOpen })} ref={feedRef} onScroll={handleScroll}>
-      {videos.map((video, index) => (
-        <div key={video.id} className={cx('videoWrapper')}>
-          <VideoPlayer 
-            video={video} 
-            isActive={index === currentIndex} 
-            isCommentOpen={commentVideoId === video.id}
-            setCommentVideoId={setCommentVideoId}
-          />
-          <VideoActions video={video} onToggleComments={() => toggleComments(video.id)} />
+    <div
+      className={cx("videoFeed", { "comments-open": isCommentOpen })}
+      ref={feedRef}
+      onScroll={handleScroll}
+    >
+      <div className={cx("videoFeedInner")}>
+        {videos.map((video, index) => (
+          <div key={video.id} className={cx("videoWrapper")}>
+            <VideoPlayer
+              video={video}
+              isActive={index === currentIndex}
+              isCommentOpen={commentVideoId === video.id}
+              setCommentVideoId={setCommentVideoId}
+            />
+            <VideoActions
+              video={video}
+              onToggleComments={() => toggleComments(video.id)}
+            />
+          </div>
+        ))}
+
+        <div className={cx("navigation", { "comments-open": isCommentOpen })}>
+          {currentIndex > 0 && (
+            <button
+              className={cx("navButton", "prevButton")}
+              onClick={handlePrev}
+              aria-label="Video trước"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18 15L12 9L6 15"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
+
+          {currentIndex < videos.length - 1 && (
+            <button
+              className={cx("navButton", "nextButton")}
+              onClick={handleNext}
+              aria-label="Video tiếp theo"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 9L12 15L18 9"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
         </div>
-      ))}
-
-      <div className={cx('navigation', { 'comments-open': isCommentOpen })}>
-        {currentIndex > 0 && (
-          <button className={cx('navButton', 'prevButton')} onClick={handlePrev} aria-label="Video trước">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M18 15L12 9L6 15"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
-
-        {currentIndex < videos.length - 1 && (
-          <button
-            className={cx('navButton', 'nextButton')}
-            onClick={handleNext}
-            aria-label="Video tiếp theo"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M6 9L12 15L18 9"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
       </div>
     </div>
   )
