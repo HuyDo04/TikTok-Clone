@@ -12,16 +12,16 @@ export default function VolumeControl({ volume, onChange }) {
 
   return (
     <div className={cx("volumeControl")}>
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={volume}
-        onChange={handleChange}
-        className={cx("slider")}
-      />
-      <div className={cx("volumeBar")}>
+      <div className={cx("sliderWrapper")}>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={handleChange}
+          className={cx("slider")}
+        />
         <div className={cx("volumeFill")} style={{ width: `${volume * 100}%` }} />
       </div>
     </div>

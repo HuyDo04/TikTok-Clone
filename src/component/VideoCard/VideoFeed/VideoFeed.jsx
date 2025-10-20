@@ -153,41 +153,39 @@ export default function VideoFeed() {
         ))}
 
         <div className={cx("navigation", { "comments-open": isCommentOpen })}>
-          {currentIndex > 0 && (
-            <button
-              className={cx("navButton", "prevButton")}
-              onClick={handlePrev}
-              aria-label="Video trước"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18 15L12 9L6 15"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
+          <button
+            className={cx("navButton", "prevButton")}
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            aria-label="Video trước"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M18 15L12 9L6 15"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
-          {currentIndex < videos.length - 1 && (
-            <button
-              className={cx("navButton", "nextButton")}
-              onClick={handleNext}
-              aria-label="Video tiếp theo"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M6 9L12 15L18 9"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
+          <button
+            className={cx("navButton", "nextButton")}
+            onClick={handleNext}
+            disabled={currentIndex >= videos.length - 1}
+            aria-label="Video tiếp theo"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 9L12 15L18 9"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

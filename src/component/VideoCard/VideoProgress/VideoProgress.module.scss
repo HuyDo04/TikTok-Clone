@@ -1,13 +1,15 @@
 .videoProgress {
+  border-radius: 50%;
   position: absolute;
-  bottom: -22px;
+  bottom: -5.46px;
   left: 0;
   width: 100%;
   padding: 8px 10px 6px;
-  color: #fff;
+  // color: #fff;
   font-size: 18px;
   z-index: 0;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .progressBar {
@@ -16,18 +18,17 @@
   width: 100%;
   border-radius: 2px;
   overflow: hidden;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.3);
-
+  background-color: hsla(0, 0%, 100%, .4);
+  
   &:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+    height: 0.325rem;
   }
 }
 
 .progressFill {
   height: calc(0.75rem);
   width: calc(0.75rem);
-  background-color: #fff;
+  background-color: #fe2c55  ;
   border-radius: inherit;
   transition: width 0.1s linear;
 }

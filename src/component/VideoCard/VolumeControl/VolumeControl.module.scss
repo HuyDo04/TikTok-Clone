@@ -1,23 +1,47 @@
 .volumeControl {
+  width: 100%;
+  height: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: rgba(85, 85, 85, 0.45);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
   position: relative;
-  // Increased width for easier interaction
-  width: 120px;
-  height: 40px; 
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.55);
+  }
+}
+
+.volumeSliderContainer {
+  width: 60px;
+}
+
+.volumeIcon {
+  font-size: 18px;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  // Add padding to increase hover area vertically
-  padding: 10px 0;
 }
 
-.volumeBar {
-  position: absolute;
-  width: 80px; // Adjusted width
+.sliderWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 90px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
   border-radius: 2px;
-  overflow: hidden;
+  cursor: pointer;
+
+  &:hover .volumeFill {
+    background: white;
+  }
 }
 
 .volumeFill {
@@ -25,37 +49,64 @@
   left: 0;
   top: 0;
   height: 100%;
-  background: white;
-  transition: width 0.1s ease;
+  background: linear-gradient(to right, #fff, #d8d8d8);
+  width: 50%;
+  border-radius: 2px;
+  transition: width 0.25s ease, background 0.25s ease;
 }
 
 .slider {
   position: absolute;
-  width: 80px; // Matched to volumeBar
-  height: 100%; // Full height of parent for easier grabbing
+  width: 100%;
+  height: 100%;
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
-  outline: none;
   cursor: pointer;
   z-index: 2;
+
+  &:focus {
+    outline: none;
+  }
 }
 
+/* Thumb (nút tròn) */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    background: #f1f1f1;
+  }
+
+  &:active {
+    transform: scale(1.3);
+  }
 }
 
 .slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: white;
-  cursor: pointer;
   border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    background: #f1f1f1;
+  }
+
+  &:active {
+    transform: scale(1.3);
+  }
 }

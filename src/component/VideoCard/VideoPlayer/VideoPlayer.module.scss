@@ -18,40 +18,88 @@
 }
 
 .topControls {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  padding: 5px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  transition: opacity 0.3s;
+  justify-content: space-between;
   display: flex;
-  gap: 12px;
-  z-index: 10;
-  align-items: center; 
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
 }
 
-.volume-container {
+.topControl{
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  transition: opacity 0.3s;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.audioControlContainer {
+  display: flex;
+  height: 40px;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.audioControl {
+  display: flex;
+  flex-direction: row-reverse;
   position: relative;
+}
+
+.volumeContainer {
   display: flex;
   align-items: center;
 }
 
+.volumeSliderContainer {
+  display: flex;
+  align-items: center;
+  width: 60px;
+}
+
+.volume-container {
+  padding: 8px;
+  opacity: 1;
+  width: 40px;
+  height: 40px;
+  transition: opacity 0.3s;
+  filter: drop-shadow(rgba(12, 12, 12, 0.2) 2px 2px 5px);
+  
+}
+
 .volumeButton,
 .optionsButton {
+  background: none;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
+  // backdrop-filter: blur(10px);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  svg {
+      width: 24px;
+      height: 24px;
+      fill: rgb(255, 255, 255);
+    }
 }
 
-.volumeButton:hover,
 .optionsButton:hover {
-  background: rgba(0, 0, 0, 0.7);
-  transform: scale(1.1);
+  background: rgba(254, 240, 240, 0.7);
+  transform: scale(1);
 }
 
 .volumeControlWrapper {

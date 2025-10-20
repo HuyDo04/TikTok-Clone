@@ -65,11 +65,11 @@ export default function VideoProgress({ currentTime, duration, onSeek }) {
         </div>
       )}
 
-      <div className={cx("timeDisplay")}>
+      {/* <div className={cx("timeDisplay")}>
         <span>{formatTime(currentTime)}</span>
         <span>/</span>
         <span>{formatTime(duration)}</span>
-      </div>
+      </div> */}
     </div>
   )
 }
