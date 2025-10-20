@@ -5,17 +5,23 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 import { LoadingProvider } from "./context/LoadingContext";
-import { store } from "./store";
-import { CustomReduxProvider } from "./context/ReduxContext";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./store";
+import { ThemeProvider } from "./context/ThemeContext"; // Import ThemeProvider
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <LoadingProvider>
-      <UserProvider>
-        <CustomReduxProvider store={store}>
-          <App />
-        </CustomReduxProvider>
-      </UserProvider>
-    </LoadingProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider> {/* Wrap the app with ThemeProvider */}
+          <LoadingProvider>
+            <UserProvider>
+              <App />
+            </UserProvider>
+          </LoadingProvider>
+        </ThemeProvider>
+      </PersistGate>
+    </Provider>
   </BrowserRouter>
 );

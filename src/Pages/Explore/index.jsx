@@ -1,4 +1,3 @@
-import Sidebar from "@/component/Sidebar";
 import styles from "./Explore.module.scss";
 import classNames from "classnames/bind";
 import { useRef, useState, useEffect } from "react";
@@ -157,86 +156,81 @@ function Explore() {
   }, []);
 
   return (
-    <div className={cx("main-content")}>
-      <Sidebar />
-      <div className={cx("content")}>
-        <div className={cx("tab-content")}>
-          <div className={cx("tabs-container")}>
-            {/* Left Arrow */}
-            {canScrollLeft && (
-              <button
-                className={cx("nav-button", "nav-button-left")}
-                onClick={handlePrev}
-                aria-label="Previous tabs"
-              >
-                <FaChevronLeft />
-              </button>
-            )}
+    <div className={cx("tab-content")}>
+      <div className={cx("tabs-container")}>
+        {/* Left Arrow */}
+        {canScrollLeft && (
+          <button
+            className={cx("nav-button", "nav-button-left")}
+            onClick={handlePrev}
+            aria-label="Previous tabs"
+          >
+            <FaChevronLeft />
+          </button>
+        )}
 
-            <div className={cx("tabs-wrapper")}>
-              <div className={cx("tabs-inner-wrapper")}>
-                <div
-                  className={cx("tabs-list")}
-                  ref={tabListRef}
-                  onScroll={handleScroll}
+        <div className={cx("tabs-wrapper")}>
+          <div className={cx("tabs-inner-wrapper")}>
+            <div
+              className={cx("tabs-list")}
+              ref={tabListRef}
+              onScroll={handleScroll}
+            >
+              {listItem.map((item, index) => (
+                <button
+                  key={index}
+                  className={cx("tab-btn", {
+                    active: activeIndex === index,
+                  })}
+                  onClick={() => setActiveIndex(index)}
                 >
-                  {listItem.map((item, index) => (
-                    <button
-                      key={index}
-                      className={cx("tab-btn", {
-                        active: activeIndex === index,
-                      })}
-                      onClick={() => setActiveIndex(index)}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-
-                <div className={cx("tab-content-inner")}>
-                  <div className={cx("video-list")}>
-                    {videos.map((video) => (
-                      <div key={video.id} className={cx("video-card")}>
-                        <div className={cx("video-wrapper")}>
-                          <video
-                            className={cx("video")}
-                            src={video.videoUrl}
-                            controls
-                            muted
-                            loop
-                            poster={video.thumbnail}
-                          />
-                        </div>
-                        <div className={cx("video-info")}>
-                          <div className={cx("user-info")}>
-                            <span className={cx("username")}>
-                              {video.username}
-                            </span>
-                          </div>
-                          <div className={cx("video-stats")}>
-                            <span>
-                              <FaHeart /> {video.likes}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                  {item}
+                </button>
+              ))}
             </div>
 
-            {canScrollRight && (
-              <button
-                className={cx("nav-button", "nav-button-right")}
-                onClick={handleNext}
-                aria-label="Next tabs"
-              >
-                <FaChevronRight />
-              </button>
-            )}
+            <div className={cx("tab-content-inner")}>
+              <div className={cx("video-list")}>
+                {videos.map((video) => (
+                  <div key={video.id} className={cx("video-card")}>
+                    <div className={cx("video-wrapper")}>
+                      <video
+                        className={cx("video")}
+                        src={video.videoUrl}
+                        controls
+                        muted
+                        loop
+                        poster={video.thumbnail}
+                      />
+                    </div>
+                    <div className={cx("video-info")}>
+                      <div className={cx("user-info")}>
+                        <span className={cx("username")}>
+                          {video.username}
+                        </span>
+                      </div>
+                      <div className={cx("video-stats")}>
+                        <span>
+                          <FaHeart /> {video.likes}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
+
+        {canScrollRight && (
+          <button
+            className={cx("nav-button", "nav-button-right")}
+            onClick={handleNext}
+            aria-label="Next tabs"
+          >
+            <FaChevronRight />
+          </button>
+        )}
       </div>
     </div>
   );

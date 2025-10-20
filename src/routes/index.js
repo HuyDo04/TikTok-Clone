@@ -13,6 +13,7 @@ import Explore from "@/Pages/Explore";
 import DefaultLayout from "@/component/layouts/DefaultLayout";
 import Products from "@/Pages/Products";
 import ProductDetail from "@/Pages/ProductDetail";
+import MessagePage from "@/component/Sidebar/component/message/MessagePage";
 
 const routes = [
     {
@@ -63,6 +64,11 @@ const routes = [
     {
         path: config.routes.explore,
         component: Explore,
+    },
+    {
+        path: config.routes.messages,
+        component: MessagePage,
+        layout: DefaultLayout
     },
     {
         path: config.routes.notFound,

@@ -17,6 +17,7 @@ const config = {
 
         // pages
         explore:"/explore",
+        messages: "/messages",
     }
 }
 

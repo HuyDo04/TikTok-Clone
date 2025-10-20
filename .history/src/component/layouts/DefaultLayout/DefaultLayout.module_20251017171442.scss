@@ -1,0 +1,31 @@
+.container {
+    // display: flex;
+    // The sidebar is fixed, so the container itself doesn't need special layout
+}
+
+.mainContent {
+    transition: margin-left 0.3s ease;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.mainContent {
+    flex-grow: 1;
+    /* NO MORE MARGIN-LEFT. The sidebar is now a true overlay. */
+    position: relative; 
+}
+
+.content {
+    width: 100%;
+}
+
+
+.content {
+    padding: 20px;
+    // The height of the content area might need adjustment depending on global styles
+    // For example, ensuring it takes up the full viewport height.
+    min-height: 100vh;
+}

@@ -1,0 +1,230 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+   
+    background-color: var(--sidebar-bg, #fff);
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-right: 1px solid rgba(22, 24, 35, 0.12);
+    overflow-y: auto;
+
+    &.sidebar-collapsed {
+        width: 72px;
+        align-items: center;
+
+        .nav-text,
+        .login-prompt,
+        .suggested-accounts {
+            display: none;
+        }
+
+        .logo-link {
+            display: none;
+        }
+    }
+
+    &.sidebar-expanded {
+        width: 240px;
+    }
+}
+
+/* ===== Logo section ===== */
+.logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px 8px;
+    position: relative;
+
+    .logo-link {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .menu-btn {
+        background: none;
+        border: none;
+        color: var(--icon-color, #161823);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: rgba(22, 24, 35, 0.06);
+        }
+    }
+}
+
+/* ===== Main navigation ===== */
+.main-nav {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    align-items: center;
+    padding-top: 0.25rem;
+    padding-bottom: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--text-color, #161823);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: rgba(22, 24, 35, 0.03);
+    }
+
+    &.nav-item-active {
+        color: var(--primary-color, #fe2c55);
+        font-weight: 600;
+
+        .nav-icon {
+            color: var(--primary-color, #fe2c55);
+        }
+    }
+
+    .nav-icon {
+        font-size: 26px;
+        flex-shrink: 0;
+        color: inherit;
+        transition: color 0.2s ease;
+    }
+
+    .nav-text {
+        font-size: 16px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+}
+
+/* ===== Separator ===== */
+.separator {
+    height: 1px;
+    margin: 12px 16px;
+    background-color: rgba(22, 24, 35, 0.12);
+}
+
+/* ===== Login prompt ===== */
+.login-prompt {
+    padding: 8px 16px;
+    text-align: left;
+
+    p {
+        font-size: 14px;
+        color: rgba(22, 24, 35, 0.75);
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    button {
+        width: 100%;
+        background-color: var(--primary-color, #fe2c55);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 4px;
+        height: 36px;
+
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+}
+
+/* ===== Suggested Accounts ===== */
+.suggested-accounts {
+    padding: 8px 16px;
+
+    .suggested-title {
+        font-size: 14px;
+        color: rgba(22, 24, 35, 0.75);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .account-item {
+        display: flex;
+        align-items: center;
+        padding: 6px 0;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: rgba(22, 24, 35, 0.03);
+        }
+
+        .account-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            .account-username {
+                font-size: 15px;
+                font-weight: 600;
+                color: #161823;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            .account-name {
+                font-size: 13px;
+                color: rgba(22, 24, 35, 0.6);
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    .view-all {
+        font-size: 14px;
+        color: var(--primary-color, #fe2c55);
+        font-weight: 600;
+        margin-top: 8px;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+/* ===== Scrollbar hidden (TikTok style) ===== */
+.sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* ===== Theme colors ===== */
+:root {
+    --sidebar-bg: #fff;
+    --text-color: #161823;
+    --icon-color: #161823;
+    --primary-color: #fe2c55;
+}
+
+[data-theme="dark"] {
+    --sidebar-bg: #121212;
+    --text-color: #f1f1f1;
+    --icon-color: #f1f1f1;
+}

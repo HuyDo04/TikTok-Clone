@@ -1,0 +1,39 @@
+/* Reset and base styles */
+@import "./assets/reset.css";
+@import url('https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap');
+
+:root {
+  /* Light Theme (default) */
+  --background-primary: #fff;
+  --background-secondary: #f8f8f8;
+  --text-primary: #161823;
+  --text-secondary: #555;
+  --border-color: #ddd;
+  --icon-color: #161823; /* Black icons for light mode */
+}
+
+[data-theme="dark"] {
+  /* Dark Theme */
+  --background-primary: #121212;
+  --background-secondary: #181818;
+  --text-primary: #fff;
+  --text-secondary: #aaa;
+  --border-color: #222;
+  --icon-color: #fff; /* White icons for dark mode */
+}
+
+body {
+  font-family: 'TikTok Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 300  ;
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+
+}
+
+svg {
+  width: 23px;
+  height: 23px;
+}
+
+

@@ -1,0 +1,159 @@
+/* Uses CSS variables defined in App.css */
+
+.sidebar {
+    position: fixed;
+    top: 60px; /* Header height */
+    left: 0;
+    height: calc(100vh - 60px);
+    background-color: var(--background-primary);
+    border-right: 1px solid var(--border-color);
+    padding: 20px 8px;
+    transition: width 0.3s ease-in-out;
+    overflow-y: auto;
+    z-index: 999;
+}
+
+.sidebar-expanded {
+    width: 15rem;
+}
+
+.sidebar-collapsed {
+    width: 72px;
+    padding: 20px 12px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.nav-item:hover {
+    background-color: var(--background-secondary);
+}
+
+.nav-item-active {
+    color: #fe2c55; /* TikTok Red */
+}
+
+.nav-item-active .nav-icon {
+    color: #fe2c55;
+}
+
+.nav-icon {
+    font-size: 23px;
+    color: var(--icon-color);
+}
+
+.nav-text {
+    margin-left: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Styles for collapsed state */
+.sidebar-collapsed .nav-item {
+    justify-content: center;
+}
+
+.sidebar-collapsed .nav-text {
+    display: none;
+}
+
+.sidebar-collapsed .nav-icon {
+    margin: 0;
+}
+
+.separator {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 16px 8px;
+}
+
+/* Login Prompt and Suggested Accounts from previous step, adapted for theming */
+.login-prompt {
+    padding: 16px;
+    margin: 10px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.login-prompt p {
+    font-size: 15px;
+    line-height: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.suggested-accounts {
+    padding: 16px 0;
+}
+
+.suggested-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0 8px;
+    margin-bottom: 8px;
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.account-item:hover {
+    background-color: var(--background-secondary);
+}
+
+.account-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.account-username {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--text-primary);
+}
+
+.account-name {
+    font-size: 12px;
+    line-height: 15px;
+    color: var(--text-secondary);
+}
+
+.view-all {
+    color: #fe2c55; /* TikTok red */
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.view-all:hover {
+    color: #e4284d;
+}

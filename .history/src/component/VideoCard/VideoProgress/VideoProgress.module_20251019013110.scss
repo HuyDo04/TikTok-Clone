@@ -1,0 +1,66 @@
+.videoProgress {
+  position: absolute;
+  bottom: 0;
+  /* bám sát viền dưới video */
+  left: 0;
+  width: 100%;
+  padding: 8px 12px 6px;
+  /* khoảng cách nhẹ trên và 2 bên */
+  // background: linear-gradient(to top, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0));
+  /* hiệu ứng mờ nền */
+  color: #fff;
+  font-size: 13px;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.progressBar {
+  position: relative;
+  height: 3px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #fff;
+  border-radius: inherit;
+  transition: width 0.1s linear;
+}
+
+.progressThumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.timeDisplay {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4px;
+  user-select: none;
+}
+
+/* Hiệu ứng khi hover lên thanh progress */
+.videoProgress:hover .progressFill {
+  background-color: #ff2d55;
+  /* đỏ TikTok */
+}
+
+.videoProgress:hover .progressThumb {
+  background-color: #ff2d55;
+  transform: translate(-50%, -50%) scale(1.2);
+}

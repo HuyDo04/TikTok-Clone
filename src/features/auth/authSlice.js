@@ -1,5 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { getCurrentUser } from './authAsync';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import authService from "@/service/authService";
+
+// Thunk for getting current user
+export const getCurrentUser = createAsyncThunk(
+  "auth/getCurrentUser",
+  async () => {
+    const user = await authService.getCurrentUser();
+    return user;
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',
@@ -7,25 +16,29 @@ const authSlice = createSlice({
     currentUser: null,
     isLoading: true
   },
-  reducers: {},
+  reducers: {
+    setCurrentUser: (state, action) => {
+      state.currentUser = action.payload;
+    },
+    setUserLoading: (state, action) => {
+      state.isLoading = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
-
-    .addCase(getCurrentUser.pending, (state) => {
-      state.isLoading = true
-    })
-
-    .addCase(getCurrentUser.fulfilled,(state,action) => {
-      state.currentUser = action.payload
-      state.isLoading = false;
-    })
-
-    .addCase(getCurrentUser.rejected, (state) => {
-      state.currentUser = null,
-      state.isLoading = false
-    })
+      .addCase(getCurrentUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(getCurrentUser.rejected, (state) => {
+        state.currentUser = null;
+        state.isLoading = false;
+      });
   }
-})
+});
 
-export const {setCurrentUser, setUserLoading } = authSlice.actions
-export default authSlice.reducer
+export const { setCurrentUser, setUserLoading } = authSlice.actions;
+export default authSlice.reducer;

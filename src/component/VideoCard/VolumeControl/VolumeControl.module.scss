@@ -1,0 +1,61 @@
+.volumeControl {
+  position: relative;
+  // Increased width for easier interaction
+  width: 120px;
+  height: 40px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  // Add padding to increase hover area vertically
+  padding: 10px 0;
+}
+
+.volumeBar {
+  position: absolute;
+  width: 80px; // Adjusted width
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.volumeFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: white;
+  transition: width 0.1s ease;
+}
+
+.slider {
+  position: absolute;
+  width: 80px; // Matched to volumeBar
+  height: 100%; // Full height of parent for easier grabbing
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: none;
+}

@@ -1,9 +1,9 @@
 import Navbar from "@/component/layouts/DefaultLayout/Header/NavBar";
 
-function Header() {
+function Header({ toggleSidebar }) {
   return (
     <>
-      <Navbar />
+      <Navbar toggleSidebar={toggleSidebar} />
     </>
   );
 }

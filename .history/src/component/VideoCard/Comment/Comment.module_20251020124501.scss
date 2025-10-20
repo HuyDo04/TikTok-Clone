@@ -1,0 +1,212 @@
+.commentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.commentWrapper.open {
+  // margin-bottom: 0;
+}
+
+.commentItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatarWrapper {
+  display: flex;
+  align-self: flex-start;
+  flex: 0 0 auto;
+}
+
+.avatarContainer {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  display: flex;
+  align-self: flex-start;
+  flex: 0 0 auto;
+  
+}
+
+.avatarImg {
+  border-radius: 50%;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 1 auto;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  gap: 5px;
+  letter-spacing: 0.0938px;
+}
+
+.headerWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.usernameText, .commentText .subContentWrapper{
+  font-family: "TikTokFont", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, "Roboto", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.usernameText {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.commentText {
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.1375rem;
+  letter-spacing: 0.0938px;
+  font-size: 0.875rem !important;
+  color: rgb(22, 24, 35);
+}
+
+.subContentWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  color: var(--text-comment);
+}
+
+.subLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dateText {
+  font-size: 14px;
+}
+
+.replyBtn {
+  color: var(--text-comment);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.likeWrapper {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.replyContainer {
+  color: var(--text-comment);
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: 52px;
+  gap: 12px;
+}
+
+/* Chỉ hiển thị line khi chưa mở replies */
+.replyHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Đường line gọn, chỉ dài vừa text */
+.line {
+  width: 24px;
+  height: 1px;
+  background-color: var(--text-comment);
+  opacity: 0.3;
+  flex-shrink: 0;
+}
+
+/* Ẩn line khi đang mở replies */
+.repliesList~.line {
+  display: none;
+}
+
+.replyContainer.open {
+  margin-inline-start: 0;
+}
+.viewRepliesBtn,
+.showMoreBtn,
+.hideRepliesBtn {
+  background: none;
+  border: none;
+  color: var(--text-comment);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.viewRepliesBtn:hover,
+.showMoreBtn:hover,
+.hideRepliesBtn:hover {
+  color: #2a2929;
+  /* hoặc nhạt hơn nếu nền sáng */
+}
+
+.arrowIcon {
+  fill: currentColor;
+  width: 1em;
+  height: 1em;
+  transition: transform 0.25s ease;
+}
+
+/* replies list ẩn line + có khoảng cách nhỏ */
+.repliesList {
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: 52px;
+  gap: 12px;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Ẩn line hoàn toàn khi repliesList hiển thị */
+.replyContainer:has(.repliesList) .replyHeader .line {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

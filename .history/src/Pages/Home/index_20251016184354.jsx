@@ -1,0 +1,20 @@
+import VideoFeed from "@/component/VideoCard/VideoFeed/VideoFeed";
+import styles from './Home.module.scss';
+import classNames from 'classnames/bind';
+import Test from "@/component/test/Test";
+
+const cx = classNames.bind(styles);
+
+function Home() {
+  return (
+    <div className={cx('wrapper')}>
+
+     
+      <VideoFeed />
+      <Test />
+    </div>
+    
+  );
+}
+
+export default Home;

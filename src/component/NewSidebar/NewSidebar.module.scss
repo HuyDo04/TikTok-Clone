@@ -1,0 +1,91 @@
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #fff; // Example background
+    border-right: 1px solid #e0e0e0;
+    transition: width 0.3s ease;
+    padding: 20px 8px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.sidebar-expanded {
+    width: 240px;
+}
+
+.sidebar-collapsed {
+    width: 72px; // Standard collapsed width
+}
+
+.logo-container, .menu-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.tiktok-icon {
+    font-size: 32px;
+    color: #fe2c55; // TikTok pink
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 8px;
+}
+
+.main-nav, .user-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-nav {
+    margin-top: auto; // Pushes user nav to the bottom
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #161823;
+
+    &:hover {
+        background-color: #f1f1f2;
+    }
+}
+
+.nav-item-active {
+    background-color: #f1f1f2;
+    font-weight: 700;
+}
+
+.nav-icon {
+    font-size: 24px;
+    flex-shrink: 0; // Prevent icon from shrinking
+}
+
+.nav-text {
+    margin-left: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upload-btn {
+    width: 100%;
+    margin-bottom: 10px;
+    span {
+        margin-left: 8px;
+    }
+}
