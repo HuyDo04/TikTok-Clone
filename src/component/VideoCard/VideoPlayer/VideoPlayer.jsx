@@ -12,7 +12,7 @@ import styles from "./VideoPlayer.module.scss"
 
 const cx = classNames.bind(styles)
 
-export default function VideoPlayer({ video, isActive, isCommentOpen, setCommentVideoId }) {
+export default function VideoPlayer({ video, isActive, isCommentOpen, setCommentVideoId, onEnded }) { // Add onEnded to props
   const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(1)
@@ -100,6 +100,13 @@ export default function VideoPlayer({ video, isActive, isCommentOpen, setComment
     }
   }
 
+  // New handler for when the video ends
+  const handleVideoEndedInternal = () => {
+    if (onEnded) {
+      onEnded();
+    }
+  };
+
   return (
     <div className={cx("videoPlayer")}>
       <video
@@ -112,6 +119,7 @@ export default function VideoPlayer({ video, isActive, isCommentOpen, setComment
         onLoadedMetadata={handleLoadedMetadata}
         onError={handleVideoError}
         onClick={togglePlay}
+        onEnded={handleVideoEndedInternal} // Attach the new handler
         crossOrigin="anonymous"
       />
 

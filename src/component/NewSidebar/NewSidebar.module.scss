@@ -3,8 +3,8 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: #fff; // Example background
-    border-right: 1px solid #e0e0e0;
+    background-color: var(--background-color); // Example background
+    border-right: 1px solid var(--border-color);
     transition: width 0.3s ease;
     padding: 20px 8px;
     position: fixed;
@@ -30,7 +30,7 @@
 
 .tiktok-icon {
     font-size: 32px;
-    color: #fe2c55; // TikTok pink
+    color: var(--primary-color); // TikTok pink
 }
 
 .menu-btn {
@@ -58,15 +58,15 @@
     border-radius: 8px;
     cursor: pointer;
     text-decoration: none;
-    color: #161823;
+    color: var(--text-color);
 
     &:hover {
-        background-color: #f1f1f2;
+        background-color: var(--hover-color);
     }
 }
 
 .nav-item-active {
-    background-color: #f1f1f2;
+    background-color: var(--hover-color);
     font-weight: 700;
 }
 

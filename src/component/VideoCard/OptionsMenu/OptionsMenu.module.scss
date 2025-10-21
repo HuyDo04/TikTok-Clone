@@ -1,35 +1,38 @@
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 100;
-}
+// .overlay {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   background: rgba(0, 0, 0, 0.5);
+//   z-index: 100;
+// }
 
 .optionsMenu {
+  transition: opacity 300ms cubic-bezier(0.65, 0, 0.35, 1);
   position: fixed;
   top: 70px;
-  right: 20px;
-  background: rgba(40, 40, 40, 0.95);
+  right: 312px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 5px 26px rgba(0, 0, 0, .1);
+  color: var(--text-color);
   backdrop-filter: blur(20px);
   border-radius: 12px;
   padding: 8px;
-  min-width: 280px;
+  max-width: 234px;
   z-index: 101;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .option {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
+  min-width: 14rem;
   padding: 12px 16px;
   background: none;
   border: none;
-  color: white;
+  color: var(--text-color);
   font-size: 15px;
   cursor: pointer;
   border-radius: 8px;
@@ -37,7 +40,7 @@
 }
 
 .option:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--hover-color)  ;
 }
 
 .option svg {
@@ -76,7 +79,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(0, 0, 0, .12)  ;
   transition: 0.3s;
   border-radius: 24px;
 }
@@ -99,4 +102,26 @@
 
 .toggle input:checked + .slider:before {
   transform: translateX(20px);
+}
+
+.qualityMenuOverlay {
+  position: absolute;
+  top: 0; /* Position it over the "Chất lượng" button */
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  box-shadow: 0 5px 26px rgba(0, 0, 0, .1);
+  padding: 8px;
+  z-index: 102; /* Higher than optionsMenu */
+  min-width: 100%; /* Ensure it covers the original button width */
+}
+
+.qualityMenuOverlay .option {
+  justify-content: center; /* Center the text */
+}
+
+.qualityMenuOverlay .option.selected {
+  background-color: rgba(0, 0, 0, .05); /* Highlight selected option */
+  font-weight: bold;
 }

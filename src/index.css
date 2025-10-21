@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --primary-color: rgb(254, 44, 85);
+    --white-color: #fff;
+    --black-color: #000;
+    --text-color: #161823;
+    --grey-color: #f1f1f2;
+    --border-color: rgba(22, 24, 35, 0.12);
+    --background-color: #fff;
+    --background-grey-color: #f1f1f2;
+    --text-grey-color: rgba(22, 24, 35, 0.75);
+    --hover-color: #f1f1f2;
+    --modal-background: rgba(0, 0, 0, 0.5);
+    --sidebar-width: 356px;
+    --default-layout-header-height: 60px;
+    --default-layout-horizontal-spacer: 24px;
+}
+
+[data-theme='dark'] {
+    --primary-color: rgb(254, 44, 85);
+    --white-color: #0d0d0d;
+    --black-color: #fff;
+    --text-color: #fff;
+    --grey-color: #282828;
+    --border-color: rgba(255, 255, 255, 0.2);
+    --background-color: #1a1a1a;
+    --background-grey-color: #282828;
+    --text-grey-color: rgba(255, 255, 255, 0.75);
+    --hover-color: #3a3b3c;
+    --modal-background: rgba(0, 0, 0, 0.7);
+}
+
+
 body {
     overflow-x: hidden !important;
 }

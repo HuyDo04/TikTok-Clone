@@ -6,6 +6,7 @@ import VideoPlayer from "../VideoPlayer/VideoPlayer"
 import VideoActions from "../VideoActions/VideoActions"
 import styles from "./VideoFeed.module.scss"
 import classNames from "classnames/bind"
+import { useVideo } from "@/context/VideoContext" // Import useVideo
 
 const cx = classNames.bind(styles)
 
@@ -67,6 +68,7 @@ const mockVideos = [
 ]
 
 export default function VideoFeed() {
+  const { autoScroll } = useVideo() // Get autoScroll from context
   const [currentIndex, setCurrentIndex] = useState(0)
   const [commentVideoId, setCommentVideoId] = useState(null)
   const [videos] = useState(mockVideos)
@@ -107,11 +109,20 @@ export default function VideoFeed() {
   }
 
   const handleNext = () => {
-    if (currentIndex < videos.length - 1) scrollToVideo(currentIndex + 1)
+    if (currentIndex < videos.length - 1) {
+      scrollToVideo(currentIndex + 1)
+    }
   }
 
   const handlePrev = () => {
     if (currentIndex > 0) scrollToVideo(currentIndex - 1)
+  }
+
+  // New handler for video ending
+  const handleVideoEnded = () => {
+    if (autoScroll && currentIndex < videos.length - 1) {
+      handleNext()
+    }
   }
 
   useEffect(() => {
@@ -126,7 +137,7 @@ export default function VideoFeed() {
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [currentIndex])
+  }, [currentIndex, handleNext, handlePrev]) // Added handleNext and handlePrev to dependencies
 
   const isCommentOpen = !!commentVideoId
 
@@ -144,6 +155,7 @@ export default function VideoFeed() {
               isActive={index === currentIndex}
               isCommentOpen={commentVideoId === video.id}
               setCommentVideoId={setCommentVideoId}
+              onEnded={handleVideoEnded} // Pass the new handler
             />
             <VideoActions
               video={video}
