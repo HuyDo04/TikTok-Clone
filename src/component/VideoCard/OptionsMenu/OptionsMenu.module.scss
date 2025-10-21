@@ -15,10 +15,10 @@
   right: 312px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 5px 26px rgba(0, 0, 0, .1);
+  box-shadow: 0 5px 26px var(--box-shadow-color);
   color: var(--text-color);
-  backdrop-filter: blur(20px);
   border-radius: 12px;
+  background-color: var(--background-color);
   padding: 8px;
   max-width: 234px;
   z-index: 101;
@@ -54,7 +54,7 @@
 
 .badge {
   padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--background-grey-color);
   border-radius: 4px;
   font-size: 12px;
 }
@@ -79,7 +79,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, .12)  ;
+  background-color: var(--background-grey-color);
   transition: 0.3s;
   border-radius: 24px;
 }
@@ -91,13 +91,13 @@
   width: 18px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
+  background-color: var(--white-color);
   transition: 0.3s;
   border-radius: 50%;
 }
 
 .toggle input:checked + .slider {
-  background-color: #fe2c55;
+  background-color: var(--primary-color);
 }
 
 .toggle input:checked + .slider:before {
@@ -108,10 +108,10 @@
   position: absolute;
   top: 0; /* Position it over the "Chất lượng" button */
   left: 0;
-  background-color: #fff;
-  border: 1px solid #ebebeb;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 5px 26px rgba(0, 0, 0, .1);
+  box-shadow: 0 5px 26px var(--box-shadow-color);
   padding: 8px;
   z-index: 102; /* Higher than optionsMenu */
   min-width: 100%; /* Ensure it covers the original button width */
@@ -122,6 +122,7 @@
 }
 
 .qualityMenuOverlay .option.selected {
-  background-color: rgba(0, 0, 0, .05); /* Highlight selected option */
+  background-color: var(--hover-color); /* Highlight selected option */
   font-weight: bold;
 }
+

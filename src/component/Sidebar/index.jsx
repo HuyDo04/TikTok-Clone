@@ -12,7 +12,11 @@ import PlusSquareIcon from "../Icons/PlusSquareIcon";
 import FocusIcon from "../Icons/FocusIcon";
 import LiveIcon from "../Icons/LiveIcon";
 import SearchIcon from "../Icons/SearchIcon";
-import TiktokLogo from "../Icons/TiktokLogo";
+import TiktokLogoDarkFull from "../Icons/TiktokLogoDarkFull";
+import TiktokLogoLightFull from "../Icons/TiktokLogoLightFull";
+import TiktokLogoDark from "../Icons/TikTokIconDark";
+import TiktokLogoLight from "../Icons/TikTokIconLight";
+
 
 // React icons
 import { FaPaperPlane, FaMoon, FaSun, FaBars } from "react-icons/fa";
@@ -64,8 +68,13 @@ const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick }) => {
 
   if (path) {
     return (
+      
       <NavLink to={path} className={navLinkClasses} onClick={onClick}>
-        <div className={cx("nav-item-icon")}><Icon {...iconProps} /></div>
+        <div className={cx("nav-item-icon")}> 
+          
+          <Icon {...iconProps} />
+          
+        </div>
         {!isCollapsed && <span className={cx("nav-text")}>{title}</span>}
       </NavLink>
     );
@@ -91,9 +100,16 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
   return (
     <aside className={sidebarClasses}>
       {/* ===== Logo Section ===== */}
-      <div className={cx("logo-section")}>
-        <NavLink to="/" className={cx("logo-link")} onClick={closeSearch}>
-          {!isCollapsed && <TiktokLogo width={118} height={42} />}
+      <div className={cx("logo-section", { collapsed: isCollapsed, expanded: !isCollapsed })}>
+        <NavLink
+          to="/"
+          className={cx("logo-link")}
+          onClick={closeSearch}
+        >
+          {isCollapsed 
+            ? (theme === 'light' ? <TiktokLogoDark /> : <TiktokLogoLight />) 
+            : (theme === 'light' ? <TiktokLogoDarkFull width={118} height={42} /> : <TiktokLogoLightFull width={118} height={42} />)
+          }
         </NavLink>
         <button className={cx("menu-btn")} onClick={toggleSidebar}>
           <FaBars size={22} />
@@ -109,7 +125,7 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
             isCollapsed={isCollapsed}
             onClick={toggleSearch}
         />
-
+  
         {sidebarMenu.map((item) => (
           <NavItem
             key={item.title}

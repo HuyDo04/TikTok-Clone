@@ -93,12 +93,13 @@
   svg {
       width: 24px;
       height: 24px;
-      fill: rgb(255, 255, 255);
+      fill: var(--white-color);
     }
 }
 
 .optionsButton:hover {
-  background: rgba(254, 240, 240, 0.7);
+  background: var(--primary-color);
+  opacity: 0.7;
   transform: scale(1);
 }
 
@@ -108,7 +109,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--modal-background);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 0 10px;

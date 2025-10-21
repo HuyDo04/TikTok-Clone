@@ -1,19 +1,19 @@
 .error {
-    color: red;
+    color: var(--error-color);
     font-size: 13px;
 }
 
 .input {
     width: 100%;
     padding: 14px 16px;
-    border: 1px solid #e2e2e2;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 15px;
     transition: all 0.2s;
 }
 
 .input:focus {
-    border-color: #fe2c55;
+    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(254, 44, 85, 0.1);
+    box-shadow: 0 0 0 2px var(--primary-color); /* Using primary color for shadow */
 }

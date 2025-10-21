@@ -76,7 +76,7 @@
   line-height: 1.1375rem;
   letter-spacing: 0.0938px;
   font-size: 0.875rem !important;
-  color: rgb(22, 24, 35);
+  color: var(--text-color);
 }
 
 .subContentWrapper {
@@ -88,7 +88,7 @@
   font-weight: 400;
   font-style: normal;
   width: 100%;
-  color: var(--text-comment);
+  color: var(--text-grey-color);
 }
 
 .subLeft {
@@ -103,7 +103,7 @@
 }
 
 .replyBtn {
-  color: var(--text-comment);
+  color: var(--text-grey-color);
   background: none;
   border: none;
   cursor: pointer;
@@ -122,7 +122,7 @@
 }
 
 .replyContainer {
-  color: var(--text-comment);
+  color: var(--text-grey-color);
   display: flex;
   flex-direction: column;
   margin-inline-start: 52px;
@@ -140,7 +140,7 @@
 .line {
   width: 24px;
   height: 1px;
-  background-color: var(--text-comment);
+  background-color: var(--text-grey-color);
   opacity: 0.3;
   flex-shrink: 0;
 }
@@ -158,7 +158,7 @@
 .hideRepliesBtn {
   background: none;
   border: none;
-  color: var(--text-comment);
+  color: var(--text-grey-color);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -172,7 +172,7 @@
 .viewRepliesBtn:hover,
 .showMoreBtn:hover,
 .hideRepliesBtn:hover {
-  color: #2a2929;
+  color: var(--text-color);
   /* hoặc nhạt hơn nếu nền sáng */
 }
 

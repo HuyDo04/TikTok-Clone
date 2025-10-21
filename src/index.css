@@ -10,13 +10,15 @@
     --grey-color: #f1f1f2;
     --border-color: rgba(22, 24, 35, 0.12);
     --background-color: #fff;
-    --background-grey-color: #f1f1f2;
+    --background-grey-color: rgba(0, 0, 0, .05)    ;
     --text-grey-color: rgba(22, 24, 35, 0.75);
     --hover-color: #f1f1f2;
     --modal-background: rgba(0, 0, 0, 0.5);
     --sidebar-width: 356px;
     --default-layout-header-height: 60px;
     --default-layout-horizontal-spacer: 24px;
+    --box-shadow-color: rgba(0, 0, 0, 0.1);
+    --error-color: red;
 }
 
 [data-theme='dark'] {
@@ -27,10 +29,12 @@
     --grey-color: #282828;
     --border-color: rgba(255, 255, 255, 0.2);
     --background-color: #1a1a1a;
-    --background-grey-color: #282828;
+    --background-grey-color: hsla(0, 0%, 100%, .13)    ;
     --text-grey-color: rgba(255, 255, 255, 0.75);
     --hover-color: #3a3b3c;
     --modal-background: rgba(0, 0, 0, 0.7);
+    --box-shadow-color: rgba(255, 255, 255, 0.1);
+    --error-color: #ff6b6b;
 }
 
 

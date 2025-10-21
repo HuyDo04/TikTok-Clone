@@ -7,7 +7,7 @@
 
 .footer-container {
     position: relative;
-    border-top: 1px solid rgba(22, 24, 35, 0.12);
+    border-top: 1px solid var(--border-color);
     padding-top: 16px;
     width: 12.5rem;
 }
@@ -17,12 +17,12 @@
     line-height: 22px;
     margin-top: 0px;
     cursor: pointer;
-    color: rgba(22, 24, 35, 0.5);
+    color: var(--text-grey-color);
     font-weight: 700;
 }
 
 .span {
-    color: rgba(22, 24, 35, 0.5);
+    color: var(--text-grey-color);
     font-weight: 600;
     font-size: 12px;
     line-height: 16px;

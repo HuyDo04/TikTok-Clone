@@ -1,6 +1,6 @@
 import React from "react";
 
-const TiktokLogo = ({ width = 118, height = 42, ...props }) => (
+const TiktokLogoDarkFull = ({ width = 118, height = 42, ...props }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="currentColor"
@@ -44,4 +44,4 @@ const TiktokLogo = ({ width = 118, height = 42, ...props }) => (
   </svg>
 );
 
-export default TiktokLogo;
+export default TiktokLogoDarkFull;

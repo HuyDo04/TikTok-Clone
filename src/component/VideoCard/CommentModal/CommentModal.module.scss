@@ -9,13 +9,13 @@
   height: 100%; // Full height minus header
   width: 24rem;
   max-width: 100vw;
-  background: white;
+  background: var(--background-color);
   z-index: 201;
   display: flex;
   flex-direction: column;
   animation: slideIn 0.3s ease;
-  border-left: 1px solid #e5e5e5;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, .1);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -2px 0 8px var(--box-shadow-color);
 
   &.closing {
     animation: slideOut 0.3s ease forwards;
@@ -67,7 +67,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0; // Prevent header from shrinking
 }
 
@@ -87,12 +87,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #666;
+  color: var(--text-grey-color);
   transition: all 0.2s ease;
 }
 
 .closeButton:hover {
-  background: #f1f1f1;
+  background: var(--hover-color);
 }
 
 .commentList {
@@ -106,24 +106,24 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  border-top: 1px solid #e5e5e5;
-  background: white;
+  border-top: 1px solid var(--border-color);
+  background: var(--background-color);
   flex-shrink: 0; // Prevent form from shrinking
 }
 
 .commentInput {
   flex: 1;
   padding: 10px 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  background: #f1f1f2;
+  background: var(--background-grey-color);
 }
 
 .commentInput:focus {
-  border-color: #ccc;
-  background: white;
+  border-color: var(--border-color);
+  background: var(--background-color);
 }
 
 .mentionButton,
@@ -143,13 +143,13 @@
 
 .mentionButton:hover,
 .emojiButton:hover {
-  background: #f1f1f1;
+  background: var(--hover-color);
 }
 
 .submitButton {
   padding: 8px 16px;
-  background: #fe2c55;
-  color: white;
+  background: var(--primary-color);
+  color: var(--white-color);
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -159,7 +159,7 @@
 }
 
 .submitButton:hover:not(:disabled) {
-  background: #e02649;
+  background: var(--primary-color);
 }
 
 .submitButton:disabled {

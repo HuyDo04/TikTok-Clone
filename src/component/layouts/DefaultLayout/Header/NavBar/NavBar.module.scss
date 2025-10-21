@@ -4,8 +4,8 @@
     align-items: center;
     // padding: 10px 20px;
     margin-bottom: 30px;
-    background-color: white;
-    border-bottom: 1px solid #ddd;
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
     position: fixed;
     top: 0;
     left: 0;
@@ -31,18 +31,18 @@ a {
 .tiktok-icon {
     font-size: 28px;
     margin-right: 5px;
-    color: #000;
+    color: var(--text-color);
 }
 
 /* Search Bar */
 .search-bar {
     display: flex;
     align-items: center;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     border-radius: 50px;
     padding: 5px 15px;
     width: 400px;
-    background-color: #f1f1f1;
+    background-color: var(--background-grey-color);
 }
 
 .search-bar input {
@@ -59,7 +59,7 @@ a {
     border: none;
     cursor: pointer;
     font-size: 18px;
-    color: #999;
+    color: var(--text-grey-color);
 }
 
 /* Navigation Buttons */
@@ -71,8 +71,8 @@ a {
 .upload-btn {
     display: flex;
     align-items: center;
-    background-color: white;
-    border: 1px solid #ddd;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
     padding: 5px 12px;
     border-radius: 5px;
     font-weight: bold;
@@ -81,7 +81,7 @@ a {
 }
 
 .upload-btn:hover {
-    background-color: #f8f8f8;
+    background-color: var(--hover-color);
 }
 
 .upload-btn span {
@@ -95,13 +95,13 @@ a {
     cursor: pointer;
     font-size: 24px;
     margin-left: 15px;
-    color: #000;
+    color: var(--text-color);
     position: relative;
 }
 
 .inbox-btn::after {
     content: "•";
-    color: red;
+    color: var(--error-color);
     font-size: 18px;
     position: absolute;
     top: 0;

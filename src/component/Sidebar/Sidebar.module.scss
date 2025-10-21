@@ -7,10 +7,9 @@
     display: flex;
     flex-direction: column;
     width: 240px;
-    padding: 8px 0;
-    background-color: var(--background-color); /* Use global variable */
-    transition: width 0.3s ease, background-color 0.3s ease;
-    border-right: 1px solid var(--border-color); /* Use global variable */
+    background-color: var(--sidebar-bg, #fff);
+    // transition: width 0.1s ease, background-color 0.3s ease;
+    border-right: 1px solid rgba(22, 24, 35, 0.12);
     overflow-y: auto;
     height: 100vh;
 
@@ -24,9 +23,6 @@
         }
         .nav-item {
             justify-content: center;
-        }
-        .logo-link {
-            display: none;
         }
     }
 
@@ -52,7 +48,7 @@
     .menu-btn {
         background: none;
         border: none;
-        color: var(--text-color); /* Use global variable */
+        color: var(--icon-color, #161823);
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -62,9 +58,13 @@
         transition: background-color 0.2s ease;
 
         &:hover {
-            background-color: var(--hover-color); /* Use global variable */
+            background-color: rgba(22, 24, 35, 0.06);
         }
     }
+        &.collapsed {
+            display: flex;
+            flex-direction: column;
+        }
 }
 
 /* ===== Main navigation ===== */
@@ -86,20 +86,20 @@
     gap: 12px;
     padding: 8px 16px;
     cursor: pointer;
-    color: var(--text-color); /* Use global variable */
+    color: var(--text-color, #161823);
     text-decoration: none;
     border-radius: 8px;
     transition: background-color 0.2s ease;
 
     &:hover {
-        background-color: var(--hover-color); /* Use global variable */
+        background-color: rgba(22, 24, 35, 0.03);
     }
 
     &.nav-item-active {
-        color: var(--primary-color); /* Use global variable */
+        color: var(--primary-color, #fe2c55);
         font-weight: 600;
         .nav-icon {
-            color: var(--primary-color); /* Use global variable */
+            color: var(--primary-color, #fe2c55);
         }
     }
 
@@ -129,10 +129,7 @@
             height: 32px;
             padding: 4px;
             transition: color 0.2s ease;  
-            svg {
-                padding: 0;
-                margin: 0;
-            } 
+          
         }
     }
 }
@@ -141,7 +138,7 @@
 .separator {
     height: 1px;
     margin: 12px 16px;
-    background-color: var(--border-color); /* Use global variable */
+    background-color: rgba(22, 24, 35, 0.12);
 }
 
 /* ===== Login prompt ===== */
@@ -151,15 +148,15 @@
 
     p {
         font-size: 14px;
-        color: var(--text-grey-color); /* Use global variable */
+        color: rgba(22, 24, 35, 0.75);
         margin-bottom: 12px;
         line-height: 1.4;
     }
 
     button {
         width: 100%;
-        background-color: var(--primary-color); /* Use global variable */
-        color: var(--white-color); /* Use global variable */
+        background-color: var(--primary-color, #fe2c55);
+        color: #fff;
         font-weight: 600;
         border-radius: 4px;
         height: 36px;
@@ -176,7 +173,7 @@
 
     .suggested-title {
         font-size: 14px;
-        color: var(--text-grey-color); /* Use global variable */
+        color: rgba(22, 24, 35, 0.75);
         font-weight: 600;
         margin-bottom: 8px;
     }
@@ -190,7 +187,7 @@
         transition: background-color 0.2s ease;
 
         &:hover {
-            background-color: var(--hover-color); /* Use global variable */
+            background-color: rgba(22, 24, 35, 0.03);
         }
 
         .account-avatar {
@@ -210,7 +207,7 @@
             .account-username {
                 font-size: 15px;
                 font-weight: 600;
-                color: var(--text-color); /* Use global variable */
+                color: #161823;
                 text-overflow: ellipsis;
                 overflow: hidden;
                 white-space: nowrap;
@@ -218,7 +215,7 @@
 
             .account-name {
                 font-size: 13px;
-                color: var(--text-grey-color); /* Use global variable */
+                color: rgba(22, 24, 35, 0.6);
                 text-overflow: ellipsis;
                 overflow: hidden;
                 white-space: nowrap;
@@ -228,7 +225,7 @@
 
     .view-all {
         font-size: 14px;
-        color: var(--primary-color); /* Use global variable */
+        color: var(--primary-color, #fe2c55);
         font-weight: 600;
         margin-top: 8px;
         cursor: pointer;
@@ -243,4 +240,18 @@
 .sidebar::-webkit-scrollbar {
     width: 0;
     height: 0;
+}
+
+/* ===== Theme colors ===== */
+:root {
+    --sidebar-bg: #fff;
+    --text-color: #161823;
+    --icon-color: #161823;
+    --primary-color: #fe2c55;
+}
+
+[data-theme="dark"] {
+    --sidebar-bg: #121212;
+    --text-color: #f1f1f1;
+    --icon-color: #f1f1f1;
 }

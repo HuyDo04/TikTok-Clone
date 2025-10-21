@@ -1,8 +1,8 @@
 .subButton {
     cursor: pointer;
     border: none;
-    background-color: rgba(254, 44, 85, 1);
-    color: rgba(255, 255, 255, 1);
+    background-color: var(--primary-color);
+    color: var(--white-color);
     height: 40px;
     min-width: 108px;
     padding-left: 16px;

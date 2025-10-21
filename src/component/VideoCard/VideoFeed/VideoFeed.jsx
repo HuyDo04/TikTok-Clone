@@ -171,7 +171,7 @@ export default function VideoFeed() {
             disabled={currentIndex === 0}
             aria-label="Video trước"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <svg width="24" height="24" viewBox="0 0 24 24" className={cx("icon-fill")}>
               <path
                 d="M18 15L12 9L6 15"
                 stroke="currentColor"
@@ -187,8 +187,9 @@ export default function VideoFeed() {
             onClick={handleNext}
             disabled={currentIndex >= videos.length - 1}
             aria-label="Video tiếp theo"
+  
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <svg  width="24" height="24" viewBox="0 0 24 24" className={cx("icon-fill")}>
               <path
                 d="M6 9L12 15L18 9"
                 stroke="currentColor"
