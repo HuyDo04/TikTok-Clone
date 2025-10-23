@@ -1,0 +1,31 @@
+.main {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.container {
+  max-width: 1280px; // max-w-7xl
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+
+  @media (min-width: 1024px) { // lg:
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.mainContent {
+  @media (min-width: 1024px) { // lg:
+    grid-column: span 2 / span 2;
+  }
+}
+
+// .sideContent {
+//   // No specific styles needed, it will just be the third column
+// }

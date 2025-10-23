@@ -1,0 +1,23 @@
+@use "../../styles/variables.scss";
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.select {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background-color: var(--background);
+  color: var(--text-primary);
+
+  &:focus {
+    outline: none;
+    ring: 2px solid var(--primary-color);
+  }
+}

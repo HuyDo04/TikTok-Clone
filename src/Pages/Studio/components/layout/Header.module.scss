@@ -1,0 +1,28 @@
+@use "../../styles/variables.scss";
+
+.header {
+  background-color: var(--sidebar);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.userButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: var(--sidebar-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userInitial {
+  color: var(--sidebar);
+  font-weight: 600;
+}

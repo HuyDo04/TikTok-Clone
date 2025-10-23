@@ -1,0 +1,79 @@
+@use "../../styles/variables.scss";
+
+.wrapper {
+  background-color: var(--card);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  padding: 1.5rem;
+}
+
+.title {
+  font-size: 1.125rem; // text-lg
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 1.5rem;
+}
+
+.chartContainer {
+  position: relative;
+  height: 16rem; // h-64
+}
+
+.chartGrid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.barGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.barWrapper {
+  width: 100%;
+  position: relative;
+  // The group class for hover is on this element in the JSX
+}
+
+.bar {
+  width: 100%;
+  background-color: #ec4899; // bg-pink-500
+  border-radius: 0.25rem 0.25rem 0 0; // rounded-t
+  transition: background-color 150ms ease-in-out;
+  min-height: 4px;
+
+  &:hover {
+    background-color: #db2777; // hover:bg-pink-600
+  }
+}
+
+.tooltip {
+  position: absolute;
+  top: -2rem; // -top-8
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--popover-foreground);
+  color: var(--popover);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+  white-space: nowrap;
+
+  .barWrapper:hover & {
+    opacity: 1;
+  }
+}
+
+.label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+}

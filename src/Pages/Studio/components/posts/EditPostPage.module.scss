@@ -1,0 +1,47 @@
+@use "../../styles/variables.scss";
+.loadingContainer {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingContent {
+  text-align: center;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  border-radius: 9999px;
+  height: 3rem;
+  width: 3rem;
+  border-bottom: 2px solid var(--primary-color);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.loadingText {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+}
+
+.mainContent {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.container {
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

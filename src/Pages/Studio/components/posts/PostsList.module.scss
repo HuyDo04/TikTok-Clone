@@ -1,0 +1,168 @@
+@use "../../styles/variables.scss";
+
+.postsListContainer {
+  background-color: var(--background);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHead {
+  background-color: var(--background-secondary);
+  border-bottom: 1px solid var(--border);
+
+  th {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  th:last-child {
+    text-align: right;
+  }
+}
+
+.tableBody {
+  background-color: var(--background);
+  border-collapse: collapse;
+
+  tr {
+    border-bottom: 1px solid var(--border);
+
+    &:hover {
+      background-color: var(--background-hover);
+    }
+  }
+
+  td {
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+}
+
+.contentCell {
+  .contentWrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .thumbnailWrapper {
+    position: relative;
+    width: 4rem;
+    height: 5rem;
+    background-color: var(--background-secondary);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .durationOverlay {
+    position: absolute;
+    bottom: 0.25rem;
+    right: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0 0.25rem;
+    border-radius: 0.25rem;
+  }
+
+  .textWrapper {
+    min-width: 0;
+    flex: 1;
+
+    p:first-child {
+      color: var(--text-primary);
+      line-clamp: 2;
+      margin-bottom: 0.25rem;
+    }
+
+    p:last-child {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.privacyBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.public {
+    background-color: var(--green-100);
+    color: var(--green-800);
+  }
+
+  &.friends {
+    background-color: var(--blue-100);
+    color: var(--blue-800);
+  }
+
+  &.private {
+    background-color: var(--gray-100);
+    color: var(--gray-800);
+  }
+}
+
+.actionsCell {
+  text-align: right;
+
+  .actionsWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  button {
+    color: var(--text-secondary);
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+
+    &.deleteButton:hover {
+      color: var(--red-600);
+    }
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
+
+  p {
+    color: var(--text-secondary);
+  }
+}

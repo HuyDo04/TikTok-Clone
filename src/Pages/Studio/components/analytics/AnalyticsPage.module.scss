@@ -1,0 +1,110 @@
+.wrapper {
+  padding: 24px;
+  background-color: #f8f8f8; // A light gray background like the studio
+}
+
+.header {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  &.fullWidth {
+    grid-column: 1 / -1;
+  }
+
+  h3 {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 12px;
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+
+  .metric {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  
+  .change {
+      font-size: 14px;
+      color: #00c853; // Green for positive change
+  }
+}
+
+.trafficSourceList, .genderList, .territoryList {
+  margin-top: 10px;
+}
+
+.trafficItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.territoryList {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.videoList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.videoItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.thumbnail {
+    width: 100px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.videoTitle {
+    font-weight: 600;
+}
+
+.videoMeta {
+    font-size: 14px;
+    color: #666;
+}

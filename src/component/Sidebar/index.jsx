@@ -35,7 +35,7 @@ const sidebarMenu = [
   { title: "LIVE", icon: LiveIcon, path: "/live" },
   { title: "Tin nhắn", icon: MessageIcon, path: "/messages" },
   { title: "Thông báo", icon: AlertIcon, path: "/notifications" },
-  { title: "Tải lên", icon: PlusSquareIcon, path: "/upload" },
+  { title: "Tải lên", icon: PlusSquareIcon, path: "/studio" },
 ];
 
 const suggestedAccounts = [

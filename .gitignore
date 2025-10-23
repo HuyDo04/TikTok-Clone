@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .history
 tiktok-studio-cms
+tiktok-live
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

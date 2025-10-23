@@ -1,5 +1,7 @@
+import { Outlet } from "react-router-dom";
+
 function NoLayout() {
-  return <></>;
+  return <><Outlet/> </>;
 }
 
 export default NoLayout;

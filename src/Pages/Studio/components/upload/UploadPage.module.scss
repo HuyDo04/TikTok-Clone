@@ -1,0 +1,11 @@
+.uploadPage {
+  flex: 1;
+  padding: 24px; // tương đương p-6 trong Tailwind
+  background-color: var(--background-color, #fafafa);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1120px; // tương đương max-w-7xl
+  margin: 0 auto;
+}
