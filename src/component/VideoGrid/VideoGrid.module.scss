@@ -1,0 +1,33 @@
+
+.videoGrid {
+  display: grid;
+    width: 100%;
+    gap: 24px 16px;
+    grid-template-columns: repeat(6, minmax(0px, 1fr)) !important;
+}
+
+@media (min-width: 640px) {
+  .videoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .videoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .videoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+.noVideos {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}

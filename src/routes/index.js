@@ -12,6 +12,7 @@ import Profile from "@/Pages/Profile";
 import Edit from "@/Pages/Edit";
 import Explore from "@/Pages/Explore";
 import DefaultLayout from "@/component/layouts/DefaultLayout";
+import LiveLayout from "@/component/layouts/LiveLayout";
 import Products from "@/Pages/Products";
 import ProductDetail from "@/Pages/ProductDetail";
 import MessagePage from "@/component/Sidebar/component/message/MessagePage";
@@ -24,12 +25,32 @@ import UploadPage from "@/Pages/Studio/components/upload/UploadPage";
 import EditPostPage from "@/Pages/Studio/components/posts/EditPostPage";
 import AnalyticsPage from "@/Pages/Studio/components/analytics/AnalyticsPage";
 import CommentsPage from "@/Pages/Studio/components/comments/CommentsPage";
+import LivePage from "@/Pages/Live";
+import LiveDetailPage from "@/Pages/Live/LiveDetailPage";
+import LiveStudio from "@/Pages/LiveStudio";
+import SettingsPage from "@/Pages/Settings";
+import SettingLayout from "@/component/layouts/SettingsLayout/SettingsLayout";
 
 const routes = [
     {
         path: config.routes.home,
         component: Home,
         layout: DefaultLayout
+    },
+    {
+        path: config.routes.live,
+        component: LivePage,
+        layout: LiveLayout
+    },
+    {
+        path: config.routes.liveDetail,
+        component: LiveDetailPage,
+        layout: LiveLayout
+    },
+    {
+        path: config.routes.liveStudio,
+        component: LiveStudio,
+        layout: LiveLayout
     },
 
      {
@@ -64,7 +85,7 @@ const routes = [
     {
         path: config.routes.profile,
         component: Profile,
-        layout: NoHeaderLayout
+        layout: DefaultLayout
     },
       {
         path: config.routes.edit,
@@ -76,13 +97,19 @@ const routes = [
         component: Explore,
     },
     {
+        path: config.routes.settings,
+        component: SettingsPage,
+        layout: SettingLayout
+    },
+    {
         path: config.routes.messages,
         component: MessagePage,
         layout: DefaultLayout
     },
     {
         path: config.routes.notFound,
-        component: NotFound
+        component: NotFound,
+        layout: NoLayout
     },
     {
         path: config.routes.studio,

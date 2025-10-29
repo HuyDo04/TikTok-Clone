@@ -236,6 +236,21 @@
     }
 }
 
+.search-type {
+    font-size: 23px;
+    display: flex;
+    align-items: center;
+    gap: 19px;
+    padding: 8px 18px;
+    cursor: pointer;
+    color: var(--text-color, #161823);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    
+}
+
+
 /* ===== Scrollbar hidden (TikTok style) ===== */
 .sidebar::-webkit-scrollbar {
     width: 0;

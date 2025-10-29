@@ -4,20 +4,17 @@ import styles from "./NavBar.module.scss";
 import classNames from "classnames/bind";
 import HandleLogout from "../HandleLogout";
 import { NavLink } from "react-router-dom";
+import TiktokLogoDarkFull from "@/component/Icons/TiktokLogoDarkFull";
 
 const cx = classNames.bind(styles);
 
-function Navbar({ toggleSidebar }) {
+function Navbar() {
   return (
     <nav className={cx("navbar")}>
       <div className={cx("logo-container")}>
-        <button className={cx("menu-btn")} onClick={toggleSidebar}>
-            <FaBars /> 
-        </button>
         <div className={cx("logo")}>
             <NavLink to="/">
-            <BsTiktok className={cx("tiktok-icon")} />
-            <span>TikTok</span>
+            <TiktokLogoDarkFull />
             </NavLink>
         </div>
       </div>

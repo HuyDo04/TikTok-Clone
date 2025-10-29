@@ -1,0 +1,16 @@
+.profilePage {
+  display: flex;
+  padding: 32px 24px 36px;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: calc(1px + 100vh);
+  margin: 0px auto;
+  box-sizing: content-box;
+  max-width: calc(85em + 4rem);
+  padding-block: 1.5rem;
+  padding-inline: 2rem;
+}
+
+.dark .profilePage {
+  background-color: #000;
+}

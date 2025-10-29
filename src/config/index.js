@@ -18,6 +18,10 @@ const config = {
         // pages
         explore:"/explore",
         messages: "/messages",
+        live: "/live",
+        liveDetail: "/live/:id",
+        liveStudio: "/live-studio",
+        settings: "/settings",
 
         // studio
         studio: "/studio",

@@ -1,0 +1,94 @@
+
+.chat-section {
+    width: 350px; /* Fixed width for chat */
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color-light);
+    height: 100%;
+    flex-shrink: 0;
+}
+
+.chat-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    h3 {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+}
+
+.comments-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: var(--background-color);
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    .username {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-right: 6px;
+        color: var(--text-color);
+    }
+    .message {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        word-break: break-word;
+        color: var(--text-color-soft);
+    }
+}
+
+.input-area {
+    display: flex;
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+    gap: 10px;
+    background-color: var(--background-color-light);
+}
+
+.input {
+    flex-grow: 1;
+    resize: none;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    height: 40px; // Set a fixed height
+    line-height: 1.4;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.send-btn {
+    border: none;
+    background-color: transparent;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 10px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

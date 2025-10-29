@@ -36,6 +36,7 @@ const sidebarMenu = [
   { title: "Tin nhắn", icon: MessageIcon, path: "/messages" },
   { title: "Thông báo", icon: AlertIcon, path: "/notifications" },
   { title: "Tải lên", icon: PlusSquareIcon, path: "/studio" },
+    {title:"Hồ sơ", icon: UsersIcon, path:"/profile/hdna0402"}
 ];
 
 const suggestedAccounts = [
@@ -60,7 +61,7 @@ const suggestedAccounts = [
 ];
 
 // ===================== NavItem Component =====================
-const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick }) => {
+const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick, classNames }) => {
   const navLinkClasses = ({ isActive }) =>
     cx("nav-item", { "nav-item-active": isActive });
 
@@ -81,7 +82,7 @@ const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick }) => {
   }
 
   return (
-    <div className={cx("nav-item")} onClick={onClick}>
+    <div className={cx("nav-item", classNames)} onClick={onClick}>
       <Icon {...iconProps} />
       {!isCollapsed && <span className={cx("nav-text")}>{title}</span>}
     </div>
@@ -118,13 +119,13 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
 
       {/* ===== Main Navigation ===== */}
       <div className={cx("main-nav")}>
-
-        <NavItem
-            icon={SearchIcon}
-            title="Search"
-            isCollapsed={isCollapsed}
-            onClick={toggleSearch}
-        />
+            <NavItem
+              classNames={cx("search-type")}
+              icon={SearchIcon}
+              title="Search"
+              isCollapsed={isCollapsed}
+              onClick={toggleSearch}
+            />
   
         {sidebarMenu.map((item) => (
           <NavItem

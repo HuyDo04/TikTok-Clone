@@ -22,6 +22,30 @@
   }
 }
 
+.emojiWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.emojiPicker {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  z-index: 1000;
+}
+
+.emojiButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform 0.1s ease;
+}
+
+.emojiButton:hover {
+  transform: scale(1.2);
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);

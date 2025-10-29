@@ -1,0 +1,14 @@
+.live-layout-wrapper {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.live-content {
+  flex: 1;
+  overflow-y: auto; /* Allow scrolling for content */
+  display: flex;
+  flex-direction: column;
+}
