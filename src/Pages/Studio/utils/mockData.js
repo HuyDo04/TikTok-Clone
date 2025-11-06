@@ -84,6 +84,7 @@ export const getRecentPosts = (limit = 3) => {
   return mockPosts.slice(0, limit)
 }
 
+// eslint-disable-next-line no-unused-vars
 export const getStatsForPeriod = (period) => {
   // Mock stats based on period
   const baseStats = {

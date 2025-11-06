@@ -1,129 +1,177 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import authService, { register as registerAPI } from "@/service/authService";
-import { NavLink, useNavigate } from "react-router-dom";
-import { yupResolver } from "@hookform/resolvers/yup";
-import userSchema from "@/schema/userSchema";
-import InputText from "@/component/InputText";
-
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { register } from "@/services/auth.service";
+import Input from "@/component/Input";
+import Button from "@/component/Button";
 import styles from "./Register.module.scss";
 import classNames from "classnames/bind";
-import useDebounce from "@/hooks/useBounce";
+
 const cx = classNames.bind(styles);
-function Register() {
+
+const Register = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    trigger,
-    setError,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(userSchema) });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const getName = (fullname) => {
-    const splitFullname = fullname
-      .trim()
-      .split(" ")
-      .filter((word) => word !== "");
-    const firstName = splitFullname.pop();
-    const lastName = splitFullname.join(" ");
-    return [firstName, lastName];
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.username) {
+      newErrors.username = "Vui lòng nhập tên người dùng";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Tên người dùng phải có ít nhất 3 ký tự";
+    }
+
+    if (!formData.email) {
+      newErrors.email = "Vui lòng nhập email";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email không hợp lệ";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Vui lòng nhập mật khẩu";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Vui lòng nhập lại mật khẩu";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Mật khẩu không khớp";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const onSubmit = async (data) => {
-    const [firstName, lastName] = getName(data.fullname);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-    try {
-      const res = await registerAPI({
-        firstName,
-        lastName,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-      });
-
-      alert("Đăng ký thành công.");
-      localStorage.setItem("token", res.access_token);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
-  const emailValue = watch("email");
-  const debouncedEmail = useDebounce(emailValue, 400);
-  useEffect(() => {
-    if (!debouncedEmail) return;
-    const validateEmail = async () => {
-      const isValid = await trigger("email");
-      if (isValid) {
-        const emailCheck = await authService.checkEmail(emailValue);
-        if (emailCheck) {
-          setError("email", {
-            type: "manual",
-            message: "Email này đã được sử dụng",
-          });
-        }
-      }
-    };
-    validateEmail();
-  }, [emailValue, trigger, setError, debouncedEmail]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    setErrors({});
+    setSuccessMessage("");
+
+    try {
+
+
+      const result = await register(formData);
+
+      setSuccessMessage(result.message || "Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
+
+      setTimeout(() => {
+        navigate("/login", {
+          replace: true,
+          state: { message: "Đăng ký thành công, vui lòng xác thực email rồi đăng nhập." },
+        });
+      }, 2000);
+
+    } catch (error) {
+      console.error("Registration failed:", error);
+      const errorMessage = error.response?.data?.message || "Đăng ký thất bại, vui lòng thử lại";
+      setErrors({
+        submit: errorMessage,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className={cx("container")}>
-      <form onSubmit={handleSubmit(onSubmit)} className={cx("form")}>
-        <div className={cx("formGroup")}>
-          <label className={cx("label")}>Họ và Tên:</label>
-          <InputText
-            className={cx("input")}
-            name="fullname"
-            register={register}
-            message={errors.fullname?.message}
-          />
-        </div>
-        <div className={cx("formGroup")}>
-          <label className={cx("label")}>Email:</label>
-          <InputText
-            className={cx("input")}
-            type="email"
-            name="email"
-            register={register}
-            message={errors.email?.message}
-          />
-        </div>
-        <div className={cx("formGroup")}>
-          <label className={cx("label")}>Mật khẩu:</label>
-          <InputText
-            className={cx("input")}
-            type="password"
-            name="password"
-            register={register}
-            message={errors.password?.message}
-          />
-        </div>
-        <div className={cx("formGroup")}>
-          <label className={cx("label")}>Nhập lại mật khẩu:</label>
-          <InputText
-            className={cx("input")}
-            type="password"
-            name="confirmPassword"
-            register={register}
-            message={errors.confirmPassword?.message}
-          />
-        </div>
+      <form onSubmit={handleSubmit} className={cx("form")}>
+        <h1>Đăng ký tài khoản</h1>
+
+        {successMessage && (
+          <div className={cx("successMessage")}>{successMessage}</div>
+        )}
+
+        <Input
+          label="Tên người dùng"
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
+          error={errors.username}
+          placeholder="Nhập tên người dùng"
+        />
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          error={errors.email}
+          placeholder="Nhập email"
+          autoComplete="email"
+        />
+
+        <Input
+          label="Mật khẩu"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          error={errors.password}
+          placeholder="Nhập mật khẩu"
+          autoComplete="new-password"
+        />
+
+        <Input
+          label="Nhập lại mật khẩu"
+          type="password"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleInputChange}
+          error={errors.confirmPassword}
+          placeholder="Nhập lại mật khẩu"
+           autoComplete="new-password"
+        />
+
+        {errors.submit && (
+          <div className={cx("submitError")}>{errors.submit}</div>
+        )}
+
         <div className={cx("Button")}>
-          <button type="submit" className={cx("subButton")}>
-            Đăng ký
-          </button>
+            <Button type="submit" primary disabled={isSubmitting} loading={isSubmitting}>
+            {isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
+            </Button>
         </div>
         <div className={cx("registerLink")}>
-          <NavLink to="/login">Bạn đã có tài khoản? Đăng nhập ngay</NavLink>
+            <p>
+                Đã có tài khoản?{" "}
+                <Link to="/login">
+                Đăng nhập
+                </Link>
+            </p>
         </div>
       </form>
     </div>
   );
-}
+};
 
 export default Register;

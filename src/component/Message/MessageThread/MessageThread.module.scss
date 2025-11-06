@@ -1,0 +1,111 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #e5e5e5;
+  }
+}
+
+.date-text {
+  font-size: 12px;
+  color: #999999;
+  white-space: nowrap;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-group {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+
+  &.own {
+    justify-content: flex-end;
+  }
+}
+
+.message-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  max-width: 70%;
+
+  .own & {
+    flex-direction: row-reverse;
+  }
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.message-bubble-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-bubble {
+  background-color: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  display: inline-block;
+
+  &.own {
+    background-color: #0084ff;
+  }
+}
+
+.message-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #000000;
+
+  .own & {
+    color: #ffffff;
+  }
+}
+
+.attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.attachment-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  display: block;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #999999;
+  align-self: flex-start;
+  margin-left: 8px;
+}

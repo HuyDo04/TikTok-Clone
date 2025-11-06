@@ -1,4 +1,4 @@
-import { logout } from "@/service/authService";
+import { logout } from "@/services/auth.service";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./HandleLogout.module.scss";

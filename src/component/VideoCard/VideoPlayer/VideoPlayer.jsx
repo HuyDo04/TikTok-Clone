@@ -7,6 +7,7 @@ import VideoInfo from "../VideoInfo/VideoInfo"
 import VolumeControl from "../VolumeControl/VolumeControl"
 import VideoProgress from "../VideoProgress/VideoProgress"
 import OptionsMenu from "../OptionsMenu/OptionsMenu"
+import { getGlobalAudioMuteState, updateGlobalAudioMuteState, addGlobalAudioMuteListener } from "@/utils/audioState"
 import CommentModal from "../CommentModal/CommentModal"
 import styles from "./VideoPlayer.module.scss"
 
@@ -16,27 +17,44 @@ export default function VideoPlayer({ video, isActive, isCommentOpen, setComment
   const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(1)
-  const [isMuted, setIsMuted] = useState(false)
+  // Initialize isMuted to true (muted) for all videos on first load,
+  // then it will be updated by global state changes.
+  const [isMuted, setIsMuted] = useState(true) 
   const [showVolumeControl, setShowVolumeControl] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
 
-  // Auto play/pause based on isActive
+  useEffect(() => {
+    // Set initial mute state based on global state when component mounts
+    setIsMuted(getGlobalAudioMuteState());
+
+    // Listen for global audio mute state changes
+    const cleanupListener = addGlobalAudioMuteListener((newMutedState) => {
+      setIsMuted(newMutedState);
+    });
+
+    return cleanupListener; // Cleanup the listener when component unmounts
+  }, []);
+
   useEffect(() => {
     if (videoRef.current) {
       if (isActive) {
-        videoRef.current.play().catch((err) => {
-          console.log("[v0] Autoplay prevented:", err)
-          setIsPlaying(false)
-        })
-        setIsPlaying(true)
+        const videoEl = videoRef.current;
+        videoEl.muted = isMuted;
+        videoEl.play().then(() => {
+          setIsPlaying(true);
+        }).catch((err) => {
+          console.warn("[v0] Autoplay prevented:", err);
+          setIsPlaying(false);
+        });
       } else {
-        videoRef.current.pause()
-        setIsPlaying(false)
+        videoRef.current.pause();
+        setIsPlaying(false);
       }
     }
-  }, [isActive])
+  }, [isActive, isMuted]);
+  
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -66,13 +84,10 @@ export default function VideoPlayer({ video, isActive, isCommentOpen, setComment
   const toggleMute = () => {
     if (videoRef.current) {
       const newMutedState = !isMuted
-      setIsMuted(newMutedState)
+      updateGlobalAudioMuteState(newMutedState) // Update global state and dispatch event
+      setIsMuted(newMutedState) // Update local state
       videoRef.current.muted = newMutedState
-      if (newMutedState) {
-        setVolume(0)
-      } else {
-        setVolume(videoRef.current.volume || 1)
-      }
+      setVolume(newMutedState ? 0 : (videoRef.current.volume || 1));
     }
   }
 
@@ -115,13 +130,15 @@ export default function VideoPlayer({ video, isActive, isCommentOpen, setComment
         src={video.videoUrl}
         loop
         playsInline
+        // muted is now controlled by state
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onError={handleVideoError}
         onClick={togglePlay}
-        onEnded={handleVideoEndedInternal} // Attach the new handler
+        onEnded={handleVideoEndedInternal}
         crossOrigin="anonymous"
       />
+
 
       {/* Top controls */}
       <div className={cx("topControls")}>

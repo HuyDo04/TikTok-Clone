@@ -18,7 +18,6 @@ function Button({
   disabled = false,
   loading = false,
   size = "",
-  onClick,
 }) {
   let Component = "button";
   const passProps = {};

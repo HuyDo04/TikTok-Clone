@@ -6,16 +6,15 @@ import Home from "../Pages/Home";
 import Login from "../Pages/Login";
 import NotFound from "../Pages/NotFound";
 import Register from "../Pages/Register";
-import User from "../Pages/User";
+
 import NoHeaderLayout from "@/component/layouts/NoHeaderLayout";
 import Profile from "@/Pages/Profile";
-import Edit from "@/Pages/Edit";
+
 import Explore from "@/Pages/Explore";
 import DefaultLayout from "@/component/layouts/DefaultLayout";
 import LiveLayout from "@/component/layouts/LiveLayout";
-import Products from "@/Pages/Products";
-import ProductDetail from "@/Pages/ProductDetail";
-import MessagePage from "@/component/Sidebar/component/message/MessagePage";
+
+import Messages from "@/component/Message/Messages/Messages";
 import StudioPage from "@/Pages/Studio";
 import DashboardPage from "@/Pages/Studio/components/dashboard/DashboardPage";
 
@@ -30,12 +29,36 @@ import LiveDetailPage from "@/Pages/Live/LiveDetailPage";
 import LiveStudio from "@/Pages/LiveStudio";
 import SettingsPage from "@/Pages/Settings";
 import SettingLayout from "@/component/layouts/SettingsLayout/SettingsLayout";
+import ChangePassword from "@/Pages/ChangePassword/ChangePassword";
+import ResetPassword from "@/Pages/ResetPassword/ResetPassword";
+import VerifyEmail from "@/Pages/VerifyEmail/VerifyEmail";
+import VerifyOtp from "@/Pages/VerifyOtp/VerifyOtp";
 
 const routes = [
     {
         path: config.routes.home,
         component: Home,
         layout: DefaultLayout
+    },
+    {
+        path: config.routes.changePassword,
+        component: ChangePassword,
+        layout: NoLayout
+    },
+    {
+        path: config.routes.resetPassword,
+        component: ResetPassword,
+        layout: NoLayout
+    },
+    {
+        path: config.routes.verifyEmail,
+        component: VerifyEmail,
+        layout: NoLayout
+    },
+    {
+        path: config.routes.verifyOtp,
+        component: VerifyOtp,
+        layout: NoLayout
     },
     {
         path: config.routes.live,
@@ -53,23 +76,6 @@ const routes = [
         layout: LiveLayout
     },
 
-     {
-        path: config.routes.products,
-        component: Products,
-        // layout: DefaultLayout
-    },
-    {
-        path: config.routes.productDetail,
-        component: ProductDetail,
-        layout: AdminLayout
-    },
-
-    {   
-        path: config.routes.user,
-        component: User,
-        protected: true,
-        layout: NoHeaderLayout
-    },
    
     {   
         path: config.routes.login,
@@ -87,11 +93,7 @@ const routes = [
         component: Profile,
         layout: DefaultLayout
     },
-      {
-        path: config.routes.edit,
-        component: Edit,
-        layout: NoHeaderLayout
-    },
+
     {
         path: config.routes.explore,
         component: Explore,
@@ -103,7 +105,7 @@ const routes = [
     },
     {
         path: config.routes.messages,
-        component: MessagePage,
+        component: Messages,
         layout: DefaultLayout
     },
     {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { Cog, Share, MessageSquare, UserPlus } from "lucide-react";
 import classNames from "classnames/bind";
@@ -18,21 +18,14 @@ function ProfileHeader({
   likes,
   bio,
   isFollowing,
+  isCurrentUser, // Nhận prop này từ ProfilePage
+  onEdit, // Nhận hàm xử lý sự kiện từ ProfilePage
+  onFollow, // Nhận hàm xử lý sự kiện từ ProfilePage
+  onUnfollow, // Nhận hàm xử lý sự kiện từ ProfilePage
 }) {
-  // ✅ Hooks phải nằm trên cùng, không được nằm trong JSX
-  // eslint-disable-next-line no-unused-vars
-  const [isCurrentUser, setIsCurrentUser] = useState(true); // giả sử là trang cá nhân của chính mình
-  const [isEditing, setIsEditing] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-
-  const handleEditProfile = () => {
-    setIsEditing(true);
-  };
-
-  const handleCloseEditForm = () => {
-    setIsEditing(false);
-  };
-
+  console.log(followers),
+  console.log(following)
   return (
     <header className={cx("header")}>
       {/* Top Header with Icons */}
@@ -74,7 +67,7 @@ function ProfileHeader({
               <>
                 <button
                   className={cx("button", "editButton")}
-                  onClick={handleEditProfile}
+                  onClick={onEdit} // Gọi hàm onEdit được truyền từ cha
                 >
                   Sửa Hồ Sơ
                 </button>
@@ -100,10 +93,11 @@ function ProfileHeader({
               </>
             ) : (
               <>
-                <button className={cx("button", "followButton")}>
-                  <UserPlus className={cx("icon-sm")} />{" "}
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </button>
+                {isFollowing ? (
+                  <button onClick={onUnfollow} className={cx("button", "unfollowButton")}>Bỏ theo dõi</button>
+                ) : (
+                  <button onClick={onFollow} className={cx("button", "followButton")}>Theo dõi</button>
+                )}
                 <button className={cx("button", "messageButton")}>
                   <MessageSquare className={cx("icon-sm")} /> Nhắn tin
                 </button>
@@ -114,8 +108,6 @@ function ProfileHeader({
             )}
           </div>
 
-          {/* --- Form Edit Profile --- */}
-          {isEditing && <EditProfile onClose={handleCloseEditForm} />}
         </div>
       </div>
     </header>

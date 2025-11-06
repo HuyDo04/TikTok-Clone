@@ -1,0 +1,51 @@
+.search-page {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 0;
+}
+
+.search-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 0 0 0 60px;
+  min-height: 100vh;
+  
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+}
+
+.users-section {
+  width: 100%;
+}
+
+.section-divider {
+  margin-top: 48px;
+  margin-bottom: 24px;
+  border-top: 1px solid #f1f1f2;
+  padding-top: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #999;
+  font-size: 14px;
+}

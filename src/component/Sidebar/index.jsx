@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { NavLink } from "react-router-dom";
 import styles from "./Sidebar.module.scss";
+import { useSelector } from "react-redux";
 import classNames from "classnames/bind";
 import { useTheme } from "@/context/ThemeContext";
 import Button from "../Button";
@@ -27,7 +28,7 @@ import AlertIcon from "../Icons/AlertIcon";
 const cx = classNames.bind(styles);
 
 // ===================== Sidebar Menu =====================
-const sidebarMenu = [
+const baseSidebarMenu = [
   { title: "Đề xuất", icon: HomeIcon, path: "/" },
   { title: "Khám phá", icon: FocusIcon, path: "/explore" },
   { title: "Đã follow", icon: FollowedIcon, path: "/following" },
@@ -36,7 +37,6 @@ const sidebarMenu = [
   { title: "Tin nhắn", icon: MessageIcon, path: "/messages" },
   { title: "Thông báo", icon: AlertIcon, path: "/notifications" },
   { title: "Tải lên", icon: PlusSquareIcon, path: "/studio" },
-    {title:"Hồ sơ", icon: UsersIcon, path:"/profile/hdna0402"}
 ];
 
 const suggestedAccounts = [
@@ -92,6 +92,17 @@ const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick, classNames }) 
 // ===================== Sidebar Component =====================
 function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
   const { theme, toggleTheme } = useTheme();
+  const currentUser = useSelector((state) => state.auth.currentUser);
+
+  // Tạo menu động dựa trên trạng thái đăng nhập của người dùng
+  const sidebarMenu = [
+    ...baseSidebarMenu,
+    {
+      title: "Hồ sơ",
+      icon: UsersIcon,
+      path: currentUser ? `/profile/${currentUser.username}` : "/profile",
+    },
+  ];
 
   const sidebarClasses = cx("sidebar", {
     "sidebar-collapsed": isCollapsed,

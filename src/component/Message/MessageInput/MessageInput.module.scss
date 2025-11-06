@@ -1,0 +1,148 @@
+.root {
+  padding: 12px 20px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attachments-preview {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d0d0d0;
+    border-radius: 2px;
+  }
+}
+
+.attachment-item {
+  position: relative;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ff3040;
+  color: #ffffff;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #e6283a;
+  }
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+
+  &:focus {
+    border-color: #000000;
+  }
+
+  &::placeholder {
+    color: #999999;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  border-radius: 50%;
+  padding: 0;
+
+  &:hover {
+    color: #000000;
+    background-color: #f0f0f0;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.send-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: #0084ff;
+  cursor: pointer;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: #0073e6;
+  }
+
+  &:disabled {
+    background-color: #d0d0d0;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}

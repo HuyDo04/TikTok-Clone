@@ -2,8 +2,8 @@ import React from "react";
 
 const HomeIcon = ({ size = "1em", color = "currentColor", ...props }) => (
   <svg
-    fill={color}
-    viewBox="6 5.5 36 36"
+    fill={color}        
+    viewBox="0 0 48 48"
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}

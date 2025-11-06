@@ -9,6 +9,10 @@ const config = {
         //auth
         login : "/login",
         register : "/register",
+        changePassword: "/change-password",
+        resetPassword: "/reset-password",
+        verifyEmail: "/verify-email",
+        verifyOtp: "/verify-otp",
         // user
         profile:"/profile/:username",
         edit:"/profile/:username/edit",

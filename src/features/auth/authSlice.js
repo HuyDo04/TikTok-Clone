@@ -1,44 +1,59 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import authService from "@/service/authService";
-
-// Thunk for getting current user
-export const getCurrentUser = createAsyncThunk(
-  "auth/getCurrentUser",
-  async () => {
-    const user = await authService.getCurrentUser();
-    return user;
-  }
-);
+import { createSlice } from "@reduxjs/toolkit";
+import {fetchCurrentUser} from "./authActions";
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
+    comments: [],
     currentUser: null,
-    isLoading: true
+    token: localStorage.getItem("token") || null,
+    isLoading: false,
   },
   reducers: {
-    setCurrentUser: (state, action) => {
+    loginSuccess(state, action) {
+      const token = action.payload;
+      state.token = token;
+      localStorage.setItem("token", token);
+    },
+    logout(state) {
+      state.currentUser = null;
+      state.token = null;
+      state.isLoading = false;
+      localStorage.removeItem("token");
+    },
+    setUser(state, action) {
       state.currentUser = action.payload;
     },
-    setUserLoading: (state, action) => {
-      state.isLoading = action.payload;
-    }
+    updateUserProfile(state, action) {
+      if (state.currentUser) {
+        state.currentUser = { ...state.currentUser, ...action.payload };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getCurrentUser.pending, (state) => {
+      .addCase(fetchCurrentUser.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getCurrentUser.fulfilled, (state, action) => {
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.currentUser = action.payload;
         state.isLoading = false;
       })
-      .addCase(getCurrentUser.rejected, (state) => {
+      .addCase(fetchCurrentUser.rejected, (state) => {
         state.currentUser = null;
         state.isLoading = false;
+        state.token = null;
+        localStorage.removeItem("token");
       });
-  }
+  },
 });
 
-export const { setCurrentUser, setUserLoading } = authSlice.actions;
+export const { loginSuccess, logout, setUser, updateUserProfile, setComments, addComment } = authSlice.actions;
+
 export default authSlice.reducer;
+
+// Selectors
+export const selectCurrentUser = (state) => state.auth.currentUser;
+export const selectUserLoading = (state) => state.auth.isLoading;
+export const selectToken = (state) => state.auth.token;
+// Comment

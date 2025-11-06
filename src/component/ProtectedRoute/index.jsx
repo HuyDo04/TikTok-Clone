@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import config from "@/config";
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import authService from "@/service/authService";
+import authService from "@/services/auth.service";
 import { useLoading } from "@/hooks/useLoading";
 
 function ProtectedRoute({ children }) {

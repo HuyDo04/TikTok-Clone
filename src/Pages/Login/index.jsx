@@ -1,59 +1,228 @@
-import InputText from "@/component/InputText";
-import config from "@/config";
-import useQuery from "@/hooks/useQuery";
-import loginSchema from "@/schema/loginSchema";
-import authService from "@/service/authService";
-import { useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import UserContext from "@/context/UserContext";
-import Form from "@/component/Forms";
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Input from "@/component/Input";
+import Button  from "@/component/Button";
+import { login, resendVerification } from "@/services/auth.service";
 import styles from "./Login.module.scss";
-import classNames from "classnames/bind";
+import { setToken } from "@/utils/httpRequest";
+import { loginSuccess } from "@/features/auth/authSlice";
+import { fetchCurrentUser } from "@/features/auth/authActions";
+import { useDispatch } from "react-redux";
 
-const cx = classNames.bind(styles);
-function Login() {
-  const { setUser } = useContext(UserContext);
-  const query = useQuery();
+const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const onSubmit = async (data) => {
-    try {
-      const response = await authService.login(data);
-      const { accsess_token, refresh_token } = response.data;
-      localStorage.setItem("token", accsess_token);
-      localStorage.setItem("refresh_token", refresh_token);
-      const user = await authService.getCurrentUser();
-      setUser(user);
-      alert("Đăng nhập thành công");
-      navigate(query.get("continue") || config.routes.home);
-    } catch (errors) {
-      console.log(errors);
-      throw new Error("Tài khoản mật khẩu không chính xác");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResend, setShowResend] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.email) {
+      newErrors.email = "Vui lòng nhập email";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email không hợp lệ";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Vui lòng nhập mật khẩu";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Mật khẩu tối thiểu 6 ký tự";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    setErrors({});
+    setResendMessage("");
+    setShowResend(false);
+
+    try {
+      // 1. Gọi API login
+      const result = await login(formData);
+      console.log("Login success:", result);
+
+      // 2. Lưu token vào Redux & localStorage
+      dispatch(loginSuccess(result.access_token));
+      setToken(result.access_token); // Set token cho httpRequest
+      localStorage.setItem("refresh_token", result.refresh_token);
+
+      // 3. Gọi API lấy user
+      await dispatch(fetchCurrentUser()).unwrap();
+
+      // 4. Điều hướng khi đã lấy user thành công
+      navigate("/", { replace: true });
+
+    } catch (error) {
+      console.error("Login failed:", error);
+
+      if (
+        error.response &&
+        error.response.status === 401 &&
+        error.response.data === "Vui lòng xác thục email"
+      ) {
+        setErrors({
+          submit: "Tài khoản chưa được xác thực. Vui lòng kiểm tra email.",
+        });
+        setShowResend(true);
+      } else {
+        setErrors({
+          submit:
+            error.response?.data?.message ||
+            "Đăng nhập thất bại. Vui lòng thử lại.",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      setIsSubmitting(true);
+      setResendMessage("");
+        
+      const res = await resendVerification(formData.email);
+      
+      setResendMessage(
+        res.message || "Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư."
+      );
+    } catch (error) {
+      console.error("Resend verification failed:", error);
+      setResendMessage(
+        error.response?.data?.message ||
+          "Không thể gửi lại email xác thực. Vui lòng thử lại sau."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:3000/api/v1/auth/oauth/google";
+  };
+
   return (
-    <div className={cx("container")}>
-      <Form schema={loginSchema} onSubmit={onSubmit} className={cx("form")}>
-        <label className={cx("label")}>Email</label>
-        <InputText type="email" name="email" className={cx("input")} />
+    <div className={styles.loginContainer}>
+      <h1 className={styles.title}>Đăng nhập</h1>
 
-        <label className={cx("label")}>Password</label>
-        <InputText type="password" name="password" className={cx("input")} />
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          error={errors.email}
+          placeholder="Nhập email"
+          required
+        />
 
-        <div className={cx("Button")}>
-          <button type="submit" className={cx("subButton")}>
-            Đăng nhập
-          </button>
+        <Input
+          label="Mật khẩu"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          error={errors.password}
+          placeholder="Nhập mật khẩu"
+          required
+        />
+
+        <div className={styles.formOptions}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="rememberMe"
+              checked={formData.rememberMe}
+              onChange={handleInputChange}
+              className={styles.checkbox}
+            />
+            <span>Ghi nhớ đăng nhập</span>
+          </label>
         </div>
 
-        <div className={cx("register-link")}>
-          <NavLink to="/register">Bạn chưa có tài khoản. Đăng ký ngay.</NavLink>
-        </div>
-      </Form>
+        {errors.submit && (
+          <div className={styles.submitError}>{errors.submit}</div>
+        )}
+
+        {showResend && (
+          <div className={styles.resendSection}>
+            <button
+              type="button"
+              onClick={handleResendVerification}
+              disabled={isSubmitting}
+              className={styles.resendButton}
+            >
+              {isSubmitting ? "Đang gửi..." : "Gửi lại email xác thực"}
+            </button>
+            {resendMessage && (
+              <p className={styles.resendMessage}>{resendMessage}</p>
+            )}
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          fullWidth
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+        </Button>
+      </form>
+
+      <div className={styles.divider}>
+        <span>HOẶC</span>
+      </div>
+
+      <Button
+        variant="secondary"
+        size="lg"
+        fullWidth
+        onClick={handleGoogleLogin}
+      >
+        Đăng nhập với Google
+      </Button>
+
+      <p className={styles.registerPrompt}>
+        Chưa có tài khoản? <a href="/register">Đăng ký</a>
+      </p>
+      <p className={styles.registerPrompt}>
+        <a href="/forgot-password">Quên mật khẩu</a>
+      </p>
     </div>
   );
-}
+};
 
 export default Login;

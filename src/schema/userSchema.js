@@ -2,21 +2,22 @@ import * as yup from "yup";
 
 const userSchema = yup
     .object({
-        fullname : yup
+        username : yup
         .string()
-        .required("Vui lòng không để trống"),
+        .required("Vui lòng nhập tên người dùng")
+        .min(3, "Tên người dùng phải có ít nhất 3 ký tự"),
         email : yup 
         .string()
-        .required("Vui lòng không để trống")
-        .email("Vui lòng nhập đúng định dạng email"),
+        .required("Vui lòng nhập email")
+        .email("Email không hợp lệ"),
         password: yup 
         .string()
-        .required("Vui lòng không để trống")
-        .min(8,"Mật khẩu cần tối thiểu 8 ký tự"),
+        .required("Vui lòng nhập mật khẩu")
+        .min(8,"Mật khẩu phải có ít nhất 8 ký tự"),
         confirmPassword: yup 
         .string()
-        .oneOf([yup.ref("password")], "Mật khẩu xác nhận không đúng.")
-        .required("Vui lòng không để trống")
+        .oneOf([yup.ref("password")], "Mật khẩu không khớp")
+        .required("Vui lòng nhập lại mật khẩu")
     })
 
 export default userSchema

@@ -1,8 +1,10 @@
 import axios from "axios";
 
+console.log(import.meta.env.VITE_BASE_URL);
+
+
 const httpRequest = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
-  
 })
 
 httpRequest.interceptors.request.use((config) => {
@@ -71,15 +73,9 @@ httpRequest.interceptors.response.use(
 )
 
 const send = async (method, url, data, config) => {
-    const isPutOrPatch = ["put", "patch"].includes(method.toLowerCase());
-    const effectiveMethod = isPutOrPatch ? "post" : method;
-    const effectivePath = isPutOrPatch
-        ? `${url}${url.includes("?") ? "&" : "?"}_method=${method}`
-        : url;
-
     const response = await httpRequest.request({
-        method: effectiveMethod,
-        url: effectivePath,
+        method: method,
+        url: url,
         data,
         ...config,
     });
