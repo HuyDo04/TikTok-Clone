@@ -7,7 +7,7 @@ function SearchSuggestions({ suggestions }) {
   return (
     <aside className={cx("suggestions-sidebar")}>
       <div className={cx("suggestions-container")}>
-        <h3 className={cx("suggestions-title")}>Những người khác tìm kiếm</h3>
+        <h3 className={cx("suggestions-title")}>Những người bạn đã tìm kiếm</h3>
 
         <div className={cx("suggestions-list")}>
           {suggestions.map((suggestion, index) => (

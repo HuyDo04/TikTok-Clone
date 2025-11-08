@@ -18,19 +18,9 @@ export const getUserById = async (id) => {
   return response;
 };
 
-// Create user
-export const createUser = async (userData) => {
-  const response = await httpRequest.post("/users", userData);
-  return response;
-};
-
 // Update existing user
 export const updateUser = async (id, userData) => {
-    console.log("userData",userData);
-    
   const response = await httpRequest.put(`/users/${id}`, userData);
-  console.log("response",response);
-  
   return response;
 };
 
@@ -72,6 +62,11 @@ export const getFollowers = async (id) => {
   const response = await httpRequest.get(`/users/${id}/followers`);
   return response;
 };
+
+export const checkStatus = async (id) => {
+  const response = await httpRequest.get(`/users/${id}/follow-status`);
+  return response
+}
 
 // Get a user's following list
 export const getFollowing = async (id) => {

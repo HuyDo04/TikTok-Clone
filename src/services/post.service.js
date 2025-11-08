@@ -67,10 +67,25 @@ export const likePost = async (id) => {
 
 // Unlike a post
 export const unlikePost = async (id) => {
-    return await httpRequest.del(`/posts/${id}/like`);
+    return await httpRequest.del(`/posts/${id}/unlike`);
 };
 
 // Delete specific media in a post
 export const deletePostMedia = async (id, mediaIndex) => {
     return await httpRequest.del(`/posts/${id}/media/${mediaIndex}`);
+};
+
+// Search posts by hashtag
+export const searchPostsByHashtag = async (tagName) => {
+    return await httpRequest.get(`/posts/search/hashtag/${tagName}`);
+};
+
+// Search posts by title
+export const searchPostsByTitle = async (title) => {
+    return await httpRequest.get(`/posts/search/title`, { params: { title } });
+};
+
+// Get posts by mentioned user
+export const getPostsByMentionedUser = async (username) => {
+    return await httpRequest.get(`/posts/mentions/${username}`);
 };

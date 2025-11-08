@@ -1,0 +1,255 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  /* thay cho top/left/right/bottom = 0 */
+  width: 100vw;
+  height: 100vh;
+  background: var(--modal-background);
+  z-index: 99999;
+  /* Đảm bảo luôn ở trên sidebar, header,... */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease forwards;
+  isolation: isolate;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Header cố định trên cùng */
+.header {
+  padding: 0 20px;
+  position: absolute;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: space-between;
+    left: 0px;
+    top: 0;
+    right: 0px;
+    margin: auto;
+    -webkit-box-align: center;
+    align-items: center;
+    height: 85px;
+}
+
+.closeBtn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: var(--text-color);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.navButtons {
+  position: absolute; // tuyệt đối so với playerContainer
+  top: 50%; // bắt đầu từ giữa container
+  right: 16px; // cách lề phải 16px
+  transform: translateY(-50%); // căn giữa theo chiều dọc
+  display: flex;
+  flex-direction: column; // sắp xếp nút theo cột
+  gap: 12px; // khoảng cách giữa 2 nút
+  z-index: 5; // đảm bảo nằm trên video
+  pointer-events: none; // cho phép click xuyên container nếu cần
+
+  .navBtn {
+    pointer-events: auto; // bật lại click cho các nút
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+.searchBar {
+  width: calc(100% - 184px);
+    max-width: calc(-32px + 56.25vh);
+  flex: 1;
+  background: var(--background-grey-color);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px;
+  color: var(--text-grey-color);
+}
+
+.searchInput {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+
+  &::placeholder {
+    color: var(--text-grey-color);
+  }
+}
+
+.moreBtn {
+  background: none;
+  border: none;
+  color: var(--text-grey-color);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--text-color);
+  }
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.playerSide {
+  flex: 1;
+  background: var(--black-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.watermark {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: var(--text-grey-color);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.infoSide {
+  width: 544px; // Tăng chiều rộng để cân đối hơn
+  background: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-left: 1px solid var(--border-color);
+  padding: 24px;
+  color: var(--text-color);
+  z-index: 1;
+
+  /* Đưa các declarations lên trước */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+
+  @media (max-width: 1024px) {
+    width: 400px; // Điều chỉnh cho màn hình nhỏ hơn
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+
+    &:hover {
+      background: var(--hover-color);
+    }
+  }
+}
+
+.videoInfo {
+  margin: 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.videoTitle {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag {
+  color: var(--primary-color); /* Hoặc một biến màu khác nếu bạn có cho link */
+  text-decoration: none;
+  font-size: 13px;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.musicInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--background-grey-color);
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--hover-color);
+  }
+}
+
+.musicIcon {
+  font-size: 16px;
+}
+
+.musicText {
+  color: var(--text-color);
+}

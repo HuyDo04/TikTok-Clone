@@ -1,24 +1,45 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { ChevronLeft, Mail } from "lucide-react"
 import classNames from "classnames/bind"
 import styles from "./MessagesList.module.scss"
 
 const cx = classNames.bind(styles)
 
-function MessagesList({ conversations, selectedConversationId, onSelectConversation }) {
+function MessagesList({ conversations, messageRequests, selectedConversationId, onSelectConversation }) {
   const [searchQuery, setSearchQuery] = useState("")
+  const [view, setView] = useState("main") // 'main' or 'requests'
 
-  const filteredConversations = conversations.filter(
-    (conv) =>
-      conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.preview.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  const handleShowRequests = () => {
+    setView("requests")
+    setSearchQuery("")
+  }
+
+  const handleShowMain = () => {
+    setView("main")
+    setSearchQuery("")
+  }
+
+  // Filtered conversations based on view and search
+  const filteredConversations = useMemo(() => {
+    const listToFilter = view === "main" ? conversations : messageRequests
+    return listToFilter.filter(
+      (conv) =>
+        conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        conv.preview.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [view, searchQuery, conversations, messageRequests])
 
   return (
     <div className={cx("root")}>
       <header className={cx("header")}>
-        <h1 className={cx("title")}>Tin nhắn</h1>
+        {view === "requests" && (
+          <button onClick={handleShowMain} className={cx("back-button")} aria-label="Quay lại danh sách chính">
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        <h1 className={cx("title")}>{view === "main" ? "Tin nhắn" : "Tin nhắn chờ"}</h1>
       </header>
 
       <div className={cx("search-container")}>
@@ -32,6 +53,15 @@ function MessagesList({ conversations, selectedConversationId, onSelectConversat
         />
       </div>
 
+      {view === "main" && messageRequests.length > 0 && (
+        <div className={cx("message-requests-link-container")}>
+          <button onClick={handleShowRequests} className={cx("message-requests-link")}>
+            <Mail size={20} className={cx("requests-icon")} />
+            <span>Tin nhắn chờ ({messageRequests.length})</span>
+          </button>
+        </div>
+      )}
+
       <div className={cx("conversations-list")}>
         {filteredConversations.length === 0 ? (
           <div className={cx("empty-state")}>
@@ -41,13 +71,15 @@ function MessagesList({ conversations, selectedConversationId, onSelectConversat
           filteredConversations.map((conversation) => (
             <button
               key={conversation.id}
-              className={cx("conversation-item", {
-                active: selectedConversationId === conversation.id,
-              })}
+              className={cx("conversation-item", { active: selectedConversationId === conversation.id })}
               onClick={() => onSelectConversation(conversation.id)}
               aria-pressed={selectedConversationId === conversation.id}
             >
-              <img src={conversation.avatar || "/placeholder.svg"} alt={conversation.name} className={cx("avatar")} />
+              <img
+                src={conversation.avatar || "/placeholder.svg"}
+                alt={conversation.name}
+                className={cx("avatar")}
+              />
               <div className={cx("content")}>
                 <div className={cx("header-row")}>
                   <h3 className={cx("name")}>{conversation.name}</h3>

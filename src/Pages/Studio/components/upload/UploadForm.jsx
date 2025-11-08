@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import classNames from "classnames/bind"
 import CaptionInput from "./CaptionInput"
 import CoverImageSelector from "./CoverImageSelector"
+import { createPost } from "@/services/post.service"
 import PrivacySelector from "./PrivacySelector"
 import PreviewTabs from "./PreviewTabs"
 import { validateVideoFile, validateImageFiles } from "../../utils/fileValidation"
@@ -23,6 +24,10 @@ export default function UploadForm() {
   const [location, setLocation] = useState("")
   const [errors, setErrors] = useState([])
   const [isUploading, setIsUploading] = useState(false)
+  const [allowComment, setAllowComment] = useState(true)
+  const [allowReuse, setAllowReuse] = useState(true)
+  const [isBranded, setIsBranded] = useState(false)
+  const [isBrandDirected, setIsBrandDirected] = useState(false)
 
   const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files)
@@ -78,18 +83,45 @@ export default function UploadForm() {
       return
     }
 
+    setErrors([])
     setIsUploading(true)
 
-    // Simulate upload
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const formData = new FormData()
+    formData.append("title", caption)
+    formData.append("content", caption)
+    formData.append("visibility", privacy)
+    formData.append("location", location)
+    formData.append("allowComment", allowComment)
+    formData.append("allowReuse", allowReuse)
+    formData.append("isBranded", isBranded)
+    formData.append("isBrandDirected", isBrandDirected)
 
-    // Save to mock data and redirect
-    navigate("/studio/posts")
+    // Append media files
+    uploadedFiles.forEach((fileObj) => {
+      formData.append("media", fileObj.file)
+    })
+
+    // Append featured image if it's an image file
+    const coverFile = uploadedFiles[selectedCover]
+    if (coverFile && coverFile.type === "image") {
+      formData.append("featuredImage", coverFile.file)
+    }
+
+    try {
+      await createPost(formData)
+      navigate("/studio/posts")
+    } catch (error) {
+      console.error("Error creating post:", error)
+      setErrors([error.response?.data?.message || "Đã có lỗi xảy ra khi đăng bài. Vui lòng thử lại."])
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const removeFile = (index) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
   }
+
 
   if (uploadedFiles.length === 0) {
     return (
@@ -205,7 +237,7 @@ export default function UploadForm() {
             <CoverImageSelector files={uploadedFiles} selected={selectedCover} onSelect={setSelectedCover} />
           </div>
 
-          <div className={cx("formGroup")}>
+          {/* <div className={cx("formGroup")}>
             <label className={cx("formLabel")}>Vị trí</label>
             <div className={cx("inputWrapper")}>
               <input
@@ -229,7 +261,7 @@ export default function UploadForm() {
                 />
               </svg>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className={cx("settingsSection")}>
@@ -237,38 +269,58 @@ export default function UploadForm() {
 
           <PrivacySelector value={privacy} onChange={setPrivacy} />
 
-          <div className={cx("formGroup")}>
+          {/* <div className={cx("formGroup")}>
             <h4 className={cx("allowUsersTitle")}>Cho phép người dùng:</h4>
             <div className={cx("checkboxGroup")}>
               <label className={cx("checkboxLabel")}>
-                <input type="checkbox" defaultChecked className={cx("checkboxInput")} />
+                <input
+                  type="checkbox"
+                  checked={allowComment}
+                  onChange={(e) => setAllowComment(e.target.checked)}
+                  className={cx("checkboxInput")}
+                />
                 <span className={cx("checkboxText")}>Bình luận</span>
               </label>
               <label className={cx("checkboxLabel")}>
-                <input type="checkbox" defaultChecked className={cx("checkboxInput")} />
+                <input
+                  type="checkbox"
+                  checked={allowReuse}
+                  onChange={(e) => setAllowReuse(e.target.checked)}
+                  className={cx("checkboxInput")}
+                />
                 <span className={cx("checkboxText")}>Sử dụng lại nội dụng</span>
               </label>
             </div>
-          </div>
+          </div> */}
 
-          <div className={cx("formGroup")}>
+          {/* <div className={cx("formGroup")}>
             <h4 className={cx("allowUsersTitle")}>Khái báo nội dụng bài đăng</h4>
             <div className={cx("checkboxGroup")}>
               <label className={cx("checkboxLabel")}>
-                <input type="checkbox" className={cx("checkboxInput")} />
+                <input
+                  type="checkbox"
+                  checked={isBranded}
+                  onChange={(e) => setIsBranded(e.target.checked)}
+                  className={cx("checkboxInput")}
+                />
                 <span className={cx("checkboxText")}>Thương hiệu của bạn</span>
               </label>
               <label className={cx("checkboxLabel")}>
-                <input type="checkbox" className={cx("checkboxInput")} />
+                <input
+                  type="checkbox"
+                  checked={isBrandDirected}
+                  onChange={(e) => setIsBrandDirected(e.target.checked)}
+                  className={cx("checkboxInput")}
+                />
                 <span className={cx("checkboxText")}>Nội dụng định hướng thương hiệu</span>
               </label>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className={cx("buttonGroup")}>
           <button
-            onClick={() => setUploadedFiles([])}
+            onClick={() => navigate("/studio/posts")}
             className={cx("cancelButton")}
           >
             Hủy
@@ -281,6 +333,15 @@ export default function UploadForm() {
             {isUploading ? "Đang đăng..." : "Đăng"}
           </button>
         </div>
+        {errors.length > 0 && (
+          <div className={cx("errorContainer", "submitError")}>
+            {errors.map((error, index) => (
+              <p key={index} className={cx("errorMessage")}>
+                {error}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={cx("previewSection")}>

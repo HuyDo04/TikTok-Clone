@@ -1,0 +1,74 @@
+.creatorCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.creatorHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.creatorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-color);
+}
+
+.category {
+  font-size: 12px;
+  color: var(--text-grey-color);
+  margin: 0;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: var(--text-grey-color);
+  margin: 0;
+}
+
+.followBtn {
+  background: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  padding: 8px 24px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    filter: brightness(90%);
+  }
+
+  &.following {
+    background: var(--background-grey-color);
+    color: var(--text-color);
+
+    &:hover {
+      background: var(--hover-color);
+    }
+  }
+}

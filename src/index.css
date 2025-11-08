@@ -1,24 +1,33 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
 
 :root {
   --primary-color: rgb(254, 44, 85);
+  --primary-color-dark: rgb(229, 25, 68);
+  --primary-color-darker: rgb(204, 22, 60);
+  --primary-color-light: rgba(254, 44, 85, 0.1);
   --white-color: #fff;
   --black-color: #000;
   --text-color: #161823;
+  --text-color-secondary: rgba(22, 24, 35, 0.75);
   --grey-color: #f1f1f2;
   --border-color: rgba(22, 24, 35, 0.12);
+  --border-color-secondary: rgba(22, 24, 35, 0.2);
   --background-color: #fff;
-  --background-grey-color: rgba(0, 0, 0, .05);
-  --text-grey-color: rgba(22, 24, 35, 0.75);
-  --hover-color: #f1f1f2;
+  --background-color-secondary: #f8f8f8;
+  --background-color-hover: #f1f1f2;
   --modal-background: rgba(0, 0, 0, 0.5);
   --sidebar-width: 356px;
   --default-layout-header-height: 60px;
   --default-layout-horizontal-spacer: 24px;
   --box-shadow-color: rgba(0, 0, 0, 0.1);
   --error-color: red;
+  --gold-color: #d4a850;
+  --blue-color: #25b4ec;
+
+  /* Deprecated - will be removed */
+  --background-grey-color: rgba(0, 0, 0, .05);
+  --text-grey-color: rgba(22, 24, 35, 0.75);
+  --hover-color: #f1f1f2;
 }
 
 [data-theme='dark'] {

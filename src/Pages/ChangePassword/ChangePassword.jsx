@@ -5,7 +5,7 @@ import  Button  from "@/component/Button";
 import styles from "./ChangePassword.module.scss";
 import { changePassword } from "@/services/auth.service";
 import { useSelector } from "react-redux";
-import  selectCurrentUser  from "@/features/auth/authSlice";
+import { selectCurrentUser } from "@/features/auth/authSlice";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
@@ -20,8 +20,6 @@ const ChangePassword = () => {
   });
 
   const user = useSelector(selectCurrentUser);
-
-
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);

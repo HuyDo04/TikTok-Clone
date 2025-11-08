@@ -16,7 +16,8 @@ export const verifyEmail = async (token) => {
 export const login = async (data) => {
     try {
       const response = await httpRequest.post("/auth/login", data, { withCredentials: true });
-      // localStorage.setItem("token", response.access_token);   
+      
+      // localStorage.setItem("token", response.access_token);  
       return response;
     } catch (error) {
       console.error("Login API error:", error);

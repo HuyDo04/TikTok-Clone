@@ -1,4 +1,6 @@
 import axios from "axios";
+import { store } from "@/store";
+import { loginSuccess } from "@/features/auth/authSlice"; // Import action
 
 console.log(import.meta.env.VITE_BASE_URL);
 
@@ -8,7 +10,9 @@ const httpRequest = axios.create({
 })
 
 httpRequest.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
+    const token = store.getState().auth.token; // Lấy token từ Redux store
+
+    console.log("Request token:", token, "url:", config.url);
     if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
     } else {
@@ -46,8 +50,8 @@ httpRequest.interceptors.response.use(
                     );
                     const data = res.data.data;
 
-                    localStorage.setItem("token", data.access_token);
                     localStorage.setItem("refresh_token", data.refresh_token);
+                    store.dispatch(loginSuccess(data.access_token)); // Cập nhật token trong Redux
 
                     onRefreshed();
                     isRefreshing = false;
@@ -55,7 +59,6 @@ httpRequest.interceptors.response.use(
                     return httpRequest(originalConfig);
                 } catch (refreshError) {
                     isRefreshing = false;
-                    localStorage.removeItem("token");
                     localStorage.removeItem("refresh_token");
 
                     return Promise.reject(refreshError);

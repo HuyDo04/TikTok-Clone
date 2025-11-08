@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { NavLink } from "react-router-dom";
 import styles from "./Sidebar.module.scss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/features/auth/authSlice"; // Vui lòng kiểm tra lại đường dẫn này
 import classNames from "classnames/bind";
 import { useTheme } from "@/context/ThemeContext";
 import Button from "../Button";
@@ -92,6 +93,7 @@ const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick, classNames }) 
 // ===================== Sidebar Component =====================
 function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
   const { theme, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
   // Tạo menu động dựa trên trạng thái đăng nhập của người dùng
@@ -103,6 +105,10 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
       path: currentUser ? `/profile/${currentUser.username}` : "/profile",
     },
   ];
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   const sidebarClasses = cx("sidebar", {
     "sidebar-collapsed": isCollapsed,
@@ -170,13 +176,21 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
         <>
           <div className={styles.separator}></div>
 
-          {/* Login Prompt */}
-          <div className={styles["login-prompt"]}>
-            <p>Log in to follow creators, like videos, and view comments.</p>
-            <Button primary size="large" to="/login" onClick={closeSearch}>
-              Log in
-            </Button>
-          </div>
+          {/* Login/Logout Section */}
+          {!currentUser ? (
+            <div className={styles["login-prompt"]}>
+              <p>Log in to follow creators, like videos, and view comments.</p>
+              <Button primary size="large" to="/login" onClick={closeSearch}>
+                Log in
+              </Button>
+            </div>
+          ) : (
+            <div onClick={handleLogout}>
+              <Button primary size="large">
+                Log out
+              </Button>
+            </div>
+          )}
 
           <div className={styles.separator}></div>
 

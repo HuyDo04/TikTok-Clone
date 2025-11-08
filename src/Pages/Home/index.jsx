@@ -4,7 +4,6 @@ import classNames from 'classnames/bind';
 import TiktokLogoLightFull from "@/component/Icons/TiktokLogoLightFull";
 import TiktokLogoLight from "@/component/Icons/TikTokIconLight";
 
-
 const cx = classNames.bind(styles);
 
 function Home() {

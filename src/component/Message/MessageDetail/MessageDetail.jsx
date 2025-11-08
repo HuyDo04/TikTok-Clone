@@ -1,37 +1,39 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import classNames from "classnames/bind"
 import styles from "./MessageDetail.module.scss"
 import MessageThread from "../MessageThread/MessageThread"
 import MessageInput from "../MessageInput/MessageInput"
-
+import socketService from "@/utils/chat.socket"
 const cx = classNames.bind(styles)
 
-function MessageDetail({ conversation, onSendMessage }) {
-  const [messages, setMessages] = useState(conversation?.messages || [])
+function MessageDetail({ conversation, onSendMessage, currentUser, isSocketConnected }) {
   const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  const scrollToBottom = (smooth = true) => {
+    messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" })
   }
 
+  // Cuộn xuống cuối khi messages thay đổi
   useEffect(() => {
     scrollToBottom()
-  }, [messages])
+  }, [conversation?.messages])
 
-  const handleSendMessage = (message, attachments) => {
-    const newMessage = {
-      id: Date.now(),
-      sender: "current-user",
-      content: message,
-      timestamp: new Date(),
-      attachments: attachments,
-      avatar: "/diverse-avatars.png",
+  // Khi chat mở, thông báo cho socket chat này đang active (để reset unread)
+  useEffect(() => {
+    if (conversation?.id) {
+      socketService.setActiveChat(conversation.id)
     }
+  }, [conversation?.id])
 
-    setMessages([...messages, newMessage])
-    onSendMessage?.(newMessage)
+  const handleSendMessage = async (content) => {
+    try {
+      // Gọi callback từ parent (Messages) → socketService.emit sẽ gửi message
+      await onSendMessage(content)
+    } catch (error) {
+      console.error("Failed to send message:", error)
+    }
   }
 
   if (!conversation) {
@@ -72,11 +74,11 @@ function MessageDetail({ conversation, onSendMessage }) {
       </header>
 
       <div className={cx("messages-container")}>
-        <MessageThread messages={messages} />
+        <MessageThread messages={conversation.messages || []} currentUser={currentUser} />
         <div ref={messagesEndRef} />
       </div>
 
-      <MessageInput onSendMessage={handleSendMessage} />
+      <MessageInput onSendMessage={handleSendMessage} chatId={conversation.id} isSocketConnected={isSocketConnected} />
     </div>
   )
 }

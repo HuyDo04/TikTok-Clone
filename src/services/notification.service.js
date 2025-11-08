@@ -11,3 +11,9 @@ export const markAsRead = async (id) => {
   const response = await httpRequest.patch(`/notifications/${id}/read`);
   return response;
 };
+
+// Mark all notifications as read
+export const markAllAsRead = async () => {
+  const response = await httpRequest.patch("/notifications/read-all");
+  return response;
+};

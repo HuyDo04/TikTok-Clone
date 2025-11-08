@@ -31,6 +31,7 @@ import SettingsPage from "@/Pages/Settings";
 import SettingLayout from "@/component/layouts/SettingsLayout/SettingsLayout";
 import ChangePassword from "@/Pages/ChangePassword/ChangePassword";
 import ResetPassword from "@/Pages/ResetPassword/ResetPassword";
+import SearchPage from "@/component/Search/SearchPage/SearchPage";
 import VerifyEmail from "@/Pages/VerifyEmail/VerifyEmail";
 import VerifyOtp from "@/Pages/VerifyOtp/VerifyOtp";
 
@@ -106,6 +107,11 @@ const routes = [
     {
         path: config.routes.messages,
         component: Messages,
+        layout: DefaultLayout
+    },
+    {
+        path: '/search',
+        component: SearchPage,
         layout: DefaultLayout
     },
     {

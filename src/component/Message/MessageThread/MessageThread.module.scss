@@ -108,4 +108,10 @@
   color: #999999;
   align-self: flex-start;
   margin-left: 8px;
+
+  .own & {
+    align-self: flex-end;
+    margin-left: 0;
+    margin-right: 8px;
+  }
 }

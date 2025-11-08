@@ -1,0 +1,211 @@
+.playerContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--black-color);
+  display: flex;
+  align-items: center; // căn giữa dọc
+  justify-content: center; // căn giữa ngang
+  overflow: hidden; // tránh tràn
+  user-select: none;
+
+  &:hover .controls {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.video {
+  max-width: 100%; // không vượt container
+  max-height: 100%; // không vượt container
+  object-fit: contain; // giữ tỉ lệ, vừa khung
+  display: block; // loại bỏ inline spacing
+  margin: auto; // căn giữa
+  background: var(--black-color);
+}
+
+.playOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.3);
+  border: 3px solid var(--white-color);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .playIcon {
+    width: 40px;
+    height: 40px;
+    color: var(--white-color);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+}
+
+.navArrow {
+  position: absolute;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;  
+  background: rgba(255, 255, 255, 0.2); /* Giữ lại màu này cho dễ nhìn trên video */
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3); /* Giữ lại màu này cho dễ nhìn trên video */
+  }
+
+  &.navArrowUp {
+    bottom: 120px;
+  }
+
+  &.navArrowDown {
+    bottom: 60px;
+  }
+}
+
+.controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 20px 16px 12px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+  z-index: 4;
+
+  &:not(.visible) {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.progressContainer {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  appearance: none;
+  background: var(--background-grey-color);
+  outline: none;
+  cursor: pointer;
+  border-radius: 2px;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--white-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: var(--white-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  &:hover {
+    background: var(--hover-color);
+  }
+}
+
+.controlsBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.leftControls,
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlBtn {
+  background: none;
+  border: none;
+  color: var(--white-color);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.volumeSlider {
+  width: 60px;
+  height: 3px;
+  appearance: none;
+  background: var(--background-grey-color);
+  outline: none;
+  cursor: pointer;
+  border-radius: 2px;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    background: var(--white-color);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    background: var(--white-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+}
+
+.timeDisplay {
+  color: var(--white-color);
+  font-size: 12px;
+  min-width: 60px;
+  font-family: monospace;
+}

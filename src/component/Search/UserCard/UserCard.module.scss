@@ -1,0 +1,116 @@
+.user-card {
+  margin-top: 40px;
+}
+
+.user-card-content {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.user-avatar-section {
+  width: 60px;
+  height: 60px;
+}
+
+.user-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gold-color);
+}
+
+.user-info {
+  flex: 1;
+  font-size: 14px;
+  line-height: 18px;
+  margin: 0;
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.user-names {
+  flex: 1;
+}
+
+.username {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--text-color);
+}
+
+.user-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-color-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.follower-count {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.follower-label {
+  font-size: 12px;
+}
+
+.follow-button {
+  flex-shrink: 0;
+  padding: 8px 20px;
+  height: 36px;
+  background: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: var(--primary-color-dark);
+  }
+
+  &:active {
+    background: var(--primary-color-darker);
+  }
+}
+
+.info-detail {
+  display: flex;
+  gap: 16px;
+  color: rgba(22, 24, 35, 0.75);
+  font-family: "IBM Plex Sans", TikTokFont, Arial, Tahoma, PingFangSC, sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  margin-top: 1px;
+  .follow-text {
+    font-family: "IBM Plex Sans", TikTokFont, Arial, Tahoma, PingFangSC, sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 18px;
+      display: inline;
+      span {
+        color: rgb(22, 24, 35);
+        font-weight:600;
+      }
+    }
+  }
+
+
+.user-bio {
+  margin-top: 4px;
+  color: var(--text-color-secondary);
+  font-weight: 400;
+}

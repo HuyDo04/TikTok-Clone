@@ -6,7 +6,7 @@ const authSlice = createSlice({
   initialState: {
     comments: [],
     currentUser: null,
-    token: localStorage.getItem("token") || null,
+    token: null, // Luôn bắt đầu là null, redux-persist sẽ phục hồi giá trị đúng
     isLoading: false,
   },
   reducers: {
@@ -19,7 +19,7 @@ const authSlice = createSlice({
       state.currentUser = null;
       state.token = null;
       state.isLoading = false;
-      localStorage.removeItem("token");
+      localStorage.removeItem("token"); // Đảm bảo xóa token khỏi localStorage
     },
     setUser(state, action) {
       state.currentUser = action.payload;

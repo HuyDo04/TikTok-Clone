@@ -74,7 +74,7 @@ const Login = () => {
       dispatch(loginSuccess(result.access_token));
       setToken(result.access_token); // Set token cho httpRequest
       localStorage.setItem("refresh_token", result.refresh_token);
-
+      
       // 3. Gọi API lấy user
       await dispatch(fetchCurrentUser()).unwrap();
 
