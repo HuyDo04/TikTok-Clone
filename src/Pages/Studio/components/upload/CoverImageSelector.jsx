@@ -1,6 +1,7 @@
 "use client"
 
 import classNames from "classnames/bind"
+import { formatImageUrl } from "@/utils/urlUtils"
 import styles from "./CoverImageSelector.module.scss"
 
 const cx = classNames.bind(styles)
@@ -15,9 +16,9 @@ export default function CoverImageSelector({ files, selected, onSelect }) {
           className={cx("coverButton", { selected: selected === index })}
         >
           {file.type === "video" ? (
-            <video src={file.url} className={cx("media")} />
+            <video src={formatImageUrl(file.url)} className={cx("media")} />
           ) : (
-            <img src={file.url || "/placeholder.svg"} alt="" className={cx("media")} />
+            <img src={formatImageUrl(file.url) || "/placeholder.svg"} alt="" className={cx("media")} />
           )}
           {selected === index && (
             <div className={cx("selectedOverlay")}>

@@ -16,7 +16,7 @@ export const verifyEmail = async (token) => {
 export const login = async (data) => {
     try {
       const response = await httpRequest.post("/auth/login", data, { withCredentials: true });
-      
+      console.log("Login API response:", response.data)
       // localStorage.setItem("token", response.access_token);  
       return response;
     } catch (error) {
@@ -69,10 +69,9 @@ export const getCurrentUser = async () => {
 }
 
 export const logout = async (refreshToken) => {
-  const response = await httpRequest.post("/auth/logout", { refresh_token: refreshToken });
-  
-  return response
-}
+  return httpRequest.post("/auth/logout", { refresh_token: refreshToken });
+};
+
 
 export const googleLogin = async (token) => {
   const response = await httpRequest.post("/auth/oauth/google", { token });

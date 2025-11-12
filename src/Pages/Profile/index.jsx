@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -7,9 +8,10 @@ import ProfileTabs from "../../component/ProfileTabs";
 import VideoGrid from "../../component/VideoGrid";
 import classNames from "classnames/bind";
 import styles from "./Profile.module.scss";
-import * as userService from "@/services/user.service";
+import * as userService from "@/services/user.service"; // Giữ lại để lấy thông tin profile chi tiết
 import * as authService from "@/services/auth.service"; // Import service mới
 import EditProfile from "@/component/EditProfile"; // Import EditProfile
+import * as postService from "@/services/post.service"; // Import post service để lấy video
 
 const cx = classNames.bind(styles);
 
@@ -18,9 +20,8 @@ function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State để mở/đóng modal
   const [videos, setVideos] = useState([]);
-  const [likedVideos, setLikedVideos] = useState([]); // API cho mục này chưa có
   const [loading, setLoading] = useState(true);
-
+  
   const { username } = useParams(); // Lấy username từ URL, ví dụ: /@hdna0402
   const navigate = useNavigate();
   // Lấy người dùng hiện tại từ Redux store
@@ -46,6 +47,8 @@ function ProfilePage() {
       if (username && (!currentUser || username !== currentUser.username)) {
         // Nếu xem trang của người khác, tìm ID của họ qua username
         const searchResult = await userService.searchUsers(username);
+        console.log("searchResult", searchResult);
+        
         if (searchResult && searchResult.length > 0) {
           userIdToFetch = searchResult[0].id;
         } else {
@@ -59,15 +62,22 @@ function ProfilePage() {
       if (userIdToFetch) {
         // Luôn gọi API getUserById để lấy dữ liệu đầy đủ, bao gồm cả Followers và Following
         userProfile = await userService.getUserById(userIdToFetch);
+        
       } else {
         throw new Error("User profile could not be fetched.");
       }
 
       setProfileData(userProfile);
 
-      // Lấy danh sách video của người dùng
-      const userPosts = await userService.getUserPosts(userProfile.id);
-      setVideos(userPosts);
+      // Lấy danh sách video của người dùng bằng API mới
+      const userPostsResponse = await postService.getUserVideosByUsername(username);
+      const mappedVideos = userPostsResponse.map(post => ({
+          id: post.id,
+          thumbnail: post.featuredImage || '/placeholder.jpg', // Sử dụng featuredImage làm thumbnail
+          title: post.content,
+          views: post.viewCount,
+      }));
+      setVideos(mappedVideos);
     } catch (error) {
       console.error("Failed to fetch profile data:", error);
       // Nếu không tìm thấy user, có thể điều hướng về trang 404

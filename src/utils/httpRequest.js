@@ -2,9 +2,6 @@ import axios from "axios";
 import { store } from "@/store";
 import { loginSuccess } from "@/features/auth/authSlice"; // Import action
 
-console.log(import.meta.env.VITE_BASE_URL);
-
-
 const httpRequest = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
 })
@@ -12,7 +9,6 @@ const httpRequest = axios.create({
 httpRequest.interceptors.request.use((config) => {
     const token = store.getState().auth.token; // Lấy token từ Redux store
 
-    console.log("Request token:", token, "url:", config.url);
     if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
     } else {

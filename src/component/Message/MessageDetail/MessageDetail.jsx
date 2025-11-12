@@ -8,7 +8,7 @@ import MessageInput from "../MessageInput/MessageInput"
 import socketService from "@/utils/chat.socket"
 const cx = classNames.bind(styles)
 
-function MessageDetail({ conversation, onSendMessage, currentUser, isSocketConnected }) {
+function MessageDetail({ conversation, onSendMessage, onInputFocus, currentUser, isSocketConnected }) {
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = (smooth = true) => {
@@ -25,7 +25,8 @@ function MessageDetail({ conversation, onSendMessage, currentUser, isSocketConne
     if (conversation?.id) {
       socketService.setActiveChat(conversation.id)
     }
-  }, [conversation?.id])
+
+  }, [conversation?.id, isSocketConnected])
 
   const handleSendMessage = async (content) => {
     try {
@@ -74,11 +75,11 @@ function MessageDetail({ conversation, onSendMessage, currentUser, isSocketConne
       </header>
 
       <div className={cx("messages-container")}>
-        <MessageThread messages={conversation.messages || []} currentUser={currentUser} />
+      <MessageThread messages={conversation.messages || []} currentUser={currentUser} />
         <div ref={messagesEndRef} />
       </div>
 
-      <MessageInput onSendMessage={handleSendMessage} chatId={conversation.id} isSocketConnected={isSocketConnected} />
+      <MessageInput onSendMessage={handleSendMessage} onInputFocus={onInputFocus} chatId={conversation.id} isSocketConnected={isSocketConnected} />
     </div>
   )
 }

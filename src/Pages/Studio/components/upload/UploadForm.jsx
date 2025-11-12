@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 "use client"
 
-import { useState, useRef, useMemo } from "react"
+import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import classNames from "classnames/bind"
 import CaptionInput from "./CaptionInput"
@@ -21,48 +21,55 @@ export default function UploadForm() {
   const [caption, setCaption] = useState("")
   const [selectedCover, setSelectedCover] = useState(0)
   const [privacy, setPrivacy] = useState("public")
-  const [location, setLocation] = useState("")
   const [errors, setErrors] = useState([])
   const [isUploading, setIsUploading] = useState(false)
-  const [allowComment, setAllowComment] = useState(true)
-  const [allowReuse, setAllowReuse] = useState(true)
-  const [isBranded, setIsBranded] = useState(false)
-  const [isBrandDirected, setIsBrandDirected] = useState(false)
+  const [mediaType, setMediaType] = useState(null) // null, 'video', or 'image'
 
   const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files)
+    if (files.length === 0) return
+
     const newErrors = []
     const validFiles = []
+    const currentMediaType = mediaType || (files[0].type.startsWith("video/") ? "video" : "image")
 
-    for (const file of files) {
-      if (file.type.startsWith("video/")) {
-        const videoError = await validateVideoFile(file)
-        if (videoError) {
-          newErrors.push(videoError)
-        } else {
-          validFiles.push({
-            file,
-            type: "video",
-            url: URL.createObjectURL(file),
-            duration: await getVideoDuration(file),
-          })
+    if (currentMediaType === "video") {
+      // Only allow one video
+      const file = files[0]
+      const videoError = await validateVideoFile(file)
+      if (videoError) {
+        newErrors.push(videoError)
+      } else {
+        validFiles.push({
+          file,
+          type: "video",
+          url: URL.createObjectURL(file),
+          duration: await getVideoDuration(file),
+        })
+        if (!mediaType) setMediaType("video")
+      }
+    } else {
+      // Allow multiple images
+      const imageError = validateImageFiles(files)
+      if (imageError) {
+        newErrors.push(imageError)
+      } else {
+        for (const file of files) {
+          if (file.type.startsWith("image/")) {
+            validFiles.push({
+              file,
+              type: "image",
+              url: URL.createObjectURL(file),
+            })
+          }
         }
-      } else if (file.type.startsWith("image/")) {
-        const imageError = validateImageFiles([file])
-        if (imageError) {
-          newErrors.push(imageError)
-        } else {
-          validFiles.push({
-            file,
-            type: "image",
-            url: URL.createObjectURL(file),
-          })
-        }
+        if (!mediaType) setMediaType("image")
       }
     }
 
     setErrors(newErrors)
-    setUploadedFiles((prev) => [...prev, ...validFiles])
+    // Replace files instead of appending
+    setUploadedFiles(validFiles)
   }
 
   const getVideoDuration = (file) => {
@@ -87,24 +94,17 @@ export default function UploadForm() {
     setIsUploading(true)
 
     const formData = new FormData()
-    formData.append("title", caption)
     formData.append("content", caption)
     formData.append("visibility", privacy)
-    formData.append("location", location)
-    formData.append("allowComment", allowComment)
-    formData.append("allowReuse", allowReuse)
-    formData.append("isBranded", isBranded)
-    formData.append("isBrandDirected", isBrandDirected)
 
-    // Append media files
-    uploadedFiles.forEach((fileObj) => {
-      formData.append("media", fileObj.file)
-    })
-
-    // Append featured image if it's an image file
-    const coverFile = uploadedFiles[selectedCover]
-    if (coverFile && coverFile.type === "image") {
-      formData.append("featuredImage", coverFile.file)
+    if (mediaType === "video") {
+      if (uploadedFiles.length > 0) {
+        formData.append("video", uploadedFiles[0].file)
+      }
+    } else if (mediaType === "image") {
+      uploadedFiles.forEach((fileObj) => {
+        formData.append("images", fileObj.file)
+      })
     }
 
     try {
@@ -120,8 +120,12 @@ export default function UploadForm() {
 
   const removeFile = (index) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
+    if (uploadedFiles.length === 1) {
+      setMediaType(null) // Reset media type if all files are removed
+      setSelectedCover(0)
+      setErrors([])
+    }
   }
-
 
   if (uploadedFiles.length === 0) {
     return (
@@ -151,8 +155,8 @@ export default function UploadForm() {
           <input
             ref={fileInputRef}
             type="file"
-            accept="video/*,image/*"
-            multiple
+            accept={mediaType === "video" ? "video/*" : mediaType === "image" ? "image/*" : "video/*,image/*"}
+            multiple={mediaType !== "video"}
             onChange={handleFileSelect}
             className={cx("hiddenInput")}
           />
@@ -237,31 +241,6 @@ export default function UploadForm() {
             <CoverImageSelector files={uploadedFiles} selected={selectedCover} onSelect={setSelectedCover} />
           </div>
 
-          {/* <div className={cx("formGroup")}>
-            <label className={cx("formLabel")}>Vị trí</label>
-            <div className={cx("inputWrapper")}>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Tìm kiếm vị trí"
-                className={cx("textInput")}
-              />
-              <svg
-                className={cx("inputIcon")}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-          </div> */}
         </div>
 
         <div className={cx("settingsSection")}>
@@ -269,58 +248,11 @@ export default function UploadForm() {
 
           <PrivacySelector value={privacy} onChange={setPrivacy} />
 
-          {/* <div className={cx("formGroup")}>
-            <h4 className={cx("allowUsersTitle")}>Cho phép người dùng:</h4>
-            <div className={cx("checkboxGroup")}>
-              <label className={cx("checkboxLabel")}>
-                <input
-                  type="checkbox"
-                  checked={allowComment}
-                  onChange={(e) => setAllowComment(e.target.checked)}
-                  className={cx("checkboxInput")}
-                />
-                <span className={cx("checkboxText")}>Bình luận</span>
-              </label>
-              <label className={cx("checkboxLabel")}>
-                <input
-                  type="checkbox"
-                  checked={allowReuse}
-                  onChange={(e) => setAllowReuse(e.target.checked)}
-                  className={cx("checkboxInput")}
-                />
-                <span className={cx("checkboxText")}>Sử dụng lại nội dụng</span>
-              </label>
-            </div>
-          </div> */}
-
-          {/* <div className={cx("formGroup")}>
-            <h4 className={cx("allowUsersTitle")}>Khái báo nội dụng bài đăng</h4>
-            <div className={cx("checkboxGroup")}>
-              <label className={cx("checkboxLabel")}>
-                <input
-                  type="checkbox"
-                  checked={isBranded}
-                  onChange={(e) => setIsBranded(e.target.checked)}
-                  className={cx("checkboxInput")}
-                />
-                <span className={cx("checkboxText")}>Thương hiệu của bạn</span>
-              </label>
-              <label className={cx("checkboxLabel")}>
-                <input
-                  type="checkbox"
-                  checked={isBrandDirected}
-                  onChange={(e) => setIsBrandDirected(e.target.checked)}
-                  className={cx("checkboxInput")}
-                />
-                <span className={cx("checkboxText")}>Nội dụng định hướng thương hiệu</span>
-              </label>
-            </div>
-          </div> */}
         </div>
 
         <div className={cx("buttonGroup")}>
           <button
-            onClick={() => navigate("/studio/posts")}
+            onClick={() => setUploadedFiles([])}
             className={cx("cancelButton")}
           >
             Hủy

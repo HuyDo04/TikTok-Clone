@@ -7,8 +7,7 @@ import {
   userOffline,
   userTyping,
   userStoppedTyping,
-  addUnreadMessage,
-  markMessagesAsRead,
+  markChatAsRead,
 } from "../store/chatSlice";
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -21,36 +20,26 @@ class SocketService {
     this.isManuallyDisconnected = false;
   }
 
-  /**
-   * ✅ Kết nối socket với token được truyền từ ngoài
-   * Không tự lấy từ store để tránh bị lệch khi token refresh
-   */
   connect(token, onConnectCallback) {
     if (!token) {
       console.error("❌ Không có token — không thể kết nối socket");
       return;
     }
 
-    // Nếu socket đang kết nối với token cũ → disconnect trước
     if (
       this.socket &&
       this.socket.connected &&
       this.currentToken &&
       this.currentToken !== token
     ) {
-      this.disconnect(true); // reconnect flag
+      this.disconnect(true);
     }
 
-    // Nếu socket đã kết nối hợp lệ → bỏ qua
-    if (this.socket && this.socket.connected) {
-      console.log("⚡ Socket đã kết nối, bỏ qua connect()");
-      return;
-    }
+    if (this.socket && this.socket.connected) return;
 
     this.currentToken = token;
     this.isManuallyDisconnected = false;
 
-    // --- Tạo socket instance ---
     this.socket = io(SOCKET_URL, {
       transports: ["websocket"],
       auth: { token },
@@ -59,26 +48,28 @@ class SocketService {
       reconnectionDelay: 1000,
     });
 
-    // --- Event listeners ---
     this._registerEvents(onConnectCallback);
   }
 
-  /**
-   * ✅ Gọi khi user đổi chat → đánh dấu đã đọc tin nhắn
-   */
+  // chat.socket.js
+off(event, callback) {
+  if (!this.socket) return;
+  if (callback) {
+    this.socket.off(event, callback); // remove cụ thể listener
+  } else {
+    this.socket.off(event); // remove tất cả listener cho event
+  }
+}
+
   setActiveChat(chatId) {
+    if (this.currentChatId === chatId) return;
     this.currentChatId = chatId;
-    store.dispatch(markMessagesAsRead({ chatId }));
+
+    store.dispatch(markChatAsRead({ chatId }));
   }
 
-  /**
-   * ✅ Gọi khi token được refresh (ví dụ axios interceptor làm mới)
-   */
   updateToken(newToken) {
-    if (!newToken) return;
-    if (this.currentToken === newToken) return;
-
-    console.log("🔄 Cập nhật token cho socket...");
+    if (!newToken || this.currentToken === newToken) return;
     this.currentToken = newToken;
 
     if (this.socket && this.socket.connected) {
@@ -88,9 +79,6 @@ class SocketService {
     }
   }
 
-  /**
-   * ✅ Ngắt kết nối socket (thủ công hoặc để reconnect)
-   */
   disconnect(forReconnect = false) {
     if (this.socket) {
       this.isManuallyDisconnected = !forReconnect;
@@ -100,20 +88,11 @@ class SocketService {
     }
   }
 
-  /**
-   * ✅ Gửi event ra server
-   */
   emit(event, data) {
-    if (this.socket?.connected) {
-      this.socket.emit(event, data);
-    } else {
-      console.warn("⚠️ Socket chưa kết nối. Không thể emit:", event);
-    }
+    if (this.socket?.connected) this.socket.emit(event, data);
+    else console.warn("⚠️ Socket chưa kết nối. Không thể emit:", event);
   }
 
-  /**
-   * ✅ Lắng nghe event từ server
-   */
   on(event, callback) {
     if (!this.socket) {
       console.warn("⚠️ Socket chưa khởi tạo. Không thể listen:", event);
@@ -122,19 +101,14 @@ class SocketService {
     this.socket.on(event, callback);
   }
 
-  /**
-   * 📦 Private: Đăng ký tất cả event mặc định
-   */
   _registerEvents(onConnectCallback) {
     this.socket.on("connect", () => {
-      console.log("✅ Socket connected:", this.socket.id);
       if (onConnectCallback) onConnectCallback();
     });
 
     this.socket.on("disconnect", (reason) => {
       console.log("⚡ Socket disconnected:", reason);
       if (!this.isManuallyDisconnected && reason === "io server disconnect") {
-        console.log("↻ Tự động reconnect...");
         this.socket.connect();
       }
     });
@@ -145,32 +119,74 @@ class SocketService {
     });
 
     // --- App-level Events ---
-    this.socket.on("receive_message", (message) => {
+    this.socket.on("receive_message", (rawMessage) => {
+      const state = store.getState();
+      const currentUserId = state.auth.currentUser?.id;
+      console.log("CurrentUserId:", currentUserId);
+      console.log("rawMessage:", rawMessage);
+      
+      // ✅ Chuẩn hoá dữ liệu read_by
+      const parseReadBy = (() => {
+        const raw = rawMessage.read_by;
+        if (!raw) return [];
+      
+        try {
+          let arr = raw;
+      
+          // nếu là string
+          if (typeof raw === "string") {
+            arr = JSON.parse(raw);       // parse 1 lần
+            if (typeof arr === "string") {
+              arr = JSON.parse(arr);     // parse 2 lần nếu nested
+            }
+          }
+      
+          if (!Array.isArray(arr)) return [];
+          return arr.map(r => Number(r)).filter(id => !isNaN(id));
+        } catch (err) {
+          console.warn("parseReadBy error:", rawMessage.read_by, err);
+          return [];
+        }
+      })();
+      
+      console.log("parseReadBy:", parseReadBy);
+      
+      const message = {
+        ...rawMessage,
+        chatId: rawMessage.chat_id,
+        senderId: rawMessage.sender_id,
+        readBy: parseReadBy,
+        currentUserId,
+      };
+    
       store.dispatch(receiveMessage(message));
-      if (this.currentChatId !== message.chatId) {
-        store.dispatch(addUnreadMessage({ chatId: message.chatId }));
-      }
     });
+    
+    
 
     this.socket.on("message_read", (data) => {
-      store.dispatch(messageRead(data));
+      
+      const state = store.getState();
+      const currentUserId = state.auth.currentUser?.id;
+    
+      // Chuyển dữ liệu server về dạng slice hiểu
+      const messageIds = Array.isArray(data.updatedMessages)
+        ? data.updatedMessages.map(msg => msg.id)
+        : [];
+    
+      store.dispatch(messageRead({
+        chatId: data.chatId,
+        messageIds,
+        userId: data.readerId,
+        currentUserId
+        }));
     });
+    
 
-    this.socket.on("user_online", (userId) => {
-      store.dispatch(userOnline(userId));
-    });
-
-    this.socket.on("user_offline", (userId) => {
-      store.dispatch(userOffline(userId));
-    });
-
-    this.socket.on("user_typing", (data) => {
-      store.dispatch(userTyping(data));
-    });
-
-    this.socket.on("user_stopped_typing", (data) => {
-      store.dispatch(userStoppedTyping(data));
-    });
+    this.socket.on("user_online", (userId) => store.dispatch(userOnline(userId)));
+    this.socket.on("user_offline", (userId) => store.dispatch(userOffline(userId)));
+    this.socket.on("user_typing", (data) => store.dispatch(userTyping(data)));
+    this.socket.on("user_stopped_typing", (data) => store.dispatch(userStoppedTyping(data)));
   }
 }
 

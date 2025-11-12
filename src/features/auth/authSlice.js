@@ -15,11 +15,13 @@ const authSlice = createSlice({
       state.token = token;
       localStorage.setItem("token", token);
     },
-    logout(state) {
+    // userSlice.js
+    logoutUser(state) {
       state.currentUser = null;
       state.token = null;
       state.isLoading = false;
-      localStorage.removeItem("token"); // Đảm bảo xóa token khỏi localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
     },
     setUser(state, action) {
       state.currentUser = action.payload;
@@ -48,7 +50,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, logout, setUser, updateUserProfile, setComments, addComment } = authSlice.actions;
+export const { loginSuccess, logoutUser, setUser, updateUserProfile, setComments, addComment } = authSlice.actions;
 
 export default authSlice.reducer;
 

@@ -61,20 +61,18 @@ function MessageThread({ messages }) {
 
             <div className={cx("messages")}>
               {dateMessages.map((message) => {
-                const isOwn = message.senderId === currentUser?.id
+                const isOwn = message.senderId === currentUser?.id;
                 return (
                   <div
                     key={message.id}
                     className={cx("message-group", { own: isOwn })}
                   >
                     <div className={cx("message-wrapper")}>
-                      {!isOwn && (
-                        <img
-                          src={message.sender?.avatar || "/placeholder.svg"}
-                          alt={message.sender?.username || "User"}
-                          className={cx("message-avatar")}
-                        />
-                      )}
+                    {isOwn && (
+                      <span className={cx("message-read")}>
+                        {message.readBy.includes(currentUser?.id) ? "✓✓" : "✓"}
+                      </span>
+                    )}
 
                       <div className={cx("message-bubble-container")}>
                         <div className={cx("message-bubble", { own: isOwn })}>

@@ -2,7 +2,7 @@
 import { NavLink } from "react-router-dom";
 import styles from "./Sidebar.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/features/auth/authSlice"; // Vui lòng kiểm tra lại đường dẫn này
+import { logoutUser } from "@/features/auth/authSlice"; // Vui lòng kiểm tra lại đường dẫn này
 import classNames from "classnames/bind";
 import { useTheme } from "@/context/ThemeContext";
 import Button from "../Button";
@@ -25,6 +25,8 @@ import { FaPaperPlane, FaMoon, FaSun, FaBars } from "react-icons/fa";
 import MessageIcon from "../Icons/MessageIcon";
 import FollowedIcon from "../Icons/FollowedIcon";
 import AlertIcon from "../Icons/AlertIcon";
+import notificationSocketService from "@/utils/notification.socket";
+import { logout } from "@/services/auth.service";
 
 const cx = classNames.bind(styles);
 
@@ -106,9 +108,25 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
     },
   ];
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+   const handleLogout = async () => {
+     try {
+       const refreshToken = localStorage.getItem("refreshToken");
+       if (refreshToken) {
+         await logout(refreshToken); // Gọi API xóa refresh token backend
+       }
+     } catch (error) {
+       console.error("Logout API error:", error);
+     } finally {
+       // Xóa token ở frontend
+       dispatch(logoutUser());
+ 
+       // Ngắt kết nối socket nếu có
+       notificationSocketService.disconnect();
+ 
+       // Reload trang về home để reset state
+       window.location.href = "/";
+     }
+   };
 
   const sidebarClasses = cx("sidebar", {
     "sidebar-collapsed": isCollapsed,
@@ -180,7 +198,7 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
           {!currentUser ? (
             <div className={styles["login-prompt"]}>
               <p>Log in to follow creators, like videos, and view comments.</p>
-              <Button primary size="large" to="/login" onClick={closeSearch}>
+              <Button primary size="large" to="/auth/login" onClick={closeSearch}>
                 Log in
               </Button>
             </div>

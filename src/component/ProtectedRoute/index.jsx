@@ -1,50 +1,37 @@
 import PropTypes from "prop-types";
-import config from "@/config";
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import authService from "@/services/auth.service";
-import { useLoading } from "@/hooks/useLoading";
+import config from "@/config";
 
 function ProtectedRoute({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
+  console.log("Xin chào")
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  console.log("currentUser:", currentUser);
+  
   const location = useLocation();
-  const { loading, setLoading } = useLoading();
-
-  useEffect(() => {
-    setLoading(true);
-    (async () => {
-      try {
-        const data = await authService.getCurrentUser();
-        console.log(data);
-        setCurrentUser(data);
-      } catch (error) {
-        console.log(error);
-        setCurrentUser(null);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [setLoading]);
-
-  if (loading) {
-    return <div>Loading.............</div>;
-  }
 
   if (!currentUser) {
-    const path = encodeURIComponent(location.pathname);
+    // Lưu lại đường dẫn hiện tại (bao gồm query string)
+    const continuePath = encodeURIComponent(location.pathname + location.search);
+    console.log("continuePath:", config.routes.login);
+    
+    const loginPath = config.routes.login || "/auth/login"; // fallback nếu chưa config đúng
+
+    console.log("Redirecting to login:", `${loginPath}?continue=${continuePath}`);
+
     return (
       <Navigate
-        to={`${config.routes.login}${path ? `?continue=${path}` : ""}`}
+        to={`${loginPath}?continue=${continuePath}`}
+        replace
       />
     );
   }
 
-  // Nếu có currentUser, render children
   return children;
 }
 
 ProtectedRoute.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.element.isRequired,
 };
 
 export default ProtectedRoute;

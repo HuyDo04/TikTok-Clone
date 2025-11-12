@@ -1,91 +1,87 @@
 import httpRequest from "@/utils/httpRequest";
 
+// Build FormData từ object postData
 const buildFormData = (postData) => {
-    const formData = new FormData();
-    for (const key in postData) {
-        if (key === 'featuredImage' && postData.featuredImage) {
-            formData.append('featuredImage', postData.featuredImage);
-        } else if (key === 'media' && postData.media) {
-            for (let i = 0; i < postData.media.length; i++) {
-                formData.append('media', postData.media[i]);
-            }
-        } else if (postData[key] !== null && postData[key] !== undefined) {
-            formData.append(key, postData[key]);
-        }
+  const formData = new FormData();
+  for (const key in postData) {
+    if (!postData[key]) continue;
+
+    if (key === "featuredImage") {
+      formData.append("file", postData.featuredImage); // backend nhận file với key "file"
+    } else if (key === "media") {
+      postData.media.forEach((m) => formData.append("file", m)); // tất cả media upload từng file
+    } else {
+      formData.append(key, postData[key]);
     }
-    return formData;
+  }
+  return formData;
 };
 
-// Get all posts
-export const getPosts = async () => {
-    return await httpRequest.get("/posts");
+// Upload file đơn lẻ (ảnh hoặc video)
+export const uploadPostFile = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return await httpRequest.post("/posts/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 };
 
-// Get all posts by user ID
-export const getPostsByUserId = async (userId) => {
-    return await httpRequest.get(`/users/${userId}/posts`);
-};
-
-// Get posts by topic ID, excluding a specific post ID
-export const getPostsByTopicAndExcludePost = async (topicId, excludePostId, limit = 3) => {
-    return await httpRequest.get(`/posts/related?topicId=${topicId}&excludePostId=${excludePostId}&limit=${limit}`);
-};
-
-// Create post
+// Tạo bài viết mới
 export const createPost = async (postData) => {
-    const dataToSend = postData instanceof FormData ? postData : buildFormData(postData);
-    return await httpRequest.post("/posts", dataToSend, {
-        headers: { "Content-Type": "multipart/form-data" }
-    });
+  const dataToSend =
+    postData instanceof FormData ? postData : buildFormData(postData);
+  return await httpRequest.post("/posts", dataToSend, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 };
 
-// Update existing post
+// Cập nhật bài viết
 export const updatePost = async (id, postData) => {
-    const dataToSend = postData instanceof FormData ? postData : buildFormData(postData);
-    return await httpRequest.put(`/posts/${id}`, dataToSend, {
-        headers: { "Content-Type": "multipart/form-data" }
-    });
+  const dataToSend =
+    postData instanceof FormData ? postData : buildFormData(postData);
+  return await httpRequest.put(`/posts/${id}`, dataToSend, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 };
 
-// Delete post
-export const deletePost = async (id) => {
-    return await httpRequest.del(`/posts/${id}`);
+// Lấy list video có xử lý login
+export const getUserVideosByUsername = async (username) => {
+  const response = await httpRequest.get(`/users/${username}/videos`);
+  return response;
+}
+
+// Các API khác 
+export const getFeedPosts = async ({ page = 1, limit = 3, body = {} }) => {
+  // API này sử dụng POST, và backend sẽ tự xác định user đã login hay chưa
+  // dựa vào Authorization header được gắn tự động bởi httpRequest interceptor.
+  // Body có thể chứa các thông tin bổ sung như `excludedPostIds`.
+  return httpRequest.post("/posts/feed", body, { params: { page, limit } });
 };
 
-export const getPostById = async (id) => {
-    return await httpRequest.get(`/posts/${id}`);
-};
+export const searchPostsByHashtag = async (tagName) =>
+  httpRequest.get(`/posts/search/hashtag/${tagName}`);
 
-export const getPostBySlug = async (slug) => {
-    return await httpRequest.get(`/posts/by-slug/${slug}`);
-};
+export const getPostsByMentionedUser = async (username) =>
+  httpRequest.get(`/posts/mentions/${username}`);
 
-// Like a post
-export const likePost = async (id) => {
-    return await httpRequest.post(`/posts/${id}/like`);
-};
+export const getPostBySlug = async (slug) =>
+  httpRequest.get(`/posts/by-slug/${slug}`);
 
-// Unlike a post
-export const unlikePost = async (id) => {
-    return await httpRequest.del(`/posts/${id}/unlike`);
-};
+export const getPostById = async (id) =>
+  httpRequest.get(`/posts/${id}`);
 
-// Delete specific media in a post
-export const deletePostMedia = async (id, mediaIndex) => {
-    return await httpRequest.del(`/posts/${id}/media/${mediaIndex}`);
-};
+export const incrementPostView = async (id) =>
+  httpRequest.post(`/posts/${id}/view`);
 
-// Search posts by hashtag
-export const searchPostsByHashtag = async (tagName) => {
-    return await httpRequest.get(`/posts/search/hashtag/${tagName}`);
-};
+export const deletePost = async (id) =>
+  httpRequest.del(`/posts/${id}`);
 
-// Search posts by title
-export const searchPostsByTitle = async (title) => {
-    return await httpRequest.get(`/posts/search/title`, { params: { title } });
-};
+export const deletePostMedia = async (id, mediaIndex) =>
+  httpRequest.del(`/posts/${id}/media/${mediaIndex}`);
 
-// Get posts by mentioned user
-export const getPostsByMentionedUser = async (username) => {
-    return await httpRequest.get(`/posts/mentions/${username}`);
-};
+export const likePost = async (id) =>
+  httpRequest.post(`/posts/${id}/like`);
+
+export const unlikePost = async (id) =>
+  httpRequest.del(`/posts/${id}/unlike`);

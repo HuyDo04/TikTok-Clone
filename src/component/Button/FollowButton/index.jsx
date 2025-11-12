@@ -23,8 +23,9 @@ function FollowButton({ userId }) {
   const navigate = useNavigate()
 
   const fetchStatus = useCallback(async () => {
+    const currentUserId = currentUser?.id;
     // Không fetch status nếu chưa đăng nhập hoặc không có userId
-    if (!currentUser || !userId) {
+    if (!currentUserId || !userId) {
       setStatus("Follow")
       setLoading(false)
       return
@@ -41,7 +42,7 @@ function FollowButton({ userId }) {
     } finally {
       setLoading(false)
     }
-  }, [userId, currentUser])
+  }, [userId, currentUser?.id]) // Chỉ phụ thuộc vào ID của currentUser
 
   useEffect(() => {
     fetchStatus()

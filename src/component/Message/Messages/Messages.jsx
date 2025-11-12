@@ -1,14 +1,13 @@
-
 "use client"
 
-import { useState, useEffect, useCallback} from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import classNames from "classnames/bind"
 import styles from "./Messages.module.scss"
 import MessagesList from "../MessagesList/MessagesList"
 import MessageDetail from "../MessageDetail/MessageDetail"
 import { getChats, getChatRequests, getMessages } from "@/services/chat.service"
-import { markMessagesAsRead, setMessages } from "@/store/chatSlice"
+import { setMessages, markChatAsRead } from "@/store/chatSlice"
 import socketService from "@/utils/chat.socket"
 
 const cx = classNames.bind(styles)
@@ -18,124 +17,200 @@ function Messages() {
   const [conversations, setConversations] = useState([])
   const [isSocketConnected, setIsSocketConnected] = useState(false)
   const [messageRequests, setMessageRequests] = useState([])
+
   const { messages, unreadCounts } = useSelector((state) => state.chat)
   const dispatch = useDispatch()
   const currentUser = useSelector((state) => state.auth.currentUser)
-  const token = useSelector((state) => state.auth.token) // Lấy token từ store
-  
-  const formatConversation = (chat) => {
-    // currentUser ở đây sẽ luôn là giá trị mới nhất từ Redux store mỗi khi component re-render.
-    if (!currentUser) return null; // Nếu không có currentUser, không format.
+  const token = useSelector((state) => state.auth.token)
 
-    const participants = chat.participants || chat.members || [];
-    const isGroupChat = chat.type === "group";
-    const otherParticipant = participants.find((p) => p.id !== currentUser.id);
-    const lastMessage = chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+  // --- Helper: format conversation object ---
+  const formatConversation = useCallback(
+    (chat) => {
+      if (!currentUser) return null
 
-    let conversationName, conversationUsername, conversationAvatar;
-    if (isGroupChat) {
-      conversationName = chat.name || "Group Chat";
-      conversationUsername = chat.name || "Group Chat";
-      conversationAvatar = chat.avatar || "/placeholder.svg";
-    } else {
-      conversationName = otherParticipant?.username || "Unknown User";
-      conversationUsername = otherParticipant?.username || "Unknown User";
-      conversationAvatar = otherParticipant?.avatar || "/placeholder.svg";
-    }
+      const participants = chat.participants || chat.members || []
+      const isGroupChat = chat.type === "group"
+      const otherParticipant = participants.find((p) => p.id !== currentUser.id)
+      const lastMessage = chat.lastMessage || null
 
-    return {
-      id: chat.id,
-      name: conversationName,
-      username: conversationUsername,
-      avatar: conversationAvatar,
-      preview: lastMessage?.content || "Chưa có tin nhắn.",
-      date: lastMessage ? new Date(lastMessage.createdAt).toLocaleString() : "",
-      unread: typeof chat.unreadCount === "number" ? chat.unreadCount : 0,
-      messages: [],
-      isRequest: chat.status === "pending",
-    };
-  };
+      let conversationName, conversationUsername, conversationAvatar
+      if (isGroupChat) {
+        conversationName = chat.name || "Group Chat"
+        conversationUsername = chat.name || "Group Chat"
+        conversationAvatar = chat.avatar || "/placeholder.svg"
+      } else {
+        conversationName = otherParticipant?.username || "Unknown User"
+        conversationUsername = otherParticipant?.username || "Unknown User"
+        conversationAvatar = otherParticipant?.avatar || "/placeholder.svg"
+      }
 
-  // --- Fetch conversations & requests ---
+      return {
+        id: chat.id,
+        name: conversationName,
+        username: conversationUsername,
+        avatar: conversationAvatar,
+        preview: lastMessage?.content || "Chưa có tin nhắn.",
+        date: lastMessage ? new Date(lastMessage.createdAt).toLocaleString() : "",
+        unread: typeof chat.unreadCount === "number" ? chat.unreadCount : 0,
+        messages: [],
+        isRequest: chat.status === "pending",
+      }
+    },
+    [currentUser]
+  )
+
+  // --- Fetch all conversations and requests ---
   const fetchConversations = useCallback(async () => {
+    if (!currentUser) return
     try {
-      const [chatsResponse, requestsResponse] = await Promise.all([getChats(), getChatRequests()])
-      console.log("chatsResponse:", chatsResponse)
-      console.log("requestsResponse:", requestsResponse);
-      
-      // Thống nhất cách lấy dữ liệu. Giả sử API luôn trả về { data: [...] } hoặc { chats: [...] }
-      const chatsData = chatsResponse || chatsResponse?.data || [];
-      const requestsData = requestsResponse || requestsResponse?.data || [];
+      const [chatsResponse, requestsResponse] = await Promise.all([
+        getChats(),
+        getChatRequests(),
+      ])
 
-      const newConversations = chatsData.map(formatConversation).filter(Boolean); // .filter(Boolean) để loại bỏ các giá trị null
+      const chatsData = chatsResponse?.data || chatsResponse || []
+      const requestsData = requestsResponse?.data || requestsResponse || []
+
+      const newConversations = chatsData.map(formatConversation).filter(Boolean)
+      const newRequests = requestsData.map(formatConversation).filter(Boolean)
+
       setConversations(newConversations)
-
-      const newRequests = requestsData.map(formatConversation)
       setMessageRequests(newRequests)
     } catch (error) {
       console.error("Error fetching conversations:", error)
+      console.log("[DEBUG] Lỗi khi tải cuộc trò chuyện ban đầu:", error);
     }
-  }, []) // Loại bỏ dependency để useCallback chỉ tạo hàm 1 lần
+  }, [currentUser, formatConversation])
 
+  // --- Fetch conversations on mount / user change ---
   useEffect(() => {
     if (!currentUser) return
     fetchConversations()
-    const intervalId = setInterval(fetchConversations, 5000)
-    return () => clearInterval(intervalId)
-  }, [currentUser, fetchConversations]) // Giữ nguyên dependency ở đây
+  }, [currentUser, fetchConversations])
 
-  // --- Socket connect ---
+  // --- Socket connect / disconnect ---
   useEffect(() => {
     if (!currentUser || !token) return
 
-    // Gọi connect với một callback để cập nhật state khi kết nối thành công
     socketService.connect(token, () => {
       setIsSocketConnected(true)
+      console.log("[DEBUG] Socket đã kết nối thành công.");
+    })
+
+    // Khi có tin nhắn mới → cập nhật lại conversation preview hoặc thêm mới
+    socketService.on("receive_message", (newMessage) => {
+      console.log("[DEBUG] Nhận được tin nhắn mới:", newMessage);
+      setConversations((prev) => {
+        const idx = prev.findIndex((c) => c.id === newMessage.chatId)
+        if (idx === -1) return prev // chat chưa tồn tại, sẽ được cập nhật bằng chat:new
+        const updated = [...prev]
+        updated[idx] = {
+          ...updated[idx],
+          preview: newMessage.content,
+          date: new Date(newMessage.createdAt).toLocaleString(),
+        }
+        return updated
+      })
+    })
+
+    // Khi có chat mới được tạo
+    socketService.on("chat:new", (newChat) => {
+      console.log("[DEBUG] Nhận được cuộc trò chuyện mới:", newChat);
+      setConversations((prev) => {
+        const formatted = formatConversation(newChat)
+        return formatted ? [formatted, ...prev] : prev
+      })
+    })
+
+    // Khi server cập nhật số lượng tin nhắn chưa đọc
+    socketService.on("unread_count_updated", ({ chatId, unreadCount }) => {
+      console.log(`[DEBUG] Nhận 'unread_count_updated' cho chatId: ${chatId}, unreadCount: ${unreadCount}`);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === chatId ? { ...c, unread: unreadCount } : c))
+      )
+      // Cập nhật cho cả message requests nếu cần
+      setMessageRequests((prev) =>
+        prev.map((c) => (c.id === chatId ? { ...c, unread: unreadCount } : c))
+      )
     })
 
     return () => {
+      socketService.off("receive_message")
+      socketService.off("chat:new")
+      console.log("[DEBUG] Ngắt kết nối socket và dọn dẹp listeners.");
+      socketService.off("unread_count_updated")
       socketService.disconnect()
       setIsSocketConnected(false)
     }
-  }, [currentUser, token])
+  }, [currentUser, token, formatConversation])
 
   // --- Select conversation ---
   const handleSelectConversation = async (conversationId) => {
-    if (!conversationId || !isSocketConnected) return // Chờ socket kết nối
-    setSelectedConversationId(conversationId)
-
-    // Tell socket this chat is active → will reset unread in client
-    socketService.setActiveChat(conversationId)
-
+    console.log(`[DEBUG] Bắt đầu handleSelectConversation cho chatId: ${conversationId}`);
+    if (!conversationId || !isSocketConnected) return;
+    setSelectedConversationId(conversationId);
+  
     try {
-      // Fetch messages for this chat
-      const messagesResponse = await getMessages(conversationId)
-      const fetchedMessages = messagesResponse?.rows || messagesResponse?.data || []
+      const messagesResponse = await getMessages(conversationId);
+      const fetchedMessages = messagesResponse?.rows || messagesResponse?.data || [];
+  
+      //  Truyền currentUserId vào setMessages
+      dispatch(setMessages({ 
+        chatId: conversationId, 
+        messages: fetchedMessages,
+        currentUserId: currentUser.id,  // <-- đây là quan trọng
+      }));
+  
+      // Emit event read_message
+      console.log(`[DEBUG] Gửi sự kiện 'read_message' cho chatId: ${conversationId}`);
+      socketService.emit("read_message", { chatId: conversationId });
 
-      // Dispatch action để lưu messages vào Redux store
-      dispatch(setMessages({ chatId: conversationId, messages: fetchedMessages }))
+      // Dispatch action để cập nhật Redux store ngay lập tức
+      dispatch(markChatAsRead({ chatId: conversationId }));
 
-      // Identify unread messages
-      const unreadMessageIds = fetchedMessages
-        .filter((msg) => !msg.read && msg.senderId !== currentUser?.id)
-        .map((msg) => msg.id)
-
-      if (unreadMessageIds.length > 0) {
-        socketService.emit("read_message", { chatId: conversationId, messageIds: unreadMessageIds })
-        dispatch(markMessagesAsRead({ chatId: conversationId }))
-      }
-
+      // Cập nhật UI ngay lập tức để phản ánh trạng thái đã đọc
+      console.log(`[DEBUG] Cập nhật giao diện (optimistic update), unread -> 0 cho chatId: ${conversationId}`);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c))
+      );
+      setMessageRequests((prev) =>
+        prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c))
+      );
     } catch (error) {
-      console.error("Failed to open conversation:", error)
+      console.log(`[DEBUG] Lỗi trong handleSelectConversation cho chatId: ${conversationId}`, error);
+      console.error("Failed to open conversation:", error);
     }
-  }
+  };
+  
+  // --- Mark as read (e.g., on input focus) ---
+  const handleMarkAsRead = (conversationId) => {
+    if (!conversationId || !isSocketConnected) return;
+
+    // Lấy conversation từ state để kiểm tra
+    const conv = conversations.find(c => c.id === conversationId) || messageRequests.find(c => c.id === conversationId);
+
+    // Chỉ thực hiện nếu có tin nhắn chưa đọc để tránh gọi lại không cần thiết
+    if (conv && conv.unread > 0) {
+      console.log(`[DEBUG] Đánh dấu đã đọc từ input focus cho chatId: ${conversationId}`);
+      socketService.emit("read_message", { chatId: conversationId });
+      dispatch(markChatAsRead({ chatId: conversationId }));
+
+      // Cập nhật UI ngay lập tức
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c))
+      );
+      setMessageRequests((prev) =>
+        prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c))
+      );
+    }
+  };
 
   // --- Prepare selectedConversation object for rendering ---
-  const selectedConversation = selectedConversationId
-    ? (conversations.find((c) => c.id === selectedConversationId) || messageRequests.find((c) => c.id === selectedConversationId))
-    : null
+  const selectedConversation =
+    selectedConversationId &&
+    (conversations.find((c) => c.id === selectedConversationId) ||
+      messageRequests.find((c) => c.id === selectedConversationId))
 
-  // Add messages from Redux slice
   if (selectedConversation) {
     selectedConversation.messages = messages[selectedConversationId] || []
     selectedConversation.unread = unreadCounts[selectedConversationId] || 0
@@ -143,7 +218,7 @@ function Messages() {
 
   // --- Send message ---
   const handleSendMessage = (content) => {
-    if (!selectedConversationId || !currentUser || !isSocketConnected) return // Chờ socket kết nối
+    if (!selectedConversationId || !currentUser || !isSocketConnected) return
     socketService.emit("send_message", {
       chatId: selectedConversationId,
       content,
@@ -168,13 +243,17 @@ function Messages() {
             key={selectedConversation.id}
             conversation={selectedConversation}
             onSendMessage={handleSendMessage}
-            isSocketConnected={isSocketConnected} // Truyền prop xuống
+            onInputFocus={() => handleMarkAsRead(selectedConversation.id)}
+            isSocketConnected={isSocketConnected}
             currentUser={currentUser}
           />
         ) : (
           <div className={cx("no-conversation-selected")}>
             <h2>Chọn một tin nhắn</h2>
-            <p>Chọn từ các cuộc trò chuyện hiện có của bạn, bắt đầu một cuộc trò chuyện mới hoặc tiếp tục lướt.</p>
+            <p>
+              Chọn từ các cuộc trò chuyện hiện có của bạn, bắt đầu một cuộc trò chuyện mới hoặc tiếp tục
+              lướt.
+            </p>
           </div>
         )}
       </div>

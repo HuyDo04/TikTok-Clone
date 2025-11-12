@@ -16,7 +16,7 @@ export const validateVideoFile = async (file) => {
 
       if (duration < 5) {
         resolve("Video phải dài ít nhất 5 giây")
-      } else if (duration > 300) {
+      } else if (duration > 1000) {
         // 5 minutes = 300 seconds
         resolve("Video không được dài quá 5 phút")
       } else {

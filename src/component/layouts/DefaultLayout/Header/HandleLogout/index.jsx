@@ -1,36 +1,50 @@
-import { logout } from "@/services/auth.service";
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./HandleLogout.module.scss";
+import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames/bind";
-import UserContext from "@/context/UserContext";
+import styles from "./HandleLogout.module.scss";
+
+import notificationSocketService from "@/utils/notification.socket";
+import { logout } from "@/services/auth.service"; // Gọi API logout
+import { logoutUser } from "@/features/auth/authSlice"; // Action Redux
+
 const cx = classNames.bind(styles);
+
 function HandleLogout() {
-  const [login, setLogin] = useState(false);
-  const { setUser } = useContext(UserContext);
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Lấy user hiện tại từ Redux
+  const currentUser = useSelector((state) => state.auth?.currentUser);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Kiểm tra token mỗi khi user thay đổi (ví dụ khi logout hoặc login)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setLogin(!!token);
-  }, []);
+    setIsLoggedIn(!!token);
+  }, [currentUser]);
 
   const handleLogout = async () => {
     try {
-      await logout();
-      alert("Logout Thành công");
-      localStorage.removeItem("token");
-      setUser(null);
-      navigate("/");
+      const refreshToken = localStorage.getItem("refreshToken");
+      await logout(refreshToken); // gửi token cho backend
     } catch (error) {
-      console.log(error);
+      console.error("Logout API error:", error);
+    } finally {
+      // Xóa token, refreshToken ở localStorage và redux
+      dispatch(logoutUser());
+      notificationSocketService.disconnect();
+  
+      // Reload trang về Home để reset mọi state
+      window.location.href = "/";
     }
   };
+  
 
   return (
     <>
-      {login && (
+      {isLoggedIn && (
         <button className={cx("subButton")} onClick={handleLogout}>
-          Logout
+          Đăng xuất
         </button>
       )}
     </>

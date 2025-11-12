@@ -12,6 +12,11 @@ export const searchUsers = async (query = "") => {
   return response;
 };
 
+export const getMyVideo = async (id) => {
+  const response = await httpRequest.get(`users/${id}/posts`)
+  return response
+}
+
 // Get user by ID
 export const getUserById = async (id) => {
   const response = await httpRequest.get(`/users/${id}`);

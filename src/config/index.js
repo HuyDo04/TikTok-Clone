@@ -2,17 +2,13 @@ const config = {
     routes : {
         home : "/",
 
-        // products
-        products : "/products",
-        productDetail: "/products/:slug",
-
         //auth
-        login : "/login",
-        register : "/register",
-        changePassword: "/change-password",
-        resetPassword: "/reset-password",
-        verifyEmail: "/verify-email",
-        verifyOtp: "/verify-otp",
+        login : "/auth/login",
+        register : "/auth/register",
+        changePassword: "/auth/change-password",
+        resetPassword: "/auth/reset-password",
+        verifyEmail: "/auth/verify-email",
+        verifyOtp: "/auth/verify-otp",
         // user
         profile:"/profile/:username",
         edit:"/profile/:username/edit",
@@ -37,6 +33,9 @@ const config = {
         studioAcademy: "/studio/academy",
         studioAudio: "/studio/audio",
         studioFeedback: "/studio/feedback",
+
+        // notification
+        notifications:"/notifications"
     }
 }
 

@@ -13,7 +13,6 @@ export const createChat = async (data) => {
 // Lấy tất cả chat của người dùng hiện tại
 export const getChats = async () => { 
   const response = await httpRequest.get("/chats"); 
-  console.log("getChats response", response);
   
   return response; 
 };

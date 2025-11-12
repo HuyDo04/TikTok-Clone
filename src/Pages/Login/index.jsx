@@ -67,18 +67,23 @@ const Login = () => {
 
     try {
       // 1. Gọi API login
+      console.log("[DEBUG] Bước 1: Bắt đầu gọi API login...");
       const result = await login(formData);
-      console.log("Login success:", result);
+      console.log("[DEBUG] Bước 1: Login thành công, nhận được token:", result);
 
       // 2. Lưu token vào Redux & localStorage
+      console.log("[DEBUG] Bước 2: Lưu token vào Redux và cấu hình httpRequest...");
       dispatch(loginSuccess(result.access_token));
       setToken(result.access_token); // Set token cho httpRequest
       localStorage.setItem("refresh_token", result.refresh_token);
       
       // 3. Gọi API lấy user
+      console.log("[DEBUG] Bước 3: Bắt đầu fetch thông tin người dùng hiện tại (currentUser)...");
       await dispatch(fetchCurrentUser()).unwrap();
+      console.log("[DEBUG] Bước 3: Fetch currentUser thành công!");
 
       // 4. Điều hướng khi đã lấy user thành công
+      console.log("[DEBUG] Bước 4: Điều hướng đến trang chủ...");
       navigate("/", { replace: true });
 
     } catch (error) {
@@ -157,7 +162,7 @@ const Login = () => {
           required
         />
 
-        <div className={styles.formOptions}>
+        {/* <div className={styles.formOptions}>
           <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
@@ -168,7 +173,7 @@ const Login = () => {
             />
             <span>Ghi nhớ đăng nhập</span>
           </label>
-        </div>
+        </div> */}
 
         {errors.submit && (
           <div className={styles.submitError}>{errors.submit}</div>

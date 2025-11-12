@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { formatImageUrl } from "@/utils/urlUtils"
 import classNames from "classnames/bind"
 import styles from "./PreviewTabs.module.scss"
 
@@ -35,9 +36,9 @@ export default function PreviewTabs({ files, caption }) {
         {currentFile ? (
           <div className={cx("mediaWrapper")}>
             {currentFile.type === "video" ? (
-              <video src={currentFile.url} className={cx("media")} controls />
+              <video src={formatImageUrl(currentFile.url)} className={cx("media")} controls />
             ) : (
-              <img src={currentFile.url || "/placeholder.svg"} alt="" className={cx("media")} />
+              <img src={formatImageUrl(currentFile.url) || "/placeholder.svg"} alt="" className={cx("media")} />
             )}
 
             {caption && (
