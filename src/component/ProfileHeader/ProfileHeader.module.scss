@@ -198,6 +198,18 @@
   color: var(--white-color);
 }
 
+.ellip-btn {
+  border-radius: 6px;
+  font-size: 16px;
+  height: 40px;
+  line-height: 21px;
+  min-width: 80px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: var(--background-grey-color);
+  color: var(--black-color);
+}
+
 .followButton {
     background-color: #ef4444;
     color: #fff;
@@ -210,7 +222,8 @@
 
 .messageButton {
     border: 1px solid #e5e7eb;
-    background-color: #fff;
+    background-color: var(--white-color);
+    color: var(--black-color);
 }
 
 .dark .messageButton {
@@ -247,4 +260,43 @@
 .icon-sm {
     width: 16px;
     height: 16px;
+}
+
+.optionsContainer {
+  position: relative;
+  display: inline-block; // Để menu có thể định vị tương đối với container này
+  margin-left: 8px; // Khoảng cách với nút share
+}
+
+.optionsMenu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 45px; // Đặt menu ngay dưới nút
+  right: -10px; // Căn phải với nút
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  min-width: 100px;
+  z-index: 100; // Đảm bảo menu hiển thị trên các phần tử khác
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Đảm bảo border-radius hoạt động tốt với các button con
+
+  button {
+    text-align: center;
+    width: 100%;
+    padding: 10px 16px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-color);
+
+    &:hover {
+      background-color: var(--background-color-light);
+    }
+  }
 }

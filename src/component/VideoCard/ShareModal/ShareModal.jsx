@@ -4,6 +4,7 @@ import styles from './ShareModal.module.scss'
 import classNames from 'classnames/bind'
 
 const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 const shareOptions = [
   { id: 'repost', icon: '🔄', label: 'Đăng lại' },
@@ -56,7 +57,7 @@ export default function ShareModal({ onClose }) {
         <div className={cx('suggestedUsers')}>
           {suggestedUsers.map((user) => (
             <button key={user.id} className={cx('userButton')} onClick={() => handleShareToUser(user.id)}>
-              <img src={user.avatar || '/placeholder.svg'} alt={user.username} />
+              <img src={user.avatar || DEFAULT_AVATAR} alt={user.username} />
               <span>{user.username}</span>
             </button>
           ))}

@@ -5,10 +5,20 @@ import classNames from "classnames/bind"
 import styles from "./MessageDetail.module.scss"
 import MessageThread from "../MessageThread/MessageThread"
 import MessageInput from "../MessageInput/MessageInput"
-import socketService from "@/utils/chat.socket"
-const cx = classNames.bind(styles)
+import RequestBanner from "./RequestBanner" // Import banner mới
 
-function MessageDetail({ conversation, onSendMessage, onInputFocus, currentUser, isSocketConnected }) {
+const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
+
+function MessageDetail({
+  conversation,
+  onSendMessage,
+  onInputFocus,
+  currentUser,
+  isSocketConnected,
+  onAcceptRequest,
+  onDeclineRequest,
+}) {
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = (smooth = true) => {
@@ -20,14 +30,6 @@ function MessageDetail({ conversation, onSendMessage, onInputFocus, currentUser,
     scrollToBottom()
   }, [conversation?.messages])
 
-  // Khi chat mở, thông báo cho socket chat này đang active (để reset unread)
-  useEffect(() => {
-    if (conversation?.id) {
-      socketService.setActiveChat(conversation.id)
-    }
-
-  }, [conversation?.id, isSocketConnected])
-
   const handleSendMessage = async (content) => {
     try {
       // Gọi callback từ parent (Messages) → socketService.emit sẽ gửi message
@@ -36,6 +38,14 @@ function MessageDetail({ conversation, onSendMessage, onInputFocus, currentUser,
       console.error("Failed to send message:", error)
     }
   }
+
+  // Xác định xem người dùng hiện tại có phải là người nhận tin nhắn chờ không
+  const isReceiverOfRequest =
+    conversation?.isRequest &&
+    conversation.participants?.find((p) => p.id === currentUser.id)
+      ?.ChatParticipant?.status === "pending"
+
+  const otherParticipant = conversation?.participants?.find((p) => p.id !== currentUser.id);
 
   if (!conversation) {
     return (
@@ -63,7 +73,7 @@ function MessageDetail({ conversation, onSendMessage, onInputFocus, currentUser,
       <header className={cx("header")}>
         <div className={cx("header-content")}>
           <img
-            src={conversation.avatar || "/placeholder.svg"}
+            src={conversation.avatar || DEFAULT_AVATAR}
             alt={conversation.name}
             className={cx("header-avatar")}
           />
@@ -79,7 +89,22 @@ function MessageDetail({ conversation, onSendMessage, onInputFocus, currentUser,
         <div ref={messagesEndRef} />
       </div>
 
-      <MessageInput onSendMessage={handleSendMessage} onInputFocus={onInputFocus} chatId={conversation.id} isSocketConnected={isSocketConnected} />
+      {/* Hiển thị banner chấp nhận/từ chối nếu là người nhận tin nhắn chờ */}
+      {isReceiverOfRequest ? (
+        <RequestBanner
+          username={otherParticipant?.username || "Người dùng"}
+          onAccept={() => onAcceptRequest(conversation.id)}
+          onDecline={() => onDeclineRequest(conversation.id)}
+        />
+      ) : (
+        <MessageInput
+          onSendMessage={handleSendMessage}
+          onInputFocus={onInputFocus}
+          chatId={conversation.id}
+          isSocketConnected={isSocketConnected}
+          disabled={isReceiverOfRequest} // Vô hiệu hóa input nếu là người nhận request
+        />
+      )}
     </div>
   )
 }

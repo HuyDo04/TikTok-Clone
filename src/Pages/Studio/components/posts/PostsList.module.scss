@@ -1,7 +1,8 @@
 @use "../../styles/variables.scss";
 
 .postsListContainer {
-  background-color: var(--background);
+  background-color: var(--background); /* Điều chỉnh giá trị này dựa trên chiều cao của header/filter và layout mong muốn */
+  overflow-y: auto; /* Cho phép cuộn dọc cho danh sách nếu nội dung vượt quá */
   border-radius: 0.5rem;
   box-shadow: var(--shadow-sm);
 }

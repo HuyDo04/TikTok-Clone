@@ -85,3 +85,9 @@ export const likePost = async (id) =>
 
 export const unlikePost = async (id) =>
   httpRequest.del(`/posts/${id}/unlike`);
+
+export const repost = async (id) => 
+  httpRequest.post(`/posts/${id}/repost`);
+
+export const unRepost = async (id) => 
+  httpRequest.del(`/posts/${id}/repost`);

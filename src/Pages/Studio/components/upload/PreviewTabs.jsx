@@ -4,6 +4,10 @@ import { useState } from "react"
 import { formatImageUrl } from "@/utils/urlUtils"
 import classNames from "classnames/bind"
 import styles from "./PreviewTabs.module.scss"
+import HeartIcon from "@/component/Icons/HeartIcon"
+import CommentIcon from "@/component/Icons/CommentIcon"
+import BookmarkIcon from "@/component/Icons/BookmarkIcon"
+import ShareIcon from "@/component/Icons/ShareIcon"
 
 const cx = classNames.bind(styles)
 
@@ -48,10 +52,10 @@ export default function PreviewTabs({ files, caption }) {
             )}
 
             <div className={cx("actionButtons")}>
-              <button>❤️</button>
-              <button>💬</button>
-              <button>🔖</button>
-              <button>↗️</button>
+              <HeartIcon />
+              <CommentIcon />
+              <BookmarkIcon />
+              <ShareIcon />
             </div>
           </div>
         ) : (

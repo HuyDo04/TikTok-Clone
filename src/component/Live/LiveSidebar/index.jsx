@@ -3,6 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./LiveSidebar.module.scss";
 
 const cx = classNames.bind(styles);
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 function LiveSidebar({ liveUsers, selectedLive, onSelectLive }) {
   return (
@@ -19,7 +20,7 @@ function LiveSidebar({ liveUsers, selectedLive, onSelectLive }) {
             onClick={() => onSelectLive(user)}
           >
             <div className={cx("user-info")}>
-              <img src={user.avatar || "/placeholder.svg"} alt={user.username} className={cx("avatar")} />
+              <img src={user.avatar || DEFAULT_AVATAR} alt={user.username} className={cx("avatar")} />
               <div className={cx("details")}>
                 <p className={cx("username")}>{user.username}</p>
                 <p className={cx("display-name")}>{user.displayName}</p>

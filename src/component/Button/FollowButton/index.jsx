@@ -51,7 +51,7 @@ function FollowButton({ userId }) {
   const handleClick = async () => {
     // Nếu chưa đăng nhập, chuyển hướng đến trang login
     if (!currentUser) {
-      navigate("/login")
+      navigate("/auth/login")
       return
     }
 

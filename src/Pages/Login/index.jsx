@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Input from "@/component/Input";
 import Button  from "@/component/Button";
 import { login, resendVerification } from "@/services/auth.service";
-import styles from "./Login.module.scss";
 import { setToken } from "@/utils/httpRequest";
 import { loginSuccess } from "@/features/auth/authSlice";
 import { fetchCurrentUser } from "@/features/auth/authActions";
 import { useDispatch } from "react-redux";
+import styles from "./Login.module.scss";
+import classNames from "classnames/bind";
+
+const cx = classNames.bind(styles);
 
 const Login = () => {
   const navigate = useNavigate();
@@ -136,10 +139,10 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <h1 className={styles.title}>Đăng nhập</h1>
+    <div className={cx("login-container")}>
+      <h1 className={cx("title")}>Đăng nhập</h1>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={handleSubmit} className={cx("form")}>
         <Input
           label="Email"
           type="email"
@@ -162,36 +165,21 @@ const Login = () => {
           required
         />
 
-        {/* <div className={styles.formOptions}>
-          <label className={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              name="rememberMe"
-              checked={formData.rememberMe}
-              onChange={handleInputChange}
-              className={styles.checkbox}
-            />
-            <span>Ghi nhớ đăng nhập</span>
-          </label>
-        </div> */}
-
         {errors.submit && (
-          <div className={styles.submitError}>{errors.submit}</div>
+          <div className={cx("submit-error")}>{errors.submit}</div>
         )}
 
         {showResend && (
-          <div className={styles.resendSection}>
+          <div className={cx("resend-section")}>
             <button
               type="button"
               onClick={handleResendVerification}
               disabled={isSubmitting}
-              className={styles.resendButton}
+              className={cx("resend-button")}
             >
               {isSubmitting ? "Đang gửi..." : "Gửi lại email xác thực"}
             </button>
-            {resendMessage && (
-              <p className={styles.resendMessage}>{resendMessage}</p>
-            )}
+            {resendMessage && <p className={cx("resend-message")}>{resendMessage}</p>}
           </div>
         )}
 
@@ -207,7 +195,7 @@ const Login = () => {
         </Button>
       </form>
 
-      <div className={styles.divider}>
+      <div className={cx("divider")}>
         <span>HOẶC</span>
       </div>
 
@@ -220,10 +208,10 @@ const Login = () => {
         Đăng nhập với Google
       </Button>
 
-      <p className={styles.registerPrompt}>
-        Chưa có tài khoản? <a href="/register">Đăng ký</a>
+      <p className={cx("register-prompt")}>
+        Chưa có tài khoản? <a href="/auth/register">Đăng ký</a>
       </p>
-      <p className={styles.registerPrompt}>
+      <p className={cx("register-prompt")}>
         <a href="/forgot-password">Quên mật khẩu</a>
       </p>
     </div>

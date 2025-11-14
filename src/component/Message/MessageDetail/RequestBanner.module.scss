@@ -1,0 +1,38 @@
+.banner-root {
+    padding: 16px;
+    background-color: var(--background-color-secondary);
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.banner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.banner-text {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-color-secondary);
+    text-align: center;
+
+    strong {
+        color: var(--text-color-primary);
+    }
+}
+
+.banner-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.action-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 100px;
+}

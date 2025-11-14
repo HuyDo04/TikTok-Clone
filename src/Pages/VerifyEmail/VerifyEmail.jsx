@@ -41,7 +41,7 @@ const VerifyEmail = () => {
   }, [location.search]);
 
   const handleLoginRedirect = () => {
-    navigate("/login");
+    navigate("/auth/login");
   };
 
   const handleResendVerification = async () => {

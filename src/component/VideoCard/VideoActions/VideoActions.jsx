@@ -11,35 +11,61 @@ import BookmarkIcon from '@/component/Icons/BookmarkIcon'
 import ShareIcon from '@/component/Icons/ShareIcon'
 import PlusIcon from '@/component/Icons/PlusIcon'
 import CheckIcon from '@/component/Icons/CheckIcon'
-import { likePost, unlikePost } from '@/services/post.service'
-import { useNavigate } from 'react-router-dom'
+import { likePost, unlikePost, repost, unRepost, getPostById } from '@/services/post.service'
+import { followUser, unfollowUser } from '@/services/user.service'
+import { useNavigate, Link } from 'react-router-dom'
 
 const cx = classNames.bind(styles)
+const URL = import.meta.env.VITE_BASE_URL_ME
 
 export default function VideoActions({ video, onToggleComments }) {
   const currentUser = useSelector((state) => state.auth.currentUser)
   const navigate = useNavigate()
-
+  console.log("video", video.commentCount);
+  
   // Khởi tạo state từ prop `video` nhận từ API
   const [isLiked, setIsLiked] = useState(video.isLiked || false)
   const [likeCount, setLikeCount] = useState(Number(video.likesCount) || 0)
-  const [isBookmarked, setIsBookmarked] = useState(false)
-  const [bookmarkCount, setBookmarkCount] = useState(video.stats?.bookmarks || 0) // Giả sử có thể không có
+  const [isBookmarked, setIsBookmarked] = useState(!!video.isBookmarked) // Đảm bảo luôn là boolean
+  const [bookmarkCount, setBookmarkCount] = useState(video.bookmarksCount || 0) // Giả sử API trả về `bookmarksCount`
   const [showShare, setShowShare] = useState(false)
-  // eslint-disable-next-line no-unused-vars
-  const [commentCount, setCommentCount] = useState(video.stats?.comments || 0)
-  const [isFollowed, setIsFollowed] = useState(false)
+  const [commentCount, setCommentCount] = useState(video.commentCount || 0)
+  const [shareCount, setShareCount] = useState(video.sharesCount || 0)
+  const [isFollowed, setIsFollowed] = useState(video.author?.isFollowing || false)
 
-  // Đồng bộ state khi prop `video` thay đổi (khi cuộn qua video khác)
+  // Đồng bộ state khi prop `video` thay đổi (khi cuộn qua video khác) và fetch trạng thái mới nhất
   useEffect(() => {
-    setIsLiked(video.isLiked || false)
-    setLikeCount(Number(video.likesCount) || 0)
-  }, [video.id, video.isLiked, video.likesCount])
+    // Cập nhật UI ngay lập tức với dữ liệu hiện có
+    setLikeCount(Number(video.likesCount) || 0);
+    setCommentCount(video.commentCount || 0);
+    setShareCount(video.sharesCount || 0);
+    setBookmarkCount(video.bookmarksCount || 0);
+    setIsFollowed(video.author?.isFollowing || false);
+
+    // Nếu đã đăng nhập, gọi API để lấy trạng thái like/repost mới nhất
+    if (currentUser && video.id) {
+      const fetchPostStatus = async () => {
+        try {
+          const postDetails = await getPostById(video.id);
+          setIsLiked(postDetails.isLiked);
+          // Cập nhật lại số lượt thích từ dữ liệu mới nhất
+          setLikeCount(Number(postDetails.likesCount) || 0);
+          // API trả về 'isReposted', ta dùng nó cho trạng thái 'isBookmarked'
+          setIsBookmarked(postDetails.isReposted);
+          // Cập nhật lại số đếm bookmark từ dữ liệu mới nhất
+          setBookmarkCount(Number(postDetails.repostCount) || 0);
+        } catch (error) {
+          console.error("Failed to fetch post status:", error);
+        }
+      };
+      fetchPostStatus();
+    }
+  }, [currentUser, video])
 
   const handleLike = async () => {
     if (!currentUser) {
       // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-      navigate('/login')
+      navigate('/auth/login')
       return
     }
 
@@ -64,29 +90,75 @@ export default function VideoActions({ video, onToggleComments }) {
     }
   }
 
-  const handleBookmark = () => {
-    if (isBookmarked) {
-      setBookmarkCount(bookmarkCount - 1)
-    } else {
-      setBookmarkCount(bookmarkCount + 1)
+  const handleBookmark = async () => {
+    if (!currentUser) {
+      navigate('/auth/login')
+      return
     }
-    setIsBookmarked(!isBookmarked)
+
+    const originalIsBookmarked = isBookmarked
+    const originalBookmarkCount = bookmarkCount
+
+    setIsBookmarked(!originalIsBookmarked)
+    // Đảm bảo số đếm không bao giờ là số âm
+    setBookmarkCount(prevCount => 
+      originalIsBookmarked ? Math.max(0, prevCount - 1) : prevCount + 1
+    )
+
+    try {
+      if (originalIsBookmarked) {
+        await unRepost(video.id)
+      } else {
+        await repost(video.id)
+      }
+    } catch (error) {
+      console.error('Failed to update bookmark status:', error)
+      setIsBookmarked(originalIsBookmarked)
+      setBookmarkCount(originalBookmarkCount)
+    }
   }
 
-  const handleToggleFollow = () => {
-    setIsFollowed((prev) => !prev)
+  const handleToggleFollow = async () => {
+    if (!currentUser) {
+      navigate('/auth/login')
+      return
+    }
+
+    // Không cho phép tự follow chính mình
+    if (currentUser.id === video.author.id) return
+
+    const originalIsFollowed = isFollowed
+    setIsFollowed(!originalIsFollowed) // Cập nhật UI lạc quan
+
+    try {
+      if (originalIsFollowed) {
+        await unfollowUser(video.author.id)
+      } else {
+        await followUser(video.author.id)
+      }
+    } catch (error) {
+      console.error('Failed to update follow status:', error)
+      setIsFollowed(originalIsFollowed) // Khôi phục lại nếu có lỗi
+    }
+  }
+
+  const handleShareSuccess = () => {
+    // Cập nhật số lượt share sau khi người dùng chia sẻ thành công
+    setShareCount(prev => prev + 1);
   }
 
   return (
     <>
       <div className={cx('videoActions')}>
         <div className={cx('authorAvatar')}>
-        <img
-          src={video.author.avatar || 'https://picsum.photos/200'}
-          alt={video.author.username}
-        />
+        <Link to={`/profile/${video.author.username}`}>
+          <img
+            src={video.author.avatar ? `${URL}/${video.author.avatar}` : 'https://picsum.photos/200'}
+            alt={video.author.username}
+          />
+        </Link>
         <button
-          className={cx('followButton', { active: isFollowed })}
+          className={cx('followButton', { active: isFollowed, hidden: currentUser?.id === video.author.id })}
           onClick={handleToggleFollow}
         >
           {isFollowed ? (
@@ -139,12 +211,12 @@ export default function VideoActions({ video, onToggleComments }) {
               <ShareIcon size={24} color="var(--text-color)" />
             </button>
           </div>
-          <span className={cx('actionLabel')}>{video.stats?.shares || 0}</span>
+          <span className={cx('actionLabel')}>{shareCount}</span>
         </div>
       </div>
 
       {showShare && (
-        <ShareModal video={video} onClose={() => setShowShare(false)} />
+        <ShareModal video={video} onClose={() => setShowShare(false)} onShareSuccess={handleShareSuccess} />
       )}
     </>
   )

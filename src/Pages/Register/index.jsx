@@ -84,7 +84,7 @@ const Register = () => {
       setSuccessMessage(result.message || "Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
 
       setTimeout(() => {
-        navigate("/login", {
+        navigate("/auth/login", {
           replace: true,
           state: { message: "Đăng ký thành công, vui lòng xác thực email rồi đăng nhập." },
         });
@@ -164,7 +164,7 @@ const Register = () => {
         <div className={cx("registerLink")}>
             <p>
                 Đã có tài khoản?{" "}
-                <Link to="/login">
+                <Link to="/auth/login">
                 Đăng nhập
                 </Link>
             </p>

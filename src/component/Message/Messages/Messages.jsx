@@ -1,16 +1,25 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux"
 import classNames from "classnames/bind"
 import styles from "./Messages.module.scss"
 import MessagesList from "../MessagesList/MessagesList"
 import MessageDetail from "../MessageDetail/MessageDetail"
-import { getChats, getChatRequests, getMessages } from "@/services/chat.service"
+import {
+  getChats,
+  getChatRequests,
+  getMessages,
+  acceptChatRequest,
+  declineChatRequest,
+} from "@/services/chat.service"
 import { setMessages, markChatAsRead } from "@/store/chatSlice"
 import socketService from "@/utils/chat.socket"
 
 const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 function Messages() {
   const [selectedConversationId, setSelectedConversationId] = useState(null)
@@ -21,6 +30,7 @@ function Messages() {
   const { messages, unreadCounts } = useSelector((state) => state.chat)
   const dispatch = useDispatch()
   const currentUser = useSelector((state) => state.auth.currentUser)
+  const location = useLocation();
   const token = useSelector((state) => state.auth.token)
 
   // --- Helper: format conversation object ---
@@ -37,11 +47,11 @@ function Messages() {
       if (isGroupChat) {
         conversationName = chat.name || "Group Chat"
         conversationUsername = chat.name || "Group Chat"
-        conversationAvatar = chat.avatar || "/placeholder.svg"
+        conversationAvatar = chat.avatar || DEFAULT_AVATAR
       } else {
         conversationName = otherParticipant?.username || "Unknown User"
         conversationUsername = otherParticipant?.username || "Unknown User"
-        conversationAvatar = otherParticipant?.avatar || "/placeholder.svg"
+        conversationAvatar = otherParticipant?.avatar || DEFAULT_AVATAR
       }
 
       return {
@@ -54,6 +64,7 @@ function Messages() {
         unread: typeof chat.unreadCount === "number" ? chat.unreadCount : 0,
         messages: [],
         isRequest: chat.status === "pending",
+        participants: participants, // Thêm thông tin participants
       }
     },
     [currentUser]
@@ -68,8 +79,8 @@ function Messages() {
         getChatRequests(),
       ])
 
-      const chatsData = chatsResponse?.data || chatsResponse || []
-      const requestsData = requestsResponse?.data || requestsResponse || []
+      const chatsData = chatsResponse || []
+      const requestsData = requestsResponse || []
 
       const newConversations = chatsData.map(formatConversation).filter(Boolean)
       const newRequests = requestsData.map(formatConversation).filter(Boolean)
@@ -88,6 +99,20 @@ function Messages() {
     fetchConversations()
   }, [currentUser, fetchConversations])
 
+  // --- Auto-select conversation from navigation state ---
+  useEffect(() => {
+    const chatIdFromState = location.state?.selectedChatId;
+
+    // ✅ Chỉ auto-select nếu chưa có conversation đang chọn
+    if (
+      chatIdFromState &&
+      !selectedConversationId &&
+      conversations.some(c => c.id === chatIdFromState)
+    ) {
+      handleSelectConversation(chatIdFromState);
+    }
+  }, [location.state, conversations, selectedConversationId]);
+
   // --- Socket connect / disconnect ---
   useEffect(() => {
     if (!currentUser || !token) return
@@ -100,75 +125,95 @@ function Messages() {
     // Khi có tin nhắn mới → cập nhật lại conversation preview hoặc thêm mới
     socketService.on("receive_message", (newMessage) => {
       console.log("[DEBUG] Nhận được tin nhắn mới:", newMessage);
-      setConversations((prev) => {
-        const idx = prev.findIndex((c) => c.id === newMessage.chatId)
-        if (idx === -1) return prev // chat chưa tồn tại, sẽ được cập nhật bằng chat:new
-        const updated = [...prev]
-        updated[idx] = {
-          ...updated[idx],
-          preview: newMessage.content,
-          date: new Date(newMessage.createdAt).toLocaleString(),
-        }
-        return updated
-      })
-    })
 
-    // Khi có chat mới được tạo
-    socketService.on("chat:new", (newChat) => {
-      console.log("[DEBUG] Nhận được cuộc trò chuyện mới:", newChat);
-      setConversations((prev) => {
-        const formatted = formatConversation(newChat)
-        return formatted ? [formatted, ...prev] : prev
-      })
+      const chatId = newMessage.chatId ?? newMessage.chat_id;
+
+      // Kiểm tra xem chat đã tồn tại trong conversations hoặc requests chưa
+      const chatExistsInConversations = conversations.some(c => c.id === chatId);
+      const chatExistsInRequests = messageRequests.some(r => r.id === chatId);
+
+      // TRƯỜNG HỢP 1: Chat chưa tồn tại -> Đây là tin nhắn đầu tiên của chat mới
+      // Giả định `newMessage` chứa object `chat` đi kèm
+      if (!chatExistsInConversations && !chatExistsInRequests && newMessage.chat) {
+        const formatted = formatConversation(newMessage.chat);
+        if (formatted) {
+          if (formatted.isRequest) {
+            setMessageRequests((prev) => [formatted, ...prev]);
+          } else {
+            setConversations((prev) => [formatted, ...prev]);
+          }
+        }
+      } 
+      // TRƯỜNG HỢP 2: Chat đã tồn tại, chỉ cần cập nhật preview
+      else {
+        const updateList = (list) => list.map(c => c.id === chatId ? { ...c, preview: newMessage.content, date: new Date(newMessage.createdAt).toLocaleString() } : c);
+        
+        if (chatExistsInConversations) setConversations(updateList);
+        if (chatExistsInRequests) setMessageRequests(updateList);
+      }
     })
 
     // Khi server cập nhật số lượng tin nhắn chưa đọc
     socketService.on("unread_count_updated", ({ chatId, unreadCount }) => {
       console.log(`[DEBUG] Nhận 'unread_count_updated' cho chatId: ${chatId}, unreadCount: ${unreadCount}`);
-      setConversations((prev) =>
-        prev.map((c) => (c.id === chatId ? { ...c, unread: unreadCount } : c))
-      )
-      // Cập nhật cho cả message requests nếu cần
-      setMessageRequests((prev) =>
-        prev.map((c) => (c.id === chatId ? { ...c, unread: unreadCount } : c))
-      )
+      const updateUnread = (list) => list.map((c) => (c.id === chatId ? { ...c, unread: unreadCount } : c));
+      setConversations(updateUnread);
+      setMessageRequests(updateUnread);
     })
 
     return () => {
       socketService.off("receive_message")
       socketService.off("chat:new")
-      console.log("[DEBUG] Ngắt kết nối socket và dọn dẹp listeners.");
       socketService.off("unread_count_updated")
       socketService.disconnect()
       setIsSocketConnected(false)
+      console.log("[DEBUG] Ngắt kết nối socket và dọn dẹp listeners.");
     }
-  }, [currentUser, token, formatConversation])
+  }, [currentUser, token, formatConversation, conversations, messageRequests])
 
   // --- Select conversation ---
   const handleSelectConversation = async (conversationId) => {
     console.log(`[DEBUG] Bắt đầu handleSelectConversation cho chatId: ${conversationId}`);
+
     if (!conversationId || !isSocketConnected) return;
+
+    // ✅ Tránh gọi lại nếu conversation đã được chọn
+    if (selectedConversationId === conversationId) return;
+
     setSelectedConversationId(conversationId);
-  
+
+    // Tìm cuộc trò chuyện được chọn từ state
+    const conversation =
+      conversations.find((c) => c.id === conversationId) ||
+      messageRequests.find((c) => c.id === conversationId);
+
+    // Nếu cuộc trò chuyện là một yêu cầu đang chờ (pending),
+    // chỉ người gửi mới có thể fetch tin nhắn ban đầu.
+    // Người nhận sẽ thấy giao diện chấp nhận/từ chối.
+    if (conversation && conversation.isRequest) { 
+      const isReceiver = conversation.participants?.some(p => p.id === currentUser.id && p.ChatParticipant?.status === 'pending');
+      
+      if (isReceiver) {
+        console.log(`[DEBUG] ChatId: ${conversationId} là một yêu cầu đang chờ cho người nhận. Không lấy tin nhắn.`);
+        return;
+      }
+    }
+
     try {
       const messagesResponse = await getMessages(conversationId);
       const fetchedMessages = messagesResponse?.rows || messagesResponse?.data || [];
-  
-      //  Truyền currentUserId vào setMessages
+
       dispatch(setMessages({ 
         chatId: conversationId, 
         messages: fetchedMessages,
-        currentUserId: currentUser.id,  // <-- đây là quan trọng
+        currentUserId: currentUser.id,
       }));
-  
-      // Emit event read_message
+
       console.log(`[DEBUG] Gửi sự kiện 'read_message' cho chatId: ${conversationId}`);
       socketService.emit("read_message", { chatId: conversationId });
 
-      // Dispatch action để cập nhật Redux store ngay lập tức
       dispatch(markChatAsRead({ chatId: conversationId }));
 
-      // Cập nhật UI ngay lập tức để phản ánh trạng thái đã đọc
       console.log(`[DEBUG] Cập nhật giao diện (optimistic update), unread -> 0 cho chatId: ${conversationId}`);
       setConversations((prev) =>
         prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c))
@@ -181,21 +226,18 @@ function Messages() {
       console.error("Failed to open conversation:", error);
     }
   };
-  
+
   // --- Mark as read (e.g., on input focus) ---
   const handleMarkAsRead = (conversationId) => {
     if (!conversationId || !isSocketConnected) return;
 
-    // Lấy conversation từ state để kiểm tra
     const conv = conversations.find(c => c.id === conversationId) || messageRequests.find(c => c.id === conversationId);
 
-    // Chỉ thực hiện nếu có tin nhắn chưa đọc để tránh gọi lại không cần thiết
     if (conv && conv.unread > 0) {
       console.log(`[DEBUG] Đánh dấu đã đọc từ input focus cho chatId: ${conversationId}`);
       socketService.emit("read_message", { chatId: conversationId });
       dispatch(markChatAsRead({ chatId: conversationId }));
 
-      // Cập nhật UI ngay lập tức
       setConversations((prev) =>
         prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c))
       );
@@ -226,6 +268,45 @@ function Messages() {
     })
   }
 
+  // --- Accept/Decline Request ---
+  const handleAcceptRequest = async (chatId) => {
+    try {
+      await acceptChatRequest(chatId)
+      // Cập nhật state: chuyển request thành conversation
+      setMessageRequests((prev) => {
+        const requestToMove = prev.find((r) => r.id === chatId)
+        if (requestToMove) {
+          setConversations((convs) => [
+            { ...requestToMove, isRequest: false },
+            ...convs,
+          ])
+        }
+        return prev.filter((r) => r.id !== chatId)
+      })
+      // Không cần làm gì thêm, vì component MessageDetail sẽ tự re-render
+      // và isReceiverOfRequest sẽ trở thành false, hiện ra ô input.
+    } catch (error) {
+      console.error("Failed to accept chat request:", error)
+      // Hiển thị thông báo lỗi cho người dùng
+    }
+  }
+
+  const handleDeclineRequest = async (chatId) => {
+    try {
+      await declineChatRequest(chatId)
+      // Cập nhật state: xóa request khỏi danh sách
+      setMessageRequests((prev) => prev.filter((r) => r.id !== chatId))
+      // Chuyển về màn hình chính nếu đang xem request đó
+      if (selectedConversationId === chatId) {
+        setSelectedConversationId(null)
+      }
+    } catch (error) {
+      console.error("Failed to decline chat request:", error)
+      // Hiển thị thông báo lỗi cho người dùng
+    }
+  }
+
+
   return (
     <div className={cx("root")}>
       <div className={cx("list-panel")}>
@@ -245,7 +326,10 @@ function Messages() {
             onSendMessage={handleSendMessage}
             onInputFocus={() => handleMarkAsRead(selectedConversation.id)}
             isSocketConnected={isSocketConnected}
+            isRequest={selectedConversation.isRequest}
             currentUser={currentUser}
+            onAcceptRequest={handleAcceptRequest}
+            onDeclineRequest={handleDeclineRequest}
           />
         ) : (
           <div className={cx("no-conversation-selected")}>

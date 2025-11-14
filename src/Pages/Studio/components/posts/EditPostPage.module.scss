@@ -25,12 +25,12 @@
   margin-top: 1rem;
   color: var(--text-secondary);
 }
-
 .mainContent {
-  flex: 1;
+  height: calc(100vh - 10px);
+  /* Giới hạn theo viewport */
   padding: 1.5rem;
+  overflow-y: auto;
 }
-
 .container {
   max-width: 80rem; /* max-w-7xl */
   margin-left: auto;

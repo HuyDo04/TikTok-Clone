@@ -1,5 +1,6 @@
 "use client"
 
+import * as postService from "../../../../services/post.service"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import classNames from "classnames/bind"
@@ -12,29 +13,37 @@ const cx = classNames.bind(styles)
 
 export default function EditPostForm({ post }) {
   const navigate = useNavigate()
-  const [caption, setCaption] = useState(post.caption)
-  const [privacy, setPrivacy] = useState(post.privacy)
+  const [content, setContent] = useState(post.content)
+  const [visibility, setVisibility] = useState(post.visibility)
   const [isSaving, setIsSaving] = useState(false)
 
   // Calculate days since post was created
   const postDate = new Date(post.createdAt)
   const today = new Date()
   const daysSincePost = Math.floor((today - postDate) / (1000 * 60 * 60 * 24))
-  const canEditCaption = daysSincePost <= 7
+  const canEditContent = daysSincePost <= 7
 
   const handleSave = async () => {
     setIsSaving(true)
-
-    // Simulate save
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    navigate("/studio/posts")
+    try {
+      const updatedData = {
+        content: canEditContent ? content : undefined, // Chỉ gửi content nếu được phép sửa
+        visibility,
+      }
+      await postService.updatePost(post.id, updatedData)
+      navigate("/studio/posts") // Điều hướng về trang danh sách sau khi lưu thành công
+    } catch (error) {
+      console.error("Failed to save post:", error)
+      // Có thể hiển thị thông báo lỗi cho người dùng ở đây
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const files = [
     {
       type: post.type,
-      url: post.thumbnail,
+      url: post.featuredImage,
       duration: post.duration,
     },
   ]
@@ -53,23 +62,23 @@ export default function EditPostForm({ post }) {
           </div>
 
           <div className={cx("captionSection")}>
-            {!canEditCaption && (
+            {!canEditContent && (
               <div className={cx("warningBox")}>
                 <p>⚠️ Bài đăng này đã quá 7 ngày, bạn không thể chỉnh sửa phụ đề nữa.</p>
               </div>
             )}
-            <CaptionInput value={caption} onChange={setCaption} disabled={!canEditCaption} />
+            <CaptionInput value={content} onChange={setContent} disabled={!canEditContent} />
           </div>
 
           <div className={cx("dateSection")}>
             <label className={cx("label")}>Ngày đăng</label>
-            <p className={cx("dateText")}>{post.date}</p>
+            <p className={cx("dateText")}>{new Date(post.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
 
         <div className={cx("card")}>
           <h3 className={cx("sectionTitle")}>Cài đặt quyền riêng tư</h3>
-          <PrivacySelector value={privacy} onChange={setPrivacy} />
+          <PrivacySelector value={visibility} onChange={setVisibility} />
           <div className={cx("mt-6")}>
             <h4 className={cx("subheading")}>Cho phép người dùng:</h4>
             <div className={cx("checkboxGroup")}>
@@ -90,19 +99,19 @@ export default function EditPostForm({ post }) {
           <div className={cx("statsGrid")}>
             <div className={cx("statItem")}>
               <p className={cx("statLabel")}>Lượt xem</p>
-              <p className={cx("statValue")}>{post.views.toLocaleString()}</p>
+              <p className={cx("statValue")}>{post.viewCount?.toLocaleString() || 0}</p>
             </div>
             <div className={cx("statItem")}>
               <p className={cx("statLabel")}>Lượt thích</p>
-              <p className={cx("statValue")}>{post.likes.toLocaleString()}</p>
+              <p className={cx("statValue")}>{post.likesCount?.toLocaleString() || 0}</p>
             </div>
             <div className={cx("statItem")}>
               <p className={cx("statLabel")}>Bình luận</p>
-              <p className={cx("statValue")}>{post.comments.toLocaleString()}</p>
+              <p className={cx("statValue")}>{post.commentsCount?.toLocaleString() || 0}</p>
             </div>
             <div className={cx("statItem")}>
               <p className={cx("statLabel")}>Chia sẻ</p>
-              <p className={cx("statValue")}>{post.shares.toLocaleString()}</p>
+              <p className={cx("statValue")}>{post.sharesCount?.toLocaleString() || 0}</p>
             </div>
           </div>
         </div>
@@ -118,7 +127,7 @@ export default function EditPostForm({ post }) {
       </div>
 
       <div className={cx("preview")}>
-        <PreviewTabs files={files} caption={caption} />
+        <PreviewTabs files={files} caption={content} />
       </div>
     </div>
   )

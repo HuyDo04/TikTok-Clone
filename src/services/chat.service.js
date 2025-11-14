@@ -52,7 +52,7 @@ export const getMessages = async (chatId, params = {}) => {
 // Lấy danh sách chat request
 export const getChatRequests = async () => {
   const response = await httpRequest.get("/chats/requests");
-  return response;
+  return response.data;
 };
 
 // Chấp nhận chat request
@@ -103,5 +103,5 @@ export const getChatByMemberIds = async (memberIds) => {
   const response = await httpRequest.get(`/chats/find/by-members`, {
     params: { memberIds: query },
   });
-  return response;
+  return response.data;
 };

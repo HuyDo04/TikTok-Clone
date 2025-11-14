@@ -5,6 +5,7 @@ import classNames from "classnames/bind"
 import styles from "./CreatorCard.module.scss"
 
 const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 export default function CreatorCard({ creator }) {
   const [isFollowing, setIsFollowing] = useState(false)
@@ -17,7 +18,7 @@ export default function CreatorCard({ creator }) {
     <div className={cx("creatorCard")}>
       <div className={cx("creatorHeader")}>
         <img
-          src={creator.avatar || "/placeholder.svg?height=48&width=48"}
+          src={creator.avatar || `${DEFAULT_AVATAR}?height=48&width=48`}
           alt={creator.name}
           className={cx("avatar")}
         />

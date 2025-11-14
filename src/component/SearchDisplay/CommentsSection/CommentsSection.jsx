@@ -1,36 +1,120 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSelector } from "react-redux"
 import classNames from "classnames/bind"
 import styles from "./CommentsSection.module.scss"
-import { Heart, SmilePlus } from "lucide-react"
+import { SmilePlus } from "lucide-react"
+import Comment from "@/component/VideoCard/Comment/Comment" // Sử dụng lại component Comment đã hoàn thiện
+import {
+  getCommentsByPost,
+  createComment,
+  replyComment,
+  deleteComment,
+} from "@/services/comment.service"
 
 const cx = classNames.bind(styles)
 
-export default function CommentsSection({ comments, videoId }) {
+export default function CommentsSection({ videoId }) {
   const [commentText, setCommentText] = useState("")
-  const [allComments, setAllComments] = useState(comments || [])
+  const [allComments, setAllComments] = useState([])
+  const [replyingTo, setReplyingTo] = useState(null) // State để quản lý việc trả lời
+  const currentUser = useSelector((state) => state.auth.currentUser)
 
-  const handlePostComment = () => {
-    if (commentText.trim()) {
-      const newComment = {
-        id: allComments.length + 1,
-        author: "You",
-        avatar: "/placeholder.svg?height=32&width=32",
-        text: commentText,
-        likes: 0,
-        timestamp: "now",
+  // Lấy danh sách bình luận từ API
+  useEffect(() => {
+    if (videoId) {
+      const fetchComments = async () => {
+        try {
+          const response = await getCommentsByPost(videoId)
+          setAllComments(response || [])
+        } catch (error) {
+          console.error("Failed to fetch comments:", error)
+          setAllComments([])
+        }
       }
-      setAllComments([newComment, ...allComments])
-      setCommentText("")
+      fetchComments()
     }
-  }
+  }, [videoId])
 
-  const handleKeyPress = (e) => {
+  // Xử lý đăng bình luận hoặc trả lời
+  const handlePostComment = async (e) => {
+    e.preventDefault()
+    if (!commentText.trim() || !currentUser) return
+
+    try {
+      let response
+      if (replyingTo) {
+        const replyData = { content: commentText }
+        response = await replyComment(replyingTo, replyData)
+      } else {
+        const commentData = { postId: videoId, content: commentText }
+        response = await createComment(commentData)
+      }
+
+      const newComment = response
+
+      if (newComment && newComment.id) {
+        if (replyingTo) {
+          // Thêm trả lời vào bình luận cha
+          setAllComments(
+            allComments.map((c) =>
+              c.id === replyingTo ? { ...c, replies: [...(c.replies || []), newComment] } : c
+            )
+          )
+          setReplyingTo(null)
+        } else {
+          // Thêm bình luận mới vào đầu danh sách
+          setAllComments([newComment, ...allComments])
+        }
+      }
+      setCommentText("")
+    } catch (error) {
+      console.error("Failed to post comment:", error)
+    }
+  };
+
+  const handleKeyPress = (e) => { // Giữ lại để submit bằng Enter
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handlePostComment()
     }
+  }
+
+  // Các hàm xử lý cho component Comment
+  const handleReply = (commentId, username) => {
+    setReplyingTo(commentId)
+    setCommentText(`@${username} `)
+  }
+
+  const handleDeleteComment = async (commentId, parentId) => {
+    try {
+      await deleteComment(commentId)
+      if (parentId) {
+        setAllComments(allComments.map(c => 
+          c.id === parentId ? { ...c, replies: c.replies.filter(r => r.id !== commentId) } : c
+        ))
+      } else {
+        setAllComments(allComments.filter(c => c.id !== commentId))
+      }
+    } catch (error) {
+      console.error("Failed to delete comment:", error)
+    }
+  }
+
+  const handleUpdateComment = (updatedComment) => {
+    setAllComments(prevComments => 
+      prevComments.map(comment => {
+        if (comment.id === updatedComment.id) return { ...comment, ...updatedComment }
+        if (comment.replies) {
+          const updatedReplies = comment.replies.map(reply => 
+            reply.id === updatedComment.id ? { ...reply, ...updatedComment } : reply
+          )
+          return { ...comment, replies: updatedReplies }
+        }
+        return comment
+      })
+    )
   }
 
   return (
@@ -41,51 +125,24 @@ export default function CommentsSection({ comments, videoId }) {
       </div>
 
       <div className={cx("commentsList")}>
-        {allComments.map((comment) => (
-          <div key={comment.id} className={cx("commentItem")}>
-            <img src={comment.avatar || "/placeholder.svg"} alt={comment.author} className={cx("commentAvatar")} />
-
-            <div className={cx("commentContent")}>
-              <div className={cx("commentHeader")}>
-                <h5 className={cx("commentAuthor")}>{comment.author}</h5>
-                <span className={cx("commentTime")}>{comment.timestamp}</span>
-              </div>
-
-              <p className={cx("commentText")}>{comment.text}</p>
-
-              <button className={cx("likeBtn")}>
-                <Heart size={14} />
-                <span>{comment.likes}</span>
-              </button>
-            </div>
-
-            {comment.reply && (
-              <div className={cx("reply")}>
-                <img
-                  src={comment.reply.avatar || "/placeholder.svg"}
-                  alt={comment.reply.author}
-                  className={cx("replyAvatar")}
-                />
-                <div className={cx("replyContent")}>
-                  <div className={cx("replyHeader")}>
-                    <h6 className={cx("replyAuthor")}>{comment.reply.author}</h6>
-                    <span className={cx("replyTime")}>{comment.reply.timestamp}</span>
-                  </div>
-                  <p className={cx("replyText")}>{comment.reply.text}</p>
-                </div>
-              </div>
-            )}
-          </div>
+        {allComments.map((comment) => ( // Sử dụng component Comment
+          <Comment
+            key={comment.id}
+            comment={comment}
+            onReply={handleReply}
+            onDelete={handleDeleteComment}
+            onUpdate={handleUpdateComment}
+          />
         ))}
       </div>
 
-      <div className={cx("commentInput")}>
+      <form className={cx("commentInput")} onSubmit={handlePostComment}>
         <input
           type="text"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Thêm bình luận..."
+          placeholder={replyingTo ? "Thêm câu trả lời..." : "Thêm bình luận..."}
           className={cx("inputField")}
         />
 
@@ -93,11 +150,11 @@ export default function CommentsSection({ comments, videoId }) {
           <button className={cx("actionBtn")} title="Emoji">
             <SmilePlus size={18} />
           </button>
-          <button className={cx("actionBtn")} onClick={handlePostComment} disabled={!commentText.trim()}>
+          <button type="submit" className={cx("actionBtn")} disabled={!commentText.trim()}>
             Đăng
           </button>
         </div>
-      </div>
+      </form>
     </div>
   )
 }

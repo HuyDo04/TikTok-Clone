@@ -15,6 +15,26 @@
     }
 }
 
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-query {
+    width: 80%;
+}
+
+.clear-history {
+    font-weight: 700;
+    cursor: pointer;
+}
+
 @keyframes slideIn {
     from {
         transform: translateX(-100%);
@@ -89,10 +109,7 @@
         li {
             padding: 8px 0;
             cursor: pointer;
-
-            &:hover {
-                background-color: var(--hover-color);
-            }
+            margin-top: 10px;
         }
     }
 }

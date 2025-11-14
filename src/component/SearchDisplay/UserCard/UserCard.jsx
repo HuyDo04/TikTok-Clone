@@ -2,13 +2,14 @@ import classNames from "classnames/bind"
 import styles from "./UserCard.module.scss"
 
 const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 function UserCard({ user }) {
   return (
     <div className={cx("user-card")}>
       <div className={cx("user-card-content")}>
         <div className={cx("user-avatar-section")}>
-          <img src={user.avatar || "/placeholder.svg"} alt={user.displayName} className={cx("user-avatar")} />
+          <img src={user.avatar || DEFAULT_AVATAR} alt={user.displayName} className={cx("user-avatar")} />
         </div>
 
         <div className={cx("user-info")}>

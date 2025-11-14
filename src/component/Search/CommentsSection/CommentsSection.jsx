@@ -6,6 +6,7 @@ import styles from "./CommentsSection.module.scss"
 import { Heart, SmilePlus } from "lucide-react"
 
 const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 // eslint-disable-next-line no-unused-vars
 export default function CommentsSection({ comments, videoId }) {
@@ -17,7 +18,7 @@ export default function CommentsSection({ comments, videoId }) {
       const newComment = {
         id: allComments.length + 1,
         author: "You",
-        avatar: "/placeholder.svg?height=32&width=32",
+        avatar: `${DEFAULT_AVATAR}?height=32&width=32`,
         text: commentText,
         likes: 0,
         timestamp: "now",
@@ -44,7 +45,7 @@ export default function CommentsSection({ comments, videoId }) {
       <div className={cx("commentsList")}>
         {allComments.map((comment) => (
           <div key={comment.id} className={cx("commentItem")}>
-            <img src={comment.avatar || "/placeholder.svg"} alt={comment.author} className={cx("commentAvatar")} />
+            <img src={comment.avatar || DEFAULT_AVATAR} alt={comment.author} className={cx("commentAvatar")} />
 
             <div className={cx("commentContent")}>
               <div className={cx("commentHeader")}>
@@ -63,7 +64,7 @@ export default function CommentsSection({ comments, videoId }) {
             {comment.reply && (
               <div className={cx("reply")}>
                 <img
-                  src={comment.reply.avatar || "/placeholder.svg"}
+                  src={comment.reply.avatar || DEFAULT_AVATAR}
                   alt={comment.reply.author}
                   className={cx("replyAvatar")}
                 />

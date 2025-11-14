@@ -11,6 +11,7 @@ import VideoDetailModal from "../VideoDetailModal/VideoDetailModal"
 import { search } from "@/services/search.service"
 
 const cx = classNames.bind(styles)
+const URL = import.meta.env.VITE_BASE_URL_ME
 
 function SearchPage() {
   const [searchParams] = useSearchParams()
@@ -40,14 +41,15 @@ function SearchPage() {
         if (response.posts && response.posts.length > 0) {
           setUserVideos(response.posts.map(post => ({
             id: post.id,
-            thumbnail: post.media ? JSON.parse(post.media)[0]?.url : '/placeholder.jpg',
+            // Xóa '/public' khỏi đường dẫn để hiển thị đúng
+            thumbnail: post.featuredImage ? `${URL}/${post.featuredImage.replace('public/', '')}` : '/placeholder.jpg',
             title: post.content,
             likes: post.likesCount,
             timeAgo: new Date(post.createdAt).toLocaleDateString(), // Adjust as needed
-            videoUrl: post.media ? JSON.parse(post.media)[0]?.url : '/placeholder-video.mp4',
+            videoUrl: post.media ? `${URL}/${JSON.parse(post.media)[0]?.url.replace('public/', '')}` : '/placeholder-video.mp4',
             creator: {
               name: post.author.username,
-              avatar: post.author.avatar || '/placeholder-user.jpg',
+              avatar: post.author.avatar? `${URL}/${post.author.avatar.replace('public/', '')}`: '/placeholder-user.jpg',
             },
             isVerified: false, // Assuming no verification status in post API
           })))

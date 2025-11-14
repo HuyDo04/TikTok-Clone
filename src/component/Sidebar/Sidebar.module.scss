@@ -33,7 +33,6 @@
 
 /* ===== Logo section ===== */
 .logo-section {
-    
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -139,6 +138,19 @@
     height: 1px;
     margin: 12px 16px;
     background-color: rgba(22, 24, 35, 0.12);
+}
+
+.style-btn {
+    margin-left: 18px;
+}
+
+.logout-btn {
+    border-radius: 8px;
+}
+
+.login-btn {
+    border-radius: 8px;
+    width: 80%;
 }
 
 /* ===== Login prompt ===== */

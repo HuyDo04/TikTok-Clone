@@ -1,9 +1,10 @@
 import { Bell, BellIcon, LockIcon, Tv, UserIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import BlockedUsersModal from "./BlockedUsersModal";
 
 // --- Self-contained UI Components ---
 
-const Button = ({ variant, onClick, children, className = '' }) => {
+export const Button = ({ variant, onClick, children, className = '' }) => {
     const baseStyle = "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-black";
     let variantStyle = "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500";
 
@@ -158,6 +159,7 @@ function SettingsSection({ section, children }) {
 }
 
 function SettingsPage() {
+  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
   const menuItems = [
     { id: "account-management", label: "Quản lý tài khoản", icon: <UserIcon /> },
     { id: "privacy", label: "Quyền riêng tư", icon: <LockIcon /> },
@@ -201,7 +203,7 @@ function SettingsPage() {
                     <Switch id="private-account" />
                 </SettingItem>
                 <SettingItem label="Tài khoản đã chặn" description="Quản lý các tài khoản bạn đã chặn.">
-                    <Button variant="outline">Quản lý</Button>
+                    <Button variant="outline" onClick={() => setIsBlockedModalOpen(true)}>Quản lý</Button>
                 </SettingItem>
                 <SettingItem label="Tải về dữ liệu của bạn" description="Nhận một bản sao dữ liệu TikTok của bạn.">
                     <Button variant="outline" onClick={handleDownloadData}>Yêu cầu dữ liệu</Button>
@@ -230,6 +232,11 @@ function SettingsPage() {
             </SettingsSection>
         </div>
       </main>
+
+      <BlockedUsersModal 
+        isOpen={isBlockedModalOpen}
+        onClose={() => setIsBlockedModalOpen(false)}
+      />
     </div>
   );
 }

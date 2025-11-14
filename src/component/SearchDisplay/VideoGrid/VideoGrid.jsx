@@ -1,8 +1,10 @@
 "use client"
 import classNames from "classnames/bind"
 import styles from "./VideoGrid.module.scss"
+import HeartIcon from "@/component/Icons/HeartIcon";
 
 const cx = classNames.bind(styles)
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 export default function VideoGrid({ videos, isUserVideos = false, onVideoClick }) {
   const handleVideoClick = (video) => {
@@ -28,11 +30,11 @@ export default function VideoGrid({ videos, isUserVideos = false, onVideoClick }
             }}
           >
             <div className={cx("video-thumbnail-wrapper")}>
-              <img src={video.thumbnail || "/placeholder.svg"} alt={video.title} className={cx("video-thumbnail")} />
+              <img src={video.thumbnail || DEFAULT_AVATAR} alt={video.title} className={cx("video-thumbnail")} />
               {!isUserVideos && (
                 <>
                   <div className={cx("video-likes")}>
-                    <span className={cx("heart-icon")}>❤️</span>
+                    <HeartIcon />
                     {video.likes}
                   </div>
                   <div className={cx("video-overlay")} />
@@ -49,7 +51,7 @@ export default function VideoGrid({ videos, isUserVideos = false, onVideoClick }
 
                 <div className={cx("video-creator")}>
                   <img
-                    src={video.creatorAvatar || "/placeholder.svg"}
+                    src={video.creatorAvatar || DEFAULT_AVATAR}
                     alt={video.creator}
                     className={cx("creator-avatar")}
                   />

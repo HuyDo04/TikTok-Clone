@@ -1,35 +1,51 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
-import { Cog, Share, MessageSquare, UserPlus } from "lucide-react";
+/* eslint-disable no-unused-vars */
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Ellipsis, OptionIcon, Share } from "lucide-react";
 import classNames from "classnames/bind";
 import styles from "./ProfileHeader.module.scss";
-import EditProfile from "../EditProfile";
-import SettingsGearIcon from "../Icons/SettingsGearIcon";
-import ShareArrowIcon from "../Icons/ShareArrowIcon";
+import FollowButton from "../Button/FollowButton";
 import ShareMenu from "../ShareMenu/ShareMenu";
+import SettingsGearIcon from "../Icons/SettingsGearIcon";
+import { useSelector } from "react-redux";
 
 const cx = classNames.bind(styles);
 
 function ProfileHeader({
   avatar,
+  userId,
   username,
   followers,
   following,
   likes,
   bio,
-  isFollowing,
-  isCurrentUser, // Nhận prop này từ ProfilePage
-  onEdit, // Nhận hàm xử lý sự kiện từ ProfilePage
-  onFollow, // Nhận hàm xử lý sự kiện từ ProfilePage
-  onUnfollow, // Nhận hàm xử lý sự kiện từ ProfilePage
+  isCurrentUser,
+  isBlocked,
+  onEdit,
+  onMessage,
+  onBlock,
+  onUnblock,
 }) {
   const [showShareMenu, setShowShareMenu] = useState(false);
-  console.log(followers),
-  console.log(following)
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  const optionsMenuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target)) {
+        setShowOptionsMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [optionsMenuRef]);
+
   return (
     <header className={cx("header")}>
-      {/* Top Header with Icons */}
-      {/* Main Profile Info */}
       <div className={cx("mainProfile")}>
         <div className={cx("avatarContainer")}>
           <img
@@ -61,16 +77,16 @@ function ProfileHeader({
 
           <p className={cx("bio")}>{bio}</p>
 
-          {/* --- Hành động (Edit, Follow, Share...) --- */}
           <div className={cx("actions")}>
             {isCurrentUser ? (
               <>
                 <button
                   className={cx("button", "editButton")}
-                  onClick={onEdit} // Gọi hàm onEdit được truyền từ cha
+                  onClick={onEdit}
                 >
                   Sửa Hồ Sơ
                 </button>
+
                 <Link to={`/settings`} className={cx("settingsLink")}>
                   <div className={cx("settingsIcon")}>
                     <SettingsGearIcon />
@@ -82,7 +98,7 @@ function ProfileHeader({
                     className={cx("shareIcon")}
                     onClick={() => setShowShareMenu(true)}
                   >
-                    <ShareArrowIcon />
+                    <Share />
                   </button>
                 </div>
 
@@ -93,21 +109,46 @@ function ProfileHeader({
               </>
             ) : (
               <>
-                {isFollowing ? (
-                  <button onClick={onUnfollow} className={cx("button", "unfollowButton")}>Bỏ theo dõi</button>
-                ) : (
-                  <button onClick={onFollow} className={cx("button", "followButton")}>Theo dõi</button>
-                )}
-                <button className={cx("button", "messageButton")}>
-                  <MessageSquare className={cx("icon-sm")} /> Nhắn tin
+                <FollowButton userId={userId} />
+
+                <button
+                  className={cx("button", "messageButton")}
+                  onClick={onMessage}
+                >
+                  Nhắn tin
                 </button>
-                <button className={cx("button", "shareButton")}>
+
+                <button
+                  className={cx("button", "shareButton")}
+                  onClick={() => setShowShareMenu(true)}
+                >
                   <Share className={cx("icon-sm")} />
                 </button>
+
+                <ShareMenu
+                  isOpen={showShareMenu}
+                  onClose={() => setShowShareMenu(false)}
+                />
+
+                <div className={cx("optionsContainer")} ref={optionsMenuRef}>
+                  <button
+                    className={cx("ellip-btn", "shareButton")}
+                    onClick={() => setShowOptionsMenu((prev) => !prev)}
+                  >
+                    <Ellipsis />
+                  </button>
+                  {showOptionsMenu && (
+                    <div className={cx("optionsMenu")}>
+                      <button onClick={isBlocked ? onUnblock : onBlock}>
+                        {isBlocked ? "Bỏ chặn" : "Chặn"}
+                      </button>
+                      {/* Thêm các tùy chọn khác ở đây nếu cần */}
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </div>
-
         </div>
       </div>
     </header>

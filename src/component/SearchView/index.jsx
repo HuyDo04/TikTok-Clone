@@ -125,18 +125,20 @@ const SearchView = ({ closeSearch }) => {
 
           {searchValue.trim() === '' ? (
             <div className={cx('search-history')}>
+              <div className={cx('history-header')}>
+              <span>Recent searches</span>
               <h4>
-                Recent searches
                 {history.length > 0 && (
                   <span className={cx('clear-history')} onClick={handleClearHistory}>
                     Xóa tất cả
                   </span>
                 )}
               </h4>
+              </div>
               <ul>
                 {history.map((item) => (
                   <li key={item.id} className={cx('history-item')}>
-                    <span onClick={() => navigate(`/search?q=${encodeURIComponent(item.query)}`)}>
+                    <span className={cx('history-query')} onClick={() => navigate(`/search?q=${encodeURIComponent(item.query)}`)}>
                       {item.query}
                     </span>
                     <X

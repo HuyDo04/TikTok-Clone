@@ -1,98 +1,108 @@
-// Login.module.scss
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: var(--background-grey-color); // Màu nền sáng giống TikTok
-    padding: 20px;
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  padding: 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--text-color);
 }
 
 .form {
-    width: 100%;
-    max-width: 400px; // Giới hạn chiều rộng giống form TikTok
-    padding: 24px;
-    background: var(--background-color);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px var(--box-shadow-color);
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--secondary-background-color);
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
+.submit-error {
+  color: var(--error-color);
+  background-color: rgba(254, 44, 85, 0.1);
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.resend-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: -0.5rem;
+}
+
+.resend-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.25rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    color: var(--text-color-secondary);
+    cursor: not-allowed;
+  }
+}
+
+.resend-message {
+  font-size: 0.85rem;
+  color: var(--success-color);
+  text-align: center;
+}
+
+.divider {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--text-color-secondary);
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  span {
+    padding: 0 1rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-color); // Màu chữ tối của TikTok
+  }
 }
 
-.input {
-    width: 100%;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    border: 1px solid var(--border-color); // Viền nhạt giống TikTok
-    border-radius: 4px;
-    font-size: 16px;
-    outline: none;
-    background: var(--background-color);
-    transition: border-color 0.2s;
+.register-prompt {
+  margin-top: 1rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
 
-    &:focus {
-        border-color: var(--text-color); // Đậm hơn khi focus
-    }
-
-    // Khi có lỗi (nếu InputText hỗ trợ)
-    &[data-error="true"] {
-        border-color: var(--primary-color); // Màu đỏ của TikTok khi lỗi
-    }
-}
-
-.Button {
-    margin-top: 24px;
-    text-align: center;
-}
-
-.subButton {
-    width: 100%;
-    padding: 12px;
-    background: var(--black-color); // Màu đen đặc trưng TikTok
-    color: var(--white-color);
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
+  a {
+    color: var(--primary-color);
     font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
+    text-decoration: none;
 
     &:hover {
-        opacity: 0.9;
+      text-decoration: underline;
     }
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-}
-
-.register-link {
-    margin-top: 16px;
-    text-align: center;
-
-    a {
-        color: var(--text-color);
-        font-size: 14px;
-        text-decoration: none;
-
-        &:hover {
-            text-decoration: underline;
-            color: var(--primary-color); // Điểm nhấn đỏ của TikTok
-        }
-    }
-}
-
-// Nếu muốn thêm error message
-.error {
-    color: var(--error-color);
-    font-size: 14px;
-    margin-top: -12px;
-    margin-bottom: 12px;
+  }
 }

@@ -8,7 +8,7 @@
 
   const cx = classNames.bind(styles)
 
-  function MessageInput({ onSendMessage, onInputFocus, chatId, isSocketConnected }) {
+  function MessageInput({ onSendMessage, onInputFocus, chatId, isSocketConnected, disabled = false }) {
     const [messageText, setMessageText] = useState("")
     const [isTyping, setIsTyping] = useState(false)
     const typingTimeoutRef = useRef(null)
@@ -38,7 +38,7 @@
     }, [messageText, isTyping, currentUser, chatId, isSocketConnected])
 
     const handleSend = () => {
-      if (!messageText.trim() || !currentUser || !isSocketConnected) return;
+      if (!messageText.trim() || !currentUser || !isSocketConnected || disabled) return;
       onSendMessage(messageText);
       setMessageText("");
       if (isTyping) {
@@ -67,6 +67,7 @@
             onFocus={onInputFocus}
             onKeyPress={handleKeyPress}
             aria-label="Nhập tin nhắn"
+            disabled={disabled}
           />
 
           <div className={cx("actions")}>
@@ -81,7 +82,7 @@
           <button
             className={cx("send-btn")}
             onClick={handleSend}
-            disabled={!messageText.trim()}
+            disabled={!messageText.trim() || disabled}
             aria-label="Gửi tin nhắn"
             title="Gửi tin nhắn"
           >

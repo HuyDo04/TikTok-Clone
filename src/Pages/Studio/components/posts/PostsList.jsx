@@ -1,31 +1,73 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
 import classNames from "classnames/bind"
-import { getAllPosts } from "../../utils/mockData"
+import * as postService from "../../../../services/post.service"
 import styles from "./PostsList.module.scss"
-
+const URL = import.meta.env.VITE_BASE_URL_ME
 const cx = classNames.bind(styles)
 
 export default function PostsList({ filters }) {
   const navigate = useNavigate()
-  const [posts, setPosts] = useState(getAllPosts())
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const currentUser = useSelector((state) => state.auth.currentUser)
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!currentUser?.username) return
+      setLoading(true)
+      try {
+        const userPosts = await postService.getUserVideosByUsername(currentUser.username)
+        setPosts(userPosts || [])
+      } catch (error) {
+        console.error("Failed to fetch posts:", error)
+        setPosts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPosts()
+  }, [currentUser])
 
   const handleEdit = (postId) => {
     navigate(`/studio/posts/${postId}/edit`)
   }
 
-  const handleDelete = (postId) => {
-    if (confirm("Bạn có chắc chắn muốn xóa bài đăng này?")) {
-      setPosts((prev) => prev.filter((p) => p.id !== postId))
+  const handleDelete = async (postId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa bài đăng này?")) {
+      try {
+        await postService.deletePost(postId)
+        setPosts((prev) => prev.filter((p) => p.id !== postId))
+      } catch (error) {
+        console.error("Failed to delete post:", error)
+      }
     }
+  }
+
+  if (loading) {
+    return (
+      <div className={cx("loadingState")}>
+        <p>Đang tải bài đăng...</p>
+      </div>
+    )
   }
 
   const filteredPosts = posts.filter((post) => {
     if (filters.privacy !== "all" && post.privacy !== filters.privacy) return false
     return true
   })
+
+  if (!loading && filteredPosts.length === 0) {
+    return (
+      <div className={cx("emptyState")}>
+        <p>Không có bài đăng nào</p>
+      </div>
+    )
+  }
 
   return (
     <div className={cx("postsListContainer")}>
@@ -47,14 +89,14 @@ export default function PostsList({ filters }) {
               <tr key={post.id}>
                 <td className={cx("contentCell")}>
                   <div className={cx("contentWrapper")}>
-                    <div className={cx("thumbnailWrapper")}>
-                      <img src={post.thumbnail || "/placeholder.svg"} alt="" />
+                    <div className={cx("thumbnailWrapper")}> 
+                      <img src={post.featuredImage ? `${URL}/${post.featuredImage}` : "/placeholder.svg"} alt={post.content} />
                       {post.type === "video" && (
                         <div className={cx("durationOverlay")}>{post.duration}</div>
                       )}
                     </div>
                     <div className={cx("textWrapper")}>
-                      <p>{post.caption}</p>
+                      <p>{post.content}</p>
                       <p>{post.date}</p>
                     </div>
                   </div>
@@ -62,18 +104,18 @@ export default function PostsList({ filters }) {
                 <td>
                   <span
                     className={cx("privacyBadge", {
-                      public: post.privacy === "public",
-                      friends: post.privacy === "friends",
-                      private: post.privacy === "private",
+                      public: post.visibility === "public",
+                      friends: post.visibility === "friends",
+                      private: post.visibility === "private",
                     })}
                   >
-                    {post.privacy === "public" ? "Công khai" : post.privacy === "friends" ? "Bạn bè" : "Riêng tư"}
+                    {post.visibility === "public" ? "Công khai" : post.visibility === "friends" ? "Bạn bè" : "Riêng tư"}
                   </span>
                 </td>
-                <td>{post.views.toLocaleString()}</td>
-                <td>{post.likes.toLocaleString()}</td>
-                <td>{post.comments.toLocaleString()}</td>
-                <td>{post.shares.toLocaleString()}</td>
+                <td>{post.viewCount?.toLocaleString() || 0}</td>
+                <td>{post.likesCount?.toLocaleString() || 0}</td>
+                <td>{post.commentsCount?.toLocaleString() || 0}</td>
+                <td>{post.sharesCount?.toLocaleString() || 0}</td>
                 <td className={cx("actionsCell")}>
                   <div className={cx("actionsWrapper")}>
                     <button onClick={() => handleEdit(post.id)} title="Chỉnh sửa">
@@ -123,12 +165,6 @@ export default function PostsList({ filters }) {
           </tbody>
         </table>
       </div>
-
-      {filteredPosts.length === 0 && (
-        <div className={cx("emptyState")}>
-          <p>Không có bài đăng nào</p>
-        </div>
-      )}
     </div>
   )
 }

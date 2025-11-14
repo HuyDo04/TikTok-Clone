@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import * as postService from "../../../../services/post.service"
 import classNames from "classnames/bind"
 import EditPostForm from "./EditPostForm"
-import { getPostById } from "../../utils/mockData"
 import styles from "./EditPostPage.module.scss"
 
 const cx = classNames.bind(styles)
@@ -15,12 +15,17 @@ export default function EditPostPage() {
   const [post, setPost] = useState(null)
 
   useEffect(() => {
-    const postData = getPostById(id)
-    if (postData) {
-      setPost(postData)
-    } else {
-      navigate("/studio/posts")
+    const fetchPost = async () => {
+      try {
+        const postData = await postService.getPostById(id)
+        setPost(postData)
+      } catch (error) {
+        console.error("Failed to fetch post:", error)
+        navigate("/studio/posts") // Điều hướng về trang danh sách nếu không tìm thấy bài đăng
+      }
     }
+
+    fetchPost()
   }, [id, navigate])
 
   if (!post) {

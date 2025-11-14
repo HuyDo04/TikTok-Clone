@@ -4,6 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./LiveChat.module.scss";
 
 const cx = classNames.bind(styles);
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 function LiveChat({ comments, onSendComment }) {
   const [message, setMessage] = useState("");
@@ -31,7 +32,7 @@ function LiveChat({ comments, onSendComment }) {
       <div className={cx("comments-list")}>
         {comments.map((comment) => (
           <div key={comment.id} className={cx("comment")}>
-            <img src={comment.avatar || "/placeholder.svg"} alt={comment.username} className={cx("avatar")} />
+            <img src={comment.avatar || DEFAULT_AVATAR} alt={comment.username} className={cx("avatar")} />
             <div className={cx("content")}>
                 <span className={cx("username")}>{comment.username}</span>
                 <span className={cx("message")}>{comment.message}</span>

@@ -30,39 +30,6 @@ import { logout } from "@/services/auth.service";
 
 const cx = classNames.bind(styles);
 
-// ===================== Sidebar Menu =====================
-const baseSidebarMenu = [
-  { title: "Đề xuất", icon: HomeIcon, path: "/" },
-  { title: "Khám phá", icon: FocusIcon, path: "/explore" },
-  { title: "Đã follow", icon: FollowedIcon, path: "/following" },
-  { title: "Bạn bè", icon: UsersIcon, path: "/friends" },
-  { title: "LIVE", icon: LiveIcon, path: "/live" },
-  { title: "Tin nhắn", icon: MessageIcon, path: "/messages" },
-  { title: "Thông báo", icon: AlertIcon, path: "/notifications" },
-  { title: "Tải lên", icon: PlusSquareIcon, path: "/studio" },
-];
-
-const suggestedAccounts = [
-  {
-    id: 1,
-    username: "thuytien",
-    name: "Thủy Tiên",
-    avatar: "https://placehold.co/40x40/FF5588/FFFFFF?text=TT",
-  },
-  {
-    id: 2,
-    username: "truongan",
-    name: "Trường An Official",
-    avatar: "https://placehold.co/40x70/007bff/FFFFFF?text=TA",
-  },
-  {
-    id: 3,
-    username: "minh_hieu",
-    name: "Minh Hiếus",
-    avatar: "https://placehold.co/40x40/28a745/FFFFFF?text=MH",
-  },
-];
-
 // ===================== NavItem Component =====================
 const NavItem = ({ icon: Icon, title, path, isCollapsed, onClick, classNames }) => {
   const navLinkClasses = ({ isActive }) =>
@@ -98,15 +65,25 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
-  // Tạo menu động dựa trên trạng thái đăng nhập của người dùng
-  const sidebarMenu = [
-    ...baseSidebarMenu,
-    {
-      title: "Hồ sơ",
-      icon: UsersIcon,
-      path: currentUser ? `/profile/${currentUser.username}` : "/profile",
-    },
+  // ===================== Sidebar Menu =====================
+  // Tạo menu động dựa trên trạng thái đăng nhập
+  const baseSidebarMenu = [
+    { title: "Đề xuất", icon: HomeIcon, path: "/" },
+    { title: "Khám phá", icon: FocusIcon, path: "/explore" },
+    { title: "Đã follow", icon: FollowedIcon, path: "/following" },
+    { title: "LIVE", icon: LiveIcon, path: "/live" },
+    { title: "Tải lên", icon: PlusSquareIcon, path: "/studio" },
   ];
+
+  if (currentUser) {
+    baseSidebarMenu.splice(3, 0, { title: "Bạn bè", icon: UsersIcon, path: "/friends" });
+    baseSidebarMenu.push(
+      { title: "Tin nhắn", icon: MessageIcon, path: "/messages" },
+      { title: "Thông báo", icon: AlertIcon, path: "/notifications" }
+    );
+  }
+
+  const sidebarMenu = [...baseSidebarMenu, { title: "Hồ sơ", icon: UsersIcon, path: currentUser ? `/profile/${currentUser.username}` : "/profile" }];
 
    const handleLogout = async () => {
      try {
@@ -195,49 +172,25 @@ function Sidebar({ isCollapsed, toggleSidebar, toggleSearch, closeSearch }) {
           <div className={styles.separator}></div>
 
           {/* Login/Logout Section */}
-          {!currentUser ? (
-            <div className={styles["login-prompt"]}>
-              <p>Log in to follow creators, like videos, and view comments.</p>
-              <Button primary size="large" to="/auth/login" onClick={closeSearch}>
-                Log in
-              </Button>
-            </div>
-          ) : (
-            <div onClick={handleLogout}>
-              <Button primary size="large">
-                Log out
-              </Button>
-            </div>
-          )}
-
-          <div className={styles.separator}></div>
+          <div className={cx("style-btn")}>
+            {!currentUser ? (
+              <div className={styles["login-prompt"]}>
+                <p>Log in to follow creators, like videos, and view comments.</p>
+                <Button primary size="large" to="/auth/login" onClick={closeSearch} className={cx("login-btn")}>
+                  Log in
+                </Button>
+              </div>
+            ) : (
+              <div onClick={handleLogout} >
+                <Button primary size="large" className= {cx("logout-btn")}>
+                  Log out
+                </Button>
+              </div>
+            )}
+          </div>
+          {/* <div className={styles.separator}></div> */}
 
           {/* Suggested Accounts */}
-          <div className={styles["suggested-accounts"]}>
-            <p className={styles["suggested-title"]}>Suggested accounts</p>
-            {suggestedAccounts.map((account) => (
-              <div
-                key={account.id}
-                className={styles["account-item"]}
-                onClick={closeSearch}
-              >
-                <img
-                  src={account.avatar}
-                  alt={account.name}
-                  className={styles["account-avatar"]}
-                />
-                <div className={styles["account-info"]}>
-                  <p className={styles["account-username"]}>
-                    {account.username}
-                  </p>
-                  <p className={styles["account-name"]}>{account.name}</p>
-                </div>
-              </div>
-            ))}
-            <div className={styles["view-all"]} onClick={closeSearch}>
-              See all
-            </div>
-          </div>
         </>
       )}
     </aside>

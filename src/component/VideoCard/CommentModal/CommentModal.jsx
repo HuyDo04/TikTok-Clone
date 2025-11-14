@@ -1,60 +1,25 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import EmojiPicker from "emoji-picker-react";
 import Comment from "../Comment/Comment";
 import styles from "./CommentModal.module.scss";
 import classNames from "classnames/bind";
+import { getCommentsByPost, createComment, replyComment, deleteComment } from "@/services/comment.service";
 
 const cx = classNames.bind(styles);
 
-// Mock comment data
-const allMockComments = {
-  1: [
-    {
-      id: 101,
-      user: { username: "hoang_dung_fan", avatar: "https://i.pravatar.cc/150?img=1" },
-      text: "Video đầu tiên hay quá! Xem chục lần rồi chưa chán 🥰",
-      likes: 42,
-      date: "10-01",
-      replies: [
-        {
-          id: 1011,
-          user: { username: "fan_reply", avatar: "https://i.pravatar.cc/150?img=2" },
-          text: "Mình cũng vậy nè!",
-          likes: 5,
-          date: "10-01",
-        },
-      ],
-    },
-  ],
-  2: [
-    {
-      id: 102,
-      user: { username: "hoang_dung_fan", avatar: "https://i.pravatar.cc/150?img=1" },
-      text: "Video đầu tiên hay quá! Xem chục lần rồi chưa chán 🥰",
-      likes: 42,
-      date: "10-01",
-      replies: [
-        {
-          id: 1011,
-          user: { username: "fan_reply", avatar: "https://i.pravatar.cc/150?img=2" },
-          text: "Mình cũng vậy nè!",
-          likes: 5,
-          date: "10-01",
-        },
-      ],
-    },
-  ],
-};
-
 export default function CommentModal({ video, onClose, onCommentAdded }) {
+  
+  
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const emojiPickerRef = useRef(null);
-
+  
+  const currentUser = useSelector((state) => state.auth.currentUser);
   // ✅ Sửa logic emoji
   const handleEmojiClick = (emojiData) => {
     setCommentText((prev) => prev + emojiData.emoji);
@@ -63,8 +28,17 @@ export default function CommentModal({ video, onClose, onCommentAdded }) {
 
   useEffect(() => {
     if (video && video.id) {
-      setComments(allMockComments[video.id] || []);
-    }
+      const fetchComments = async () => {
+        try {
+          const response = await getCommentsByPost(video.id);
+          // API trả về trực tiếp mảng comments
+          setComments(response || []);
+        } catch (error) {
+          console.error("Failed to fetch comments:", error);
+        }
+      };
+      fetchComments();
+    } 
   }, [video]);
 
   useEffect(() => {
@@ -85,43 +59,77 @@ export default function CommentModal({ video, onClose, onCommentAdded }) {
     };
   }, [showPicker]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
+    if (!commentText.trim() || !currentUser) return;
 
-    if (replyingTo) {
-      const newReply = {
-        id: Date.now(),
-        user: { username: "current_user", avatar: "/current-user.jpg" },
-        text: commentText,
-        likes: 0,
-        date: "Vừa xong",
-      };
+    try {
+      let response;
 
-      setComments(
-        comments.map((comment) =>
-          comment.id === replyingTo
-            ? { ...comment, replies: [...comment.replies, newReply] }
-            : comment
-        )
-      );
-      setReplyingTo(null);
-    } else {
-      const newComment = {
-        id: Date.now(),
-        user: { username: "current_user", avatar: "/current-user.jpg" },
-        text: commentText,
-        likes: 0,
-        date: "Vừa xong",
-        replies: [],
-      };
-      setComments([newComment, ...comments]);
-      if (onCommentAdded) onCommentAdded();
+      if (replyingTo) {
+        // Logic để trả lời bình luận
+        const replyData = { content: commentText };
+        response = await replyComment(replyingTo, replyData);
+      } else {
+        // Logic để tạo bình luận gốc
+        const commentData = {
+          postId: video.id, // Sửa từ post_id thành postId
+          content: commentText,
+        };
+        response = await createComment(commentData);
+      }
+      // API trả về trực tiếp object comment mới
+      const newComment = response;
+
+      if (replyingTo) {
+        if (newComment && newComment.id) {
+          // Thêm trả lời vào bình luận cha
+          setComments(
+            comments.map((comment) =>
+              comment.id === replyingTo
+                ? { ...comment, replies: [...(comment.replies || []), newComment] }
+                : comment
+            )
+          );
+          setReplyingTo(null);
+        }
+      } else {
+        if (newComment && newComment.id) {
+          // Thêm bình luận mới vào đầu danh sách
+          setComments([newComment, ...comments]);
+          if (onCommentAdded) onCommentAdded();
+        }
+      }
+
+      setCommentText("");
+      setShowPicker(false);
+    } catch (error) {
+      console.error("Failed to post comment or reply:", error);
+      // Có thể hiển thị thông báo lỗi cho người dùng ở đây
     }
+  };
 
-    setCommentText("");
-    setShowPicker(false);
-};
+  const handleDeleteComment = async (commentId, parentId) => {
+    try {
+      await deleteComment(commentId); // Gọi API để xóa comment
+      if (parentId) {
+        // Xóa một reply
+        setComments(comments.map(comment => {
+          if (comment.id === parentId) {
+            // Lọc ra reply đã bị xóa
+            const updatedReplies = comment.replies.filter(reply => reply.id !== commentId);
+            return { ...comment, replies: updatedReplies };
+          }
+          return comment;
+        }));
+      } else {
+        // Xóa một comment gốc
+        setComments(comments.filter(comment => comment.id !== commentId));
+      }
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  };
 
   const handleReply = (commentId, username) => {
     setReplyingTo(commentId);
@@ -130,6 +138,24 @@ export default function CommentModal({ video, onClose, onCommentAdded }) {
 
   const handleMention = (username) => {
     setCommentText(commentText + `@${username} `);
+  };
+
+  const handleUpdateComment = (updatedComment) => {
+    setComments(prevComments => 
+      prevComments.map(comment => {
+        if (comment.id === updatedComment.id) {
+          return { ...comment, ...updatedComment }; // Hợp nhất comment cũ và mới
+        }
+        if (comment.replies) {
+          // Cập nhật reply trong comment cha
+          const updatedReplies = comment.replies.map(reply => 
+            reply.id === updatedComment.id ? { ...reply, ...updatedComment } : reply
+          );
+          return { ...comment, replies: updatedReplies };
+        }
+        return comment;
+      })
+    );
   };
 
   return (
@@ -155,6 +181,8 @@ export default function CommentModal({ video, onClose, onCommentAdded }) {
                 comment={comment}
                 onReply={handleReply}
                 onMention={handleMention}
+                onDelete={handleDeleteComment}
+                onUpdate={handleUpdateComment}
               />
             ))}
           </div>

@@ -20,6 +20,11 @@ export const deleteComment = async (id) => {
   return response;
 };
 
+export const replyComment = async (id, data) => {
+  const response = await httpRequest.post(`/comments/${id}/reply`, data);
+  return response;
+}
+
 // Like a comment
 export const likeComment = async (id) => {
     return await httpRequest.post(`/comments/${id}/like`);
