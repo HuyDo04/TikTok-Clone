@@ -12,7 +12,6 @@ function DefaultLayout() {
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [sidebarStateBeforeSearch, setSidebarStateBeforeSearch] = useState(false);
-  const [isNotificationsVisible, setNotificationsVisible] = useState(false);
   const location = useLocation();
 
   // Close search on route change
@@ -54,12 +53,6 @@ function DefaultLayout() {
       }
   }
 
-  const toggleNotifications = () => {
-    setNotificationsVisible(prev => !prev);
-    setSidebarCollapsed(false); // Đóng tìm kiếm khi mở thông báo
-  };
-  const closeNotifications = () => setNotificationsVisible(false);
-
   // The main content's margin is now static, set in the SCSS file.
   const mainContentClass = cx("mainContent");
 
@@ -71,14 +64,11 @@ function DefaultLayout() {
         toggleSidebar={toggleSidebar}
         toggleSearch={toggleSearch}
         closeSearch={closeSearch}
-        toggleNotifications={toggleNotifications}
-        closeNotifications={closeNotifications}
       />
       </div>
       <div className={cx("main-content")}>
         <div className={mainContentClass}>
           {isSearchActive && <SearchView closeSearch={closeSearch} />}
-          {isNotificationsVisible && <Notifications closeNotifications={closeNotifications} />}
           <main className={styles.content}>
               <Outlet />
           </main>

@@ -1,5 +1,6 @@
 import { Bell, BellIcon, LockIcon, Tv, UserIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import BlockedUsersModal from "./BlockedUsersModal";
 
 // --- Self-contained UI Components ---
@@ -159,6 +160,7 @@ function SettingsSection({ section, children }) {
 }
 
 function SettingsPage() {
+  const navigate = useNavigate();
   const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
   const menuItems = [
     { id: "account-management", label: "Quản lý tài khoản", icon: <UserIcon /> },
@@ -179,6 +181,14 @@ function SettingsPage() {
       console.log("Requesting user data download");
       alert("Đang chuẩn bị dữ liệu của bạn. (Đây là thông báo giả lập)");
   }
+
+  const handleChangePassword = () => {
+    navigate('/auth/change-password');
+  };
+
+  const handleLanguageSettings = () => {
+    navigate('/settings/languages'); // Chuyển hướng đến trang cài đặt ngôn ngữ
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-zinc-900">
@@ -202,6 +212,10 @@ function SettingsPage() {
                 <SettingItem label="Tài khoản riêng tư" description="Khi ở chế độ riêng tư, chỉ những người bạn phê duyệt mới có thể theo dõi bạn.">
                     <Switch id="private-account" />
                 </SettingItem>
+                <SettingItem label="Đổi mật khẩu" description="Đổi mật khẩu">
+                    
+                    <Button variant="outline" onClick={handleChangePassword}>Đổi</Button>
+                </SettingItem>
                 <SettingItem label="Tài khoản đã chặn" description="Quản lý các tài khoản bạn đã chặn.">
                     <Button variant="outline" onClick={() => setIsBlockedModalOpen(true)}>Quản lý</Button>
                 </SettingItem>
@@ -224,7 +238,7 @@ function SettingsPage() {
 
             <SettingsSection section={{id: "content-preferences", title: "Tùy chọn nội dung"}}>
                 <SettingItem label="Ngôn ngữ video" description="Quản lý ngôn ngữ cho video của bạn.">
-                     <Button variant="outline">Thêm ngôn ngữ</Button>
+                     <Button variant="outline" onClick={handleLanguageSettings}>Thêm ngôn ngữ</Button>
                 </SettingItem>
                 <SettingItem label="Chế độ hạn chế" description="Hạn chế các video có thể không phù hợp với một số người xem.">
                     <Switch id="restricted-mode" />

@@ -63,7 +63,7 @@ const ResetPassword = () => {
       const res = await resetPassword({...formData, email});
       setMessage(res.message || "Đặt lại mật khẩu thành công.");
       // Redirect sang login sau 2s
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/auth/login"), 2000);
     } catch (error) {
       console.error("Reset password error:", error);
       setErrors({

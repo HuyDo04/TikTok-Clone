@@ -7,6 +7,7 @@ import styles from "./MessagesList.module.scss"
 
 const cx = classNames.bind(styles)
 const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
+const URL = import.meta.env.VITE_BASE_URL_ME;
 
 function MessagesList({ conversations, messageRequests, selectedConversationId, onSelectConversation }) {
   const [searchQuery, setSearchQuery] = useState("")
@@ -77,7 +78,7 @@ function MessagesList({ conversations, messageRequests, selectedConversationId, 
               aria-pressed={selectedConversationId === conversation.id}
             >
               <img
-                src={conversation.avatar || DEFAULT_AVATAR}
+                src={conversation.avatar ? `${URL}/${conversation.avatar}` : DEFAULT_AVATAR}
                 alt={conversation.name}
                 className={cx("avatar")}
               />

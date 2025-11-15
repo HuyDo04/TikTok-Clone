@@ -38,7 +38,7 @@ export default function VideoActions({ video, onToggleComments }) {
 
   // Đồng bộ state khi prop `video` thay đổi (khi cuộn qua video khác) và fetch trạng thái mới nhất
   useEffect(() => {
-    console.log('[VideoActions] useEffect triggered for video ID:', video.id);
+    
     // Cập nhật UI ngay lập tức với dữ liệu hiện có từ props
     setIsLiked(video.isLiked || false);
     setLikeCount(Number(video.likesCount) || 0);
@@ -49,15 +49,11 @@ export default function VideoActions({ video, onToggleComments }) {
     // Cập nhật logic tương tự như state ban đầu
     const initialFollowedState = video.author?.followStatus === 'Following' || video.author?.followStatus === 'Friends';
     setIsFollowed(initialFollowedState);
-    console.log('[VideoActions] Initial followStatus from prop:', video.author?.followStatus);
-    console.log('[VideoActions] Determined initial isFollowed state as:', initialFollowedState);
-
-
+    
     // Nếu đã đăng nhập, gọi API để lấy trạng thái chính xác nhất
     if (currentUser && video.id && video.author?.id) {
       const fetchPostStatus = async () => {
         try {
-          console.log(`[VideoActions] Fetching latest status for post ${video.id} and author ${video.author.id}`);
           const [postDetails, authorDetails] = await Promise.all([
             getPostById(video.id),
             getUserById(video.author.id)
@@ -65,8 +61,7 @@ export default function VideoActions({ video, onToggleComments }) {
 
           // Cập nhật logic: Sử dụng `followStatus` từ dữ liệu fetch được
           const fetchedFollowedState = authorDetails.followStatus === 'Following' || authorDetails.followStatus === 'Friends';
-          console.log('[VideoActions] Fetched author details, followStatus:', authorDetails.followStatus);
-          console.log('[VideoActions] Determined fetched isFollowed state as:', fetchedFollowedState);
+         
           setIsLiked(postDetails.isLiked);
           setLikeCount(Number(postDetails.likesCount) || 0);
           setIsBookmarked(postDetails.isReposted); // API trả về 'isReposted'
@@ -113,7 +108,6 @@ export default function VideoActions({ video, onToggleComments }) {
     if (isTogglingFollow) return;
 
     if (!currentUser) {
-      console.log("[VideoActions] User not logged in, redirecting to login.");
       navigate('/auth/login');
       return;
     }
@@ -127,14 +121,10 @@ export default function VideoActions({ video, onToggleComments }) {
   
     try {
       if (isFollowed) {
-        console.log(`[VideoActions] Attempting to UNFOLLOW user ${video.author.id}`);
         await unfollowUser(video.author.id);
-        console.log(`[VideoActions] Successfully unfollowed user ${video.author.id}`);
         setIsFollowed(false);
       } else {
-        console.log(`[VideoActions] Attempting to FOLLOW user ${video.author.id}`);
         await followUser(video.author.id);
-        console.log(`[VideoActions] Successfully followed user ${video.author.id}`);
         setIsFollowed(true);
       }
     } catch (error) {
@@ -145,7 +135,6 @@ export default function VideoActions({ video, onToggleComments }) {
         // Cập nhật logic: Đồng bộ lại bằng `followStatus`
         const reSyncFollowedState = authorDetails.followStatus === 'Following' || authorDetails.followStatus === 'Friends';
         setIsFollowed(reSyncFollowedState);
-        console.log('[VideoActions] Re-synced follow status to:', reSyncFollowedState, 'based on followStatus:', authorDetails.followStatus);
       } catch (syncError) {
         console.error("[VideoActions] Failed to re-sync follow status after error:", syncError);
       }

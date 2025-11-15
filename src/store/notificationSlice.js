@@ -18,6 +18,12 @@ const notificationSlice = createSlice({
       state.unreadCount += 1
     },
 
+    // Thêm nhiều thông báo (dùng cho "Xem thêm")
+    addNotifications: (state, action) => {
+      state.notifications.push(...action.payload); // Nối mảng mới vào cuối
+      state.unreadCount += action.payload.filter(n => !n.read).length;
+    },
+
     // Đặt tất cả notifications
     setNotifications: (state, action) => {
       state.notifications = action.payload
@@ -79,6 +85,7 @@ const notificationSlice = createSlice({
 
 export const {
   addNotification,
+  addNotifications,
   setNotifications,
   markAsRead,
   markAllAsRead,

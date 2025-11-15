@@ -134,9 +134,9 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3000/api/v1/auth/oauth/google";
-  };
+  // const handleGoogleLogin = () => {
+  //   window.location.href = "http://localhost:3000/api/v1/auth/oauth/google";
+  // };
 
   return (
     <div className={cx("login-container")}>
@@ -199,20 +199,20 @@ const Login = () => {
         <span>HOẶC</span>
       </div>
 
-      <Button
+      {/* <Button
         variant="secondary"
         size="lg"
         fullWidth
         onClick={handleGoogleLogin}
       >
         Đăng nhập với Google
-      </Button>
+      </Button> */}
 
       <p className={cx("register-prompt")}>
         Chưa có tài khoản? <a href="/auth/register">Đăng ký</a>
       </p>
       <p className={cx("register-prompt")}>
-        <a href="/forgot-password">Quên mật khẩu</a>
+        <a href="/auth/forgot-password">Quên mật khẩu</a>
       </p>
     </div>
   );

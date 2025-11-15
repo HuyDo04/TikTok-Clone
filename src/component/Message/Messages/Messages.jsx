@@ -26,7 +26,8 @@ function Messages() {
   const [conversations, setConversations] = useState([])
   const [isSocketConnected, setIsSocketConnected] = useState(false)
   const [messageRequests, setMessageRequests] = useState([])
-
+  // console.log("[DEBUG] Bắt đầu render Messages", conversations);
+  
   const { messages, unreadCounts } = useSelector((state) => state.chat)
   const dispatch = useDispatch()
   const currentUser = useSelector((state) => state.auth.currentUser)
@@ -37,12 +38,12 @@ function Messages() {
   const formatConversation = useCallback(
     (chat) => {
       if (!currentUser) return null
-
+      
       const participants = chat.participants || chat.members || []
       const isGroupChat = chat.type === "group"
       const otherParticipant = participants.find((p) => p.id !== currentUser.id)
       const lastMessage = chat.lastMessage || null
-
+      console.log("last", chat)
       let conversationName, conversationUsername, conversationAvatar
       if (isGroupChat) {
         conversationName = chat.name || "Group Chat"
@@ -83,6 +84,8 @@ function Messages() {
       const requestsData = requestsResponse || []
 
       const newConversations = chatsData.map(formatConversation).filter(Boolean)
+      console.log("[DEBUG] newConversations:", newConversations);
+      
       const newRequests = requestsData.map(formatConversation).filter(Boolean)
 
       setConversations(newConversations)
@@ -305,8 +308,6 @@ function Messages() {
       // Hiển thị thông báo lỗi cho người dùng
     }
   }
-
-
   return (
     <div className={cx("root")}>
       <div className={cx("list-panel")}>

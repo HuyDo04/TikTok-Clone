@@ -52,11 +52,12 @@ export const getUserVideosByUsername = async (username) => {
 }
 
 // Các API khác 
-export const getFeedPosts = async ({ page = 1, limit = 3, body = {} }) => {
+export const getFeedPosts = async (body = {} ) => {
   // API này sử dụng POST, và backend sẽ tự xác định user đã login hay chưa
   // dựa vào Authorization header được gắn tự động bởi httpRequest interceptor.
   // Body có thể chứa các thông tin bổ sung như `excludedPostIds`.
-  return httpRequest.post("/posts/feed", body, { params: { page, limit } });
+ const response = await  httpRequest.post("/posts/feed", body);  
+ return response
 };
 
 export const searchPostsByHashtag = async (tagName) =>

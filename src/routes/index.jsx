@@ -31,6 +31,7 @@ import SearchPage from "@/component/Search/SearchPage/SearchPage";
 import VerifyEmail from "@/Pages/VerifyEmail/VerifyEmail";
 import VerifyOtp from "@/Pages/VerifyOtp/VerifyOtp";
 import NotificationPage from "@/component/Notifications";
+import ForgotPassword from "@/Pages/ForgotPassword/ForgotPassword";
 
 const routes = [
   // Public routes
@@ -39,6 +40,7 @@ const routes = [
   { path: config.routes.register, component: Register, layout: NoLayout },
   { path: config.routes.verifyEmail, component: VerifyEmail, layout: NoLayout },
   { path: config.routes.verifyOtp, component: VerifyOtp, layout: NoLayout },
+  { path: config.routes.forgotPassword, component: ForgotPassword, layout: NoLayout },
   { path: config.routes.resetPassword, component: ResetPassword, layout: NoLayout },
   { path: config.routes.explore, component: Explore, layout: DefaultLayout },
   { path: "/search", component: SearchPage, layout: DefaultLayout },
@@ -65,7 +67,7 @@ const routes = [
       { path: "comments", component: CommentsPage },
     ],
   },
-  // { path: config.routes.notifications, component:NotificationPage, layout: DefaultLayout , protected:true},
+  { path: config.routes.notifications, component:NotificationPage, layout: DefaultLayout , protected:true},
   { path: config.routes.profile, component: Profile, layout: DefaultLayout },
 ];
 

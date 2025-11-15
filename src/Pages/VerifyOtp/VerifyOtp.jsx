@@ -43,7 +43,7 @@ const VerifyOtp = () => {
 
       setMessage("Xác minh OTP thành công.");
       // Navigate sang Reset Password page
-      navigate("/reset-password", { state: { email } });
+      navigate("/auth/reset-password", { state: { email } });
     } catch (error) {
       console.error("Verify OTP error:", error);
       setErrors({

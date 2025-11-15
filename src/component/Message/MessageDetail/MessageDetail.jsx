@@ -9,7 +9,7 @@ import RequestBanner from "./RequestBanner" // Import banner mới
 
 const cx = classNames.bind(styles)
 const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
-
+const URL = import.meta.env.VITE_BASE_URL_ME
 function MessageDetail({
   conversation,
   onSendMessage,
@@ -20,6 +20,7 @@ function MessageDetail({
   onDeclineRequest,
 }) {
   const messagesEndRef = useRef(null)
+console.log("[DEBUG] Render MessageDetail", conversation);
 
   const scrollToBottom = (smooth = true) => {
     messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" })
@@ -67,13 +68,14 @@ function MessageDetail({
       </div>
     )
   }
-
+  console.log("conversation", conversation);
+  
   return (
     <div className={cx("root")}>
       <header className={cx("header")}>
         <div className={cx("header-content")}>
           <img
-            src={conversation.avatar || DEFAULT_AVATAR}
+            src={conversation.avatar ? `${URL}/${conversation.avatar}` : DEFAULT_AVATAR}
             alt={conversation.name}
             className={cx("header-avatar")}
           />

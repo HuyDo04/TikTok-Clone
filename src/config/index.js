@@ -3,12 +3,15 @@ const config = {
         home : "/",
 
         //auth
-        login : "/auth/login",
-        register : "/auth/register",
+        login: "/auth/login",
+        register: "/auth/register",
         changePassword: "/auth/change-password",
         resetPassword: "/auth/reset-password",
         verifyEmail: "/auth/verify-email",
-        verifyOtp: "/auth/verify-otp",
+        verifyOtp: "/auth/forgot-password/verify-otp",
+        forgotPassword: "/auth/forgot-password",
+        resendOtp: "/auth/resend-otp",
+        resendVerification: "/auth/resend-verification",
         // user
         profile:"/profile/:username",
         edit:"/profile/:username/edit",

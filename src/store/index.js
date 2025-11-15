@@ -5,6 +5,7 @@ import chatReducer from "./chatSlice";
 import storage from "redux-persist/lib/storage";
 import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
+import notificationReducer from "./notificationSlice";
 // import logger from "redux-logger";
 // import { productApi } from "@/services/product";
 
@@ -17,6 +18,7 @@ const rootConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   chat: chatReducer,
+  notification: notificationReducer,
   // [productApi.reducerPath]: productApi.reducer
 });
 

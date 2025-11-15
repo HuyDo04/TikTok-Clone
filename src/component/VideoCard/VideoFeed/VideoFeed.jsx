@@ -8,7 +8,6 @@ import styles from "./VideoFeed.module.scss"
 import classNames from "classnames/bind"
 import { useVideo } from "@/context/VideoContext"
 import { getFeedPosts } from "@/services/post.service"
-import { getUserById } from "@/services/user.service"
 import { useSelector } from "react-redux"
 import { useInView } from "react-intersection-observer"
 
@@ -25,13 +24,12 @@ export default function VideoFeed() {
   const [seenPostIds, setSeenPostIds] = useState([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [followStatusMap, setFollowStatusMap] = useState({}) // <--- thêm map trạng thái follow
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [commentVideoId, setCommentVideoId] = useState(null)
   const feedRef = useRef(null)
 
-  // Hàm gọi API lấy video
+  // --- Hàm gọi API lấy video ---
   const fetchVideos = useCallback(async (currentPage) => {
     if (loading || !hasMore) return
     setLoading(true)
@@ -44,7 +42,6 @@ export default function VideoFeed() {
       })
 
       if (newVideos && newVideos.length > 0) {
-        // Xử lý media
         const processedVideos = newVideos.map(video => {
           try {
             const mediaData = typeof video.media === 'string' ? JSON.parse(video.media) : video.media
@@ -55,27 +52,12 @@ export default function VideoFeed() {
           }
         })
 
-        setVideos(prev => [...prev, ...processedVideos])
-        const newSeenIds = newVideos.map(v => v.id)
-        setSeenPostIds(prev => [...prev, ...newSeenIds])
-        setPage(currentPage + 1)
+        console.log("[DEBUG] processedVideos:", processedVideos);
 
-        // --- LẤY followStatus cho mỗi author ---
-        if (currentUser) {
-          processedVideos.forEach(video => {
-            const authorId = video.author?.id
-            if (authorId && !followStatusMap[authorId]) {
-              getUserById(authorId)
-                .then(user => {
-                  setFollowStatusMap(prev => ({
-                    ...prev,
-                    [authorId]: user.followStatus === "Following" || user.followStatus === "Friends"
-                  }))
-                })
-                .catch(err => console.error("Failed to fetch author followStatus", err))
-            }
-          })
-        }
+        // --- append trực tiếp, giữ nguyên thứ tự API trả ---
+        setVideos(prev => [...prev, ...processedVideos])
+        setSeenPostIds(prev => [...prev, ...processedVideos.map(v => v.id)])
+        setPage(currentPage + 1)
       } else {
         setHasMore(false)
       }
@@ -84,10 +66,9 @@ export default function VideoFeed() {
     } finally {
       setLoading(false)
     }
-  }, [loading, hasMore, seenPostIds, currentUser, followStatusMap])
+  }, [loading, hasMore, seenPostIds])
 
-
-  
+  // --- Reset state và fetch page 1 khi user đổi ---
   useEffect(() => {
     setVideos([])
     setSeenPostIds([])
@@ -97,6 +78,7 @@ export default function VideoFeed() {
     fetchVideos(1)
   }, [currentUser])
 
+  // --- Tự động fetch khi video cuối cùng inView ---
   useEffect(() => {
     if (isLastVideoInView && videos.length > 0 && hasMore && !loading) {
       fetchVideos(page)
@@ -164,9 +146,14 @@ export default function VideoFeed() {
     >
       <div className={cx("videoFeedInner")}>
         {videos.map((video, index) => {
-          const isSecondToLast = index === videos.length - 2
+          const isLastItem = index === videos.length - 1
+
           return (
-            <div key={`${video.id}-${index}`} className={cx("videoWrapper")} ref={isSecondToLast ? lastVideoRef : null}>
+            <div
+              key={`${video.id}-${index}`}
+              className={cx("videoWrapper")}
+              ref={isLastItem ? lastVideoRef : null}
+            >
               <VideoPlayer
                 video={video}
                 isActive={index === currentIndex}
@@ -174,25 +161,56 @@ export default function VideoFeed() {
                 setCommentVideoId={setCommentVideoId}
                 onEnded={handleVideoEnded}
               />
+
               <VideoActions
-                video={{
-                  ...video,
-                  author: {
-                    ...video.author,
-                    isFollowed: followStatusMap[video.author?.id] ?? false
-                  }
-                }}
+                video={video}
                 onToggleComments={() => toggleComments(video.id)}
-                updateFollowStatus={(authorId, value) => {
-                  setFollowStatusMap(prev => ({ ...prev, [authorId]: value }))
-                }}
               />
             </div>
           )
         })}
 
         {loading && <div className={cx('loader')}>Đang tải thêm video...</div>}
-        {!hasMore && videos.length > 0 && <div className={cx('end-message')}>Bạn đã xem hết video!</div>}
+
+        {!hasMore && videos.length > 0 && (
+          <div className={cx('end-message')}>Bạn đã xem hết video!</div>
+        )}
+
+        <div className={cx("navigation", { "comments-open": isCommentOpen })}>
+          <button
+            className={cx("navButton", "prevButton")}
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            aria-label="Video trước"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" className={cx("icon-fill")}>
+              <path
+                d="M18 15L12 9L6 15"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <button
+            className={cx("navButton", "nextButton")}
+            onClick={handleNext}
+            disabled={currentIndex >= videos.length - 1}
+            aria-label="Video tiếp theo"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" className={cx("icon-fill")}>
+              <path
+                d="M6 9L12 15L18 9"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   )
