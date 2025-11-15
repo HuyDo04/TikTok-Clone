@@ -21,24 +21,24 @@ const cx = classNames.bind(styles)
 
 export default function EngagementStats({
   postId,
-  likes,
+  likesCount: initialLikesCount,
   comments,
-  bookmarks,
+  bookmarks: initialBookmarksCount, // bookmarks từ API là repostCount
   isLiked,
-  isBookmarked,
+  isBookmarked, // isBookmarked từ API là isReposted
 }) {
-  const [likedByMe, setLikedByMe] = useState(isLiked)
-  const [likeCount, setLikeCount] = useState(likes)
-  const [bookmarkedByMe, setBookmarkedByMe] = useState(isBookmarked)
-  const [bookmarkCount, setBookmarkCount] = useState(bookmarks)
+  const [likedByMe, setLikedByMe] = useState(!!isLiked)
+  const [likeCount, setLikeCount] = useState(Number(initialLikesCount) || 0)
+  const [bookmarkedByMe, setBookmarkedByMe] = useState(!!isBookmarked)
+  const [bookmarkCount, setBookmarkCount] = useState(Number(initialBookmarksCount) || 0)
   const currentUser = useSelector((state) => state.auth.currentUser)
-
   useEffect(() => {
-    setLikedByMe(isLiked)
-    setLikeCount(likes)
-    setBookmarkedByMe(isBookmarked)
-    setBookmarkCount(bookmarks)
-  }, [postId, isLiked, likes, isBookmarked, bookmarks])
+    // Đảm bảo state được cập nhật khi video thay đổi trong modal
+    setLikedByMe(!!isLiked)
+    setLikeCount(Number(initialLikesCount) || 0)
+    setBookmarkedByMe(!!isBookmarked)
+    setBookmarkCount(Number(initialBookmarksCount) || 0)
+  }, [postId, isLiked, initialLikesCount, isBookmarked, initialBookmarksCount])
 
   const toggleLike = async () => {
     if (!currentUser) {
@@ -50,7 +50,7 @@ export default function EngagementStats({
     // Cập nhật giao diện trước (Optimistic Update)
     const previousLikedState = likedByMe
     setLikedByMe(!previousLikedState)
-    setLikeCount((prev) => (previousLikedState ? prev - 1 : prev + 1))
+    setLikeCount((prev) => (previousLikedState ? Math.max(0, prev - 1) : prev + 1))
 
     try {
       if (!previousLikedState) {
@@ -62,20 +62,41 @@ export default function EngagementStats({
       console.error("Lỗi khi cập nhật trạng thái thích:", error)
       // Hoàn tác lại nếu có lỗi
       setLikedByMe(previousLikedState)
-      setLikeCount((prev) => (previousLikedState ? prev + 1 : prev - 1))
+      setLikeCount((prev) => (previousLikedState ? Math.max(0, prev - 1) : prev + 1))
     }
   }
 
-  const toggleBookmark = () => {
-    // Logic cho bookmark sẽ được thêm ở đây khi có API
-    setBookmarkedByMe(!bookmarkedByMe)
-    setBookmarkCount((prev) => (bookmarkedByMe ? prev - 1 : prev + 1))
+  const toggleBookmark = async () => {
+    if (!currentUser) {
+      console.log("Vui lòng đăng nhập để lưu bài viết.");
+      return;
+    }
+
+    // Cập nhật giao diện trước (Optimistic Update)
+    const previousBookmarkedState = bookmarkedByMe;
+    setBookmarkedByMe(!previousBookmarkedState);
+    setBookmarkCount((prev) => (previousBookmarkedState ? Math.max(0, prev - 1) : prev + 1));
+
+    try {
+      if (!previousBookmarkedState) {
+        // API cho bookmark được ánh xạ tới repost
+        await postService.repost(postId);
+      } else {
+        // API cho unbookmark được ánh xạ tới unRepost
+        await postService.unRepost(postId);
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái bookmark:", error);
+      // Hoàn tác lại nếu có lỗi
+      setBookmarkedByMe(previousBookmarkedState);
+      setBookmarkCount((prev) => (previousBookmarkedState ? Math.max(0, prev - 1) : prev + 1));
+    }
   }
 
   return (
     <div className={cx("engagementStats")}>
       <div className={cx("statsRow")}>
-        <div className={cx("actionItem")}>
+        <div className={cx("actionItem")}> 
           <div className={cx("actionButtons")}>
             <button className={cx("actionButton", { active: likedByMe })} onClick={toggleLike}>
               <Heart size={24} />

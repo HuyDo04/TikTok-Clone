@@ -64,11 +64,13 @@ export default function VideoDetailModal({ video, isOpen, onClose, onNextVideo, 
     navigator.clipboard.writeText(url);
     alert("Copied to clipboard!");
   };
-
   // Bây giờ mới kiểm tra điều kiện để return sớm
   if (!isOpen || !video) {
     return null;
   }
+
+  // Xác định trạng thái đang tải dữ liệu. Nếu video có rồi nhưng chưa có videoUrl, coi như đang tải.
+  const isLoading = !video.videoUrl;
 
   // JSX modal
   const modalContent = (
@@ -85,7 +87,7 @@ export default function VideoDetailModal({ video, isOpen, onClose, onNextVideo, 
 
         <div className={cx("searchBar")}>
           <Search size={16} />
-          <input type="text" placeholder={video.title} readOnly className={cx("searchInput")} />
+          <input type="text" placeholder={isLoading ? "Đang tải..." : video.title} readOnly className={cx("searchInput")} />
         </div>
 
         <button className={cx("moreBtn")} aria-label="More options">
@@ -93,11 +95,11 @@ export default function VideoDetailModal({ video, isOpen, onClose, onNextVideo, 
         </button>
       </div>
           <VideoPlayer
-            key={video.id} // Thêm key để re-mount component khi video thay đổi
+            key={video.id} 
             videoUrl={video.videoUrl || "/placeholder-video.mp4"}
             onNextVideo={onNextVideo}
             onPrevVideo={onPrevVideo}
-            autoPlay={true} // Bật tự động phát
+            autoPlay={!isLoading} // Chỉ tự động phát khi đã có videoUrl
           />
           <div className={cx("watermark")}>MỦA ĐÔNG NĂM NĂY</div>
           {/* Nút điều hướng */}
@@ -112,38 +114,49 @@ export default function VideoDetailModal({ video, isOpen, onClose, onNextVideo, 
         </div>
 
         <div className={cx("infoSide")}>
-          {/* Creator Card */}
-          <CreatorCard creator={video.creator} />
+          {isLoading ? (
+            // Giao diện chờ (Skeleton)
+            <div>Đang tải thông tin video...</div>
+          ) : (
+            // Giao diện khi đã có dữ liệu
+            <>
+              {/* Creator Card */}
+              <CreatorCard creator={video.creator} />
 
-          {/* Video Title and Tags */}
-          <div className={cx("videoInfo")}>
-            <h3 className={cx("videoTitle")}>{video.title}</h3>
-            <p className={cx("tags")}>
-              {video.tags?.map((tag) => (
-                <a key={tag} href={`#tag-${tag}`} className={cx("tag")}>
-                  #{tag}
-                </a>
-              ))}
-            </p>
-          </div>
+              {/* Video Title and Tags */}
+              <div className={cx("videoInfo")}>
+                <h3 className={cx("videoTitle")}>{video.title}</h3>
+                <p className={cx("tags")}>
+                  {video.tags?.map((tag) => (
+                    <a key={tag} href={`#tag-${tag}`} className={cx("tag")}>
+                      #{tag}
+                    </a>
+                  ))}
+                </p>
+              </div>
 
-          {/* Music Info */}
-          <div className={cx("musicInfo")}>
-            <span className={cx("musicIcon")}>♫</span>
-            <span className={cx("musicText")}>{video.music || "Nhạc nền - Original Sound"}</span>
-          </div>
+              {/* Music Info */}
+              <div className={cx("musicInfo")}>
+                <span className={cx("musicIcon")}>♫</span>
+                <span className={cx("musicText")}>{video.music || "Nhạc nền - Original Sound"}</span>
+              </div>
+                  
+              {/* Engagement Stats */}
+              <EngagementStats
+                postId={video.id}
+                likesCount={video.likesCount}
+                comments={video.commentCount}
+                bookmarks={video.repostCount}
+                isLiked={video.isLiked}
+                isBookmarked={video.isReposted} // API dùng isReposted cho bookmark
+                onCopyLink={handleCopyLink}
+              />
 
-          {/* Engagement Stats */}
-          <EngagementStats
-            likes={video.likes}
-            comments={video.comments}
-            bookmarks={video.bookmarks}
-            shares={video.shares}
-            onCopyLink={handleCopyLink}
-          />
-
-          {/* Comments Section */}
-          <CommentsSection comments={video.videoComments} videoId={video.id} />
+              {/* Comments Section */}
+              {/* Component này tự fetch comment dựa trên videoId */}
+              <CommentsSection videoId={video.id} />
+            </>
+          )}
         </div>
       </div>
     </div>

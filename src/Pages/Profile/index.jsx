@@ -9,11 +9,11 @@ import VideoGrid from "../../component/VideoGrid";
 import classNames from "classnames/bind";
 import styles from "./Profile.module.scss";
 import * as userService from "@/services/user.service"; // Giữ lại để lấy thông tin profile chi tiết
-import * as authService from "@/services/auth.service"; // Import service mới
+import VideoDetailModal from "@/component/Search/VideoDetailModal/VideoDetailModal"; // Import modal
 import EditProfile from "@/component/EditProfile"; // Import EditProfile
 import * as postService from "@/services/post.service"; // Import post service để lấy video
 import { getChatByMemberIds, createChat } from "@/services/chat.service";
-import { blockUser, unblockUser } from "@/services/user.service";
+import { blockUser, unblockUser, getUserById } from "@/services/user.service";
 const cx = classNames.bind(styles);
 const URL = import.meta.env.VITE_BASE_URL_ME;
 const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
@@ -23,6 +23,9 @@ function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State để mở/đóng modal
   const [videos, setVideos] = useState([]);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentVideoList, setCurrentVideoList] = useState([]);
   const [loading, setLoading] = useState(true);
   
   const { username } = useParams(); // Lấy username từ URL, ví dụ: /@hdna0402
@@ -64,19 +67,20 @@ function ProfilePage() {
 
       if (userIdToFetch) {
         // Luôn gọi API getUserById để lấy dữ liệu đầy đủ, bao gồm cả Followers và Following
-        userProfile = await userService.getUserById(userIdToFetch);
+        userProfile = await getUserById(userIdToFetch);
         
       } else {
         throw new Error("User profile could not be fetched.");
       }
 
       setProfileData(userProfile);
-
+console.log(username)
       // Lấy danh sách video của người dùng bằng API mới
       const userPostsResponse = await postService.getUserVideosByUsername(username);
+      // API này chỉ trả về dữ liệu cơ bản, đủ để hiển thị grid.
       const mappedVideos = userPostsResponse.map(post => ({
           id: post.id,
-          thumbnail: post.featuredImage || '/placeholder.jpg', // Sử dụng featuredImage làm thumbnail
+          thumbnail: post.featuredImage ? `${URL}/${post.featuredImage.replace('public/', '')}` : '/placeholder.jpg',
           title: post.content,
           views: post.viewCount,
       }));
@@ -194,6 +198,67 @@ function ProfilePage() {
     }
   };
 
+  // --- Handlers for Video Detail Modal ---
+  const handleVideoClick = async (video) => {
+    // Mở modal ngay lập tức với dữ liệu cơ bản để người dùng không phải chờ
+    setIsModalOpen(true);
+    setCurrentVideoList(videos); // Thiết lập danh sách video hiện tại để điều hướng
+    setSelectedVideo({ id: video.id, thumbnail: video.thumbnail }); // Dữ liệu tạm thời
+
+    try {
+      // Gọi API getPostById để lấy dữ liệu chi tiết
+      const detailedPost = await postService.getPostById(video.id);
+      
+      // Ánh xạ dữ liệu chi tiết sang cấu trúc mà VideoDetailModal cần
+      const fullVideoData = {
+        id: detailedPost.id,
+        videoUrl: detailedPost.media ? `${URL}/${JSON.parse(detailedPost.media)[0]?.url.replace('public/', '')}` : '/placeholder-video.mp4',
+        title: detailedPost.content || "Không có tiêu đề",
+        likesCount: detailedPost.likesCount,
+        commentCount: detailedPost.commentCount,
+        repostCount: detailedPost.repostCount,
+        isLiked: detailedPost.isLiked,
+        isReposted: detailedPost.isReposted,
+        creator: {
+          name: detailedPost.author.username,
+          avatar: detailedPost.author.avatar ? `${URL}/${detailedPost.author.avatar.replace('public/', '')}` : DEFAULT_AVATAR,
+        },
+      };
+
+      setSelectedVideo(fullVideoData); // Cập nhật state với dữ liệu đầy đủ
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết video:", error);
+      setIsModalOpen(false); // Đóng modal nếu có lỗi
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedVideo(null);
+    setCurrentVideoList([]);
+  };
+
+  const handleNextVideo = async () => {
+    if (!selectedVideo || currentVideoList.length === 0) return;
+    const currentIndex = currentVideoList.findIndex(v => v.id === selectedVideo.id);
+    if (currentIndex < currentVideoList.length - 1) {
+      const nextVideo = currentVideoList[currentIndex + 1];
+      // Gọi lại handleVideoClick để fetch dữ liệu chi tiết cho video tiếp theo
+      await handleVideoClick(nextVideo);
+    }
+  };
+
+  const handlePrevVideo = async () => {
+    if (!selectedVideo || currentVideoList.length === 0) return;
+    const currentIndex = currentVideoList.findIndex(v => v.id === selectedVideo.id);
+    if (currentIndex > 0) {
+      const prevVideo = currentVideoList[currentIndex - 1];
+      // Gọi lại handleVideoClick để fetch dữ liệu chi tiết cho video trước đó
+      await handleVideoClick(prevVideo);
+    }
+  };
+
+console.log("video", videos)
   if (loading) {
     return <div>Loading...</div>; // Hoặc một component skeleton loading đẹp hơn
   }
@@ -224,8 +289,8 @@ function ProfilePage() {
         onUnblock={handleUnblock}
       />
       <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
-      {activeTab === "videos" && <VideoGrid videos={videos} />}
-      {activeTab === "likes" && <VideoGrid videos={[]} />} {/* API cho mục này chưa có, tạm thời để trống */}
+      {activeTab === "videos" && <VideoGrid videos={videos} onVideoClick={handleVideoClick} />}
+      {activeTab === "likes" && <VideoGrid videos={[]} onVideoClick={handleVideoClick} />} {/* API cho mục này chưa có, tạm thời để trống */}
 
       {/* Render modal EditProfile khi isEditModalOpen là true */}
       {isEditModalOpen && (
@@ -235,6 +300,14 @@ function ProfilePage() {
           onSaveSuccess={handleSaveSuccess}
         />
       )}
+
+      <VideoDetailModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        video={selectedVideo}
+        onNextVideo={handleNextVideo}
+        onPrevVideo={handlePrevVideo}
+      />
     </div>
   );
 }

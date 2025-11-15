@@ -52,13 +52,13 @@ export const checkUsername = async (username) => {
 
 // Follow a user
 export const followUser = async (id) => {
-  const response = await httpRequest.post(`/users/${id}/follow`);
+  const response = await httpRequest.post(`/users/${id}/follow`, {});
   return response;
 };
 
 // Unfollow a user
 export const unfollowUser = async (id) => {
-  const response = await httpRequest.del(`/users/${id}/follow`);
+  const response = await httpRequest.del(`/users/${id}/follow`,{});
   return response;
 };
 

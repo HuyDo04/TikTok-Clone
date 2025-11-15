@@ -3,12 +3,13 @@ import classNames from "classnames/bind";
 import styles from "./LiveVideo.module.scss";
 
 const cx = classNames.bind(styles);
+const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
 
 function LiveVideo({ live }) {
   return (
     <div className={cx("video-player")}>
       <div className={cx("video-container")}>
-        <img src={live.thumbnail || "/placeholder.svg"} alt={live.title} className={cx("video")} />
+        <img src={live.thumbnail || DEFAULT_AVATAR} alt={live.title} className={cx("video")} />
         <div className={cx("overlay")}>
           <div className={cx("live-info")}>
             <span className={cx("live-badge")}>LIVE</span>
@@ -20,7 +21,7 @@ function LiveVideo({ live }) {
       <div className={cx("live-details")}>
         <div className={cx("header")}>
           <div className={cx("user-info")}>
-            <img src={live.avatar || "/placeholder.svg"} alt={live.username} className={cx("avatar")} />
+            <img src={live.avatar || DEFAULT_AVATAR} alt={live.username} className={cx("avatar")} />
             <div className={cx("info")}>
               <h3>{live.username}</h3>
               <p>{live.displayName}</p>

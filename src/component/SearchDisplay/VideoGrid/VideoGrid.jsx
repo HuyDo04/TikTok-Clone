@@ -2,6 +2,7 @@
 import classNames from "classnames/bind"
 import styles from "./VideoGrid.module.scss"
 import HeartIcon from "@/component/Icons/HeartIcon";
+import { PlayIcon } from "lucide-react";
 
 const cx = classNames.bind(styles)
 const DEFAULT_AVATAR = import.meta.env.VITE_DEFAULT_AVATAR;
@@ -41,7 +42,7 @@ export default function VideoGrid({ videos, isUserVideos = false, onVideoClick }
                 </>
               )}
               <div className={cx("play-button-overlay")}>
-                <div className={cx("play-button")}>▶</div>
+                <PlayIcon />            
               </div>
             </div>
 
